@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 interface HeaderProps {
   isMuted: boolean;
@@ -7,7 +7,12 @@ interface HeaderProps {
   favoritesCount: number;
 }
 
-export const Header = ({ isMuted, onToggleMute, onOpenFavorites, favoritesCount }: HeaderProps) => {
+export const Header = ({
+  isMuted,
+  onToggleMute,
+  onOpenFavorites,
+  favoritesCount,
+}: HeaderProps) => {
   return (
     <motion.header
       initial={{ opacity: 0, y: -20 }}
@@ -19,10 +24,10 @@ export const Header = ({ isMuted, onToggleMute, onOpenFavorites, favoritesCount 
       <button
         onClick={onToggleMute}
         className="w-10 h-10 rounded-full bg-white/70 backdrop-blur-sm shadow-sm flex items-center justify-center text-lg hover:bg-white transition-colors btn-press"
-        aria-label={isMuted ? 'Unmute sounds' : 'Mute sounds'}
-        title={isMuted ? 'Unmute sounds' : 'Mute sounds'}
+        aria-label={isMuted ? "Unmute sounds" : "Mute sounds"}
+        title={isMuted ? "Unmute sounds" : "Mute sounds"}
       >
-        {isMuted ? '🔇' : '🔊'}
+        {isMuted ? "🔇" : "🔊"}
       </button>
 
       {/* Title */}
@@ -47,7 +52,7 @@ export const Header = ({ isMuted, onToggleMute, onOpenFavorites, favoritesCount 
             animate={{ scale: 1 }}
             className="absolute -top-1 -right-1 min-w-5 h-5 px-1 bg-accent-pink text-white text-xs font-bold rounded-full flex items-center justify-center"
           >
-            {favoritesCount > 99 ? '99+' : favoritesCount}
+            {favoritesCount > 99 ? "99+" : favoritesCount}
           </motion.span>
         )}
       </button>
