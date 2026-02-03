@@ -73,7 +73,8 @@ export const THEMES = {
   },
   sunset: {
     name: "Sunset",
-    gradient: "linear-gradient(135deg, #fef3c7 0%, #fde68a 30%, #fca5a5 70%, #f87171 100%)",
+    gradient:
+      "linear-gradient(135deg, #fef3c7 0%, #fde68a 30%, #fca5a5 70%, #f87171 100%)",
     accent: "#f97316",
     cardBg: "linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%)",
   },

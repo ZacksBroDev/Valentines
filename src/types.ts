@@ -3,7 +3,13 @@
 // Card types, state types, and utility types
 // ============================================================
 
-import { RarityKey, StickerKey, MoodKey, OpenWhenKey, ThemeKey } from "./config";
+import {
+  RarityKey,
+  StickerKey,
+  MoodKey,
+  OpenWhenKey,
+  ThemeKey,
+} from "./config";
 
 // Re-export for convenience
 export type Mood = MoodKey;
@@ -54,9 +60,12 @@ export interface PlaylistCard extends BaseCard {
 export type Card = TextCard | VoucherCard | PlaylistCard;
 
 // ----- TYPE GUARDS -----
-export const isTextCard = (card: Card): card is TextCard => card.type === "text";
-export const isVoucherCard = (card: Card): card is VoucherCard => card.type === "voucher";
-export const isPlaylistCard = (card: Card): card is PlaylistCard => card.type === "playlist";
+export const isTextCard = (card: Card): card is TextCard =>
+  card.type === "text";
+export const isVoucherCard = (card: Card): card is VoucherCard =>
+  card.type === "voucher";
+export const isPlaylistCard = (card: Card): card is PlaylistCard =>
+  card.type === "playlist";
 
 // ----- APP STATE -----
 export interface AppState {

@@ -52,7 +52,9 @@ export const ActionBar = ({
           onClick={onOpenWhen}
           whileTap={{ scale: 0.95 }}
           className={`w-12 h-12 rounded-full shadow-button flex items-center justify-center text-lg transition-all btn-press ${
-            isDark ? "bg-white/20 hover:bg-white/30" : "bg-white hover:bg-blush-50"
+            isDark
+              ? "bg-white/20 hover:bg-white/30"
+              : "bg-white hover:bg-blush-50"
           }`}
           aria-label="Open when..."
           title="Open when..."
@@ -72,7 +74,9 @@ export const ActionBar = ({
                 : "bg-white hover:bg-blush-50"
               : "bg-gray-100 opacity-50 cursor-not-allowed"
           }`}
-          aria-label={isFavorite ? "Remove from favorites" : "Save to favorites"}
+          aria-label={
+            isFavorite ? "Remove from favorites" : "Save to favorites"
+          }
           title={isFavorite ? "Remove from favorites" : "Save to favorites"}
         >
           <motion.span
@@ -125,7 +129,9 @@ export const ActionBar = ({
           onClick={onShuffle}
           whileTap={{ scale: 0.95, rotate: 180 }}
           className={`w-12 h-12 rounded-full shadow-button flex items-center justify-center text-lg transition-all btn-press ${
-            isDark ? "bg-white/20 hover:bg-white/30" : "bg-white hover:bg-blush-50"
+            isDark
+              ? "bg-white/20 hover:bg-white/30"
+              : "bg-white hover:bg-blush-50"
           }`}
           aria-label="Shuffle deck"
           title="Mix the deck"
@@ -144,7 +150,9 @@ export const ActionBar = ({
           <button
             onClick={onScreenshot}
             className={`text-xs flex items-center gap-1 px-3 py-1.5 rounded-full transition-colors ${
-              isDark ? "text-gray-300 hover:bg-white/10" : "text-blush-500 hover:bg-blush-50"
+              isDark
+                ? "text-gray-300 hover:bg-white/10"
+                : "text-blush-500 hover:bg-blush-50"
             }`}
           >
             📸 Save as image

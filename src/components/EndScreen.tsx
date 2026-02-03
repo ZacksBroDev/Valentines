@@ -55,8 +55,16 @@ export const EndScreen = ({
               <motion.span
                 key={i}
                 className="absolute text-2xl"
-                initial={{ opacity: 0, x: `${10 + Math.random() * 80}%`, y: "110%" }}
-                animate={{ opacity: [0, 1, 0], y: "-10%", rotate: [0, 20, -20, 0] }}
+                initial={{
+                  opacity: 0,
+                  x: `${10 + Math.random() * 80}%`,
+                  y: "110%",
+                }}
+                animate={{
+                  opacity: [0, 1, 0],
+                  y: "-10%",
+                  rotate: [0, 20, -20, 0],
+                }}
                 transition={{
                   duration: 4 + Math.random() * 3,
                   delay: i * 0.3,
@@ -144,20 +152,25 @@ export const EndScreen = ({
 
                   {/* Final 3 option */}
                   <div className="mt-4">
-                    <p className="text-sm text-gray-500 mb-3">Or draw a Final 3:</p>
+                    <p className="text-sm text-gray-500 mb-3">
+                      Or draw a Final 3:
+                    </p>
                     <div className="flex justify-center gap-2">
-                      {(Object.entries(FINAL_THREE_CATEGORIES) as [keyof typeof FINAL_THREE_CATEGORIES, typeof FINAL_THREE_CATEGORIES[keyof typeof FINAL_THREE_CATEGORIES]][]).map(
-                        ([key, { label, emoji }]) => (
-                          <button
-                            key={key}
-                            onClick={() => handleFinalThree(key)}
-                            className="px-4 py-2 rounded-full bg-white/70 hover:bg-white text-sm font-medium text-gray-700 transition-colors flex items-center gap-1"
-                          >
-                            <span>{emoji}</span>
-                            <span>{label}</span>
-                          </button>
-                        )
-                      )}
+                      {(
+                        Object.entries(FINAL_THREE_CATEGORIES) as [
+                          keyof typeof FINAL_THREE_CATEGORIES,
+                          (typeof FINAL_THREE_CATEGORIES)[keyof typeof FINAL_THREE_CATEGORIES],
+                        ][]
+                      ).map(([key, { label, emoji }]) => (
+                        <button
+                          key={key}
+                          onClick={() => handleFinalThree(key)}
+                          className="px-4 py-2 rounded-full bg-white/70 hover:bg-white text-sm font-medium text-gray-700 transition-colors flex items-center gap-1"
+                        >
+                          <span>{emoji}</span>
+                          <span>{label}</span>
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </motion.div>
@@ -170,7 +183,9 @@ export const EndScreen = ({
                   animate={{ opacity: 1, scale: 1 }}
                   className="space-y-4"
                 >
-                  <h2 className="text-xl font-bold text-gray-800 mb-4">Your Final 3 💕</h2>
+                  <h2 className="text-xl font-bold text-gray-800 mb-4">
+                    Your Final 3 💕
+                  </h2>
                   {finalCards.map((card, i) => (
                     <motion.div
                       key={card.id}
@@ -182,7 +197,8 @@ export const EndScreen = ({
                       <p className="text-gray-700">
                         {card.type === "text" && `"${card.text}"`}
                         {card.type === "voucher" && card.title}
-                        {card.type === "playlist" && `${card.songTitle} by ${card.artist}`}
+                        {card.type === "playlist" &&
+                          `${card.songTitle} by ${card.artist}`}
                       </p>
                     </motion.div>
                   ))}

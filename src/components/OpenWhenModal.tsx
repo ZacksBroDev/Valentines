@@ -32,34 +32,37 @@ export const OpenWhenModal = ({
           Pick a feeling, and I'll find the perfect words for you.
         </p>
 
-        {(Object.entries(OPEN_WHEN_CATEGORIES) as [OpenWhenKey, typeof OPEN_WHEN_CATEGORIES[OpenWhenKey]][]).map(
-          ([key, { label, emoji, description }]) => (
-            <motion.button
-              key={key}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => handleSelect(key)}
-              className={`w-full p-4 rounded-2xl text-left transition-all ${
-                currentMode === key
-                  ? "bg-accent-pink text-white shadow-lg"
-                  : "bg-blush-50 hover:bg-blush-100"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">{emoji}</span>
-                <div>
-                  <p className="font-medium">{label}</p>
-                  <p
-                    className={`text-sm ${
-                      currentMode === key ? "text-white/80" : "text-gray-500"
-                    }`}
-                  >
-                    {description}
-                  </p>
-                </div>
+        {(
+          Object.entries(OPEN_WHEN_CATEGORIES) as [
+            OpenWhenKey,
+            (typeof OPEN_WHEN_CATEGORIES)[OpenWhenKey],
+          ][]
+        ).map(([key, { label, emoji, description }]) => (
+          <motion.button
+            key={key}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => handleSelect(key)}
+            className={`w-full p-4 rounded-2xl text-left transition-all ${
+              currentMode === key
+                ? "bg-accent-pink text-white shadow-lg"
+                : "bg-blush-50 hover:bg-blush-100"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">{emoji}</span>
+              <div>
+                <p className="font-medium">{label}</p>
+                <p
+                  className={`text-sm ${
+                    currentMode === key ? "text-white/80" : "text-gray-500"
+                  }`}
+                >
+                  {description}
+                </p>
               </div>
-            </motion.button>
-          )
-        )}
+            </div>
+          </motion.button>
+        ))}
 
         {currentMode && (
           <button

@@ -67,7 +67,8 @@ const set = <T>(key: string, value: T): void => {
 
 // ----- FAVORITES -----
 export const getFavorites = (): string[] => get(STORAGE_KEYS.FAVORITES, []);
-export const saveFavorites = (ids: string[]) => set(STORAGE_KEYS.FAVORITES, ids);
+export const saveFavorites = (ids: string[]) =>
+  set(STORAGE_KEYS.FAVORITES, ids);
 export const toggleFavorite = (id: string): boolean => {
   const favs = getFavorites();
   const idx = favs.indexOf(id);
@@ -91,7 +92,8 @@ export const unlockSecret = () =>
 // ----- SEEN IDS -----
 export const getSeenIds = (): string[] => get(STORAGE_KEYS.SEEN_IDS, []);
 export const saveSeenIds = (ids: string[]) => set(STORAGE_KEYS.SEEN_IDS, ids);
-export const clearSeenIds = () => localStorage.removeItem(STORAGE_KEYS.SEEN_IDS);
+export const clearSeenIds = () =>
+  localStorage.removeItem(STORAGE_KEYS.SEEN_IDS);
 
 // ----- DECK EXHAUSTED -----
 export const wasDeckExhausted = (): boolean =>
@@ -173,8 +175,10 @@ export const deleteNote = (id: string) => {
 };
 
 // ----- MOOD & FILTERS -----
-export const getCurrentMood = (): MoodKey => get(STORAGE_KEYS.CURRENT_MOOD, "all");
-export const setCurrentMood = (mood: MoodKey) => set(STORAGE_KEYS.CURRENT_MOOD, mood);
+export const getCurrentMood = (): MoodKey =>
+  get(STORAGE_KEYS.CURRENT_MOOD, "all");
+export const setCurrentMood = (mood: MoodKey) =>
+  set(STORAGE_KEYS.CURRENT_MOOD, mood);
 export const getOpenWhenMode = (): OpenWhenKey | null =>
   get(STORAGE_KEYS.OPEN_WHEN_MODE, null);
 export const setOpenWhenMode = (mode: OpenWhenKey | null) =>

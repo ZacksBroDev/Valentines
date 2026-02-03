@@ -29,7 +29,7 @@ export const HeartBuddy = ({
         setIsBlinking(true);
         setTimeout(() => setIsBlinking(false), 150);
       },
-      4000 + Math.random() * 2000
+      4000 + Math.random() * 2000,
     );
     return () => clearInterval(interval);
   }, []);

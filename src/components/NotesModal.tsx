@@ -36,7 +36,7 @@ export const NotesModal = ({ isOpen, onClose }: NotesModalProps) => {
       deleteNote(id);
       refreshNotes();
     },
-    [refreshNotes]
+    [refreshNotes],
   );
 
   const formatDate = (timestamp: number) => {

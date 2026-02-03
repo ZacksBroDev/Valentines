@@ -7,60 +7,45 @@
   --theme-primary: #ff4d85;
   --theme-secondary: #ffe8ed;
   --theme-accent: #ff4da6;
-  --theme-bg-start: #fff5f7;
-  --theme-bg-mid: #ffe8ed;
-  --theme-bg-end: #ffd6e0;
 }
 
+/* Each theme applies its own background directly */
 .theme-blush {
   --theme-primary: #ff4d85;
   --theme-secondary: #ffe8ed;
   --theme-accent: #ff4da6;
-  --theme-bg-start: #fff5f7;
-  --theme-bg-mid: #ffe8ed;
-  --theme-bg-end: #ffd6e0;
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe8ed 50%, #ffd6e0 100%) !important;
 }
 
 .theme-lavender {
   --theme-primary: #9b6dff;
   --theme-secondary: #e6d5ff;
   --theme-accent: #b794f6;
-  --theme-bg-start: #f3e8ff;
-  --theme-bg-mid: #e6d5ff;
-  --theme-bg-end: #dcc8ff;
+  background: linear-gradient(135deg, #f3e8ff 0%, #e6d5ff 50%, #dcc8ff 100%) !important;
 }
 
 .theme-night {
   --theme-primary: #ff6b9d;
   --theme-secondary: #1a1a2e;
   --theme-accent: #ff4da6;
-  --theme-bg-start: #1a1a2e;
-  --theme-bg-mid: #16213e;
-  --theme-bg-end: #0f3460;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
+}
+
+.theme-night .text-blush-500,
+.theme-night .text-gray-700,
+.theme-night .text-gray-800 {
+  color: #e0e0e0 !important;
+}
+
+.theme-night .bg-white {
+  background-color: #16213e !important;
 }
 
 .theme-sunset {
   --theme-primary: #ff6b6b;
   --theme-secondary: #ffecd2;
   --theme-accent: #ff8c42;
-  --theme-bg-start: #fff5eb;
-  --theme-bg-mid: #ffecd2;
-  --theme-bg-end: #ffdfb8;
-}
-
-/* Dynamic theme background */
-.theme-bg {
-  background: linear-gradient(135deg, var(--theme-bg-start) 0%, var(--theme-bg-mid) 50%, var(--theme-bg-end) 100%);
-}
-
-/* Night theme text adjustments */
-.theme-night .text-blush-500 {
-  color: #ff8fb3;
-}
-
-.theme-night .text-gray-700,
-.theme-night .text-gray-800 {
-  color: #e0e0e0;
+  background: linear-gradient(135deg, #fff5eb 0%, #ffecd2 50%, #ffdfb8 100%) !important;
 }
 
 /* Custom scrollbar for the app */
@@ -113,10 +98,13 @@ body {
 
 /* Blush animation for HeartBuddy */
 @keyframes blush-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.4;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.9;
     transform: scale(1.1);
@@ -133,6 +121,7 @@ body {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
+
   100% {
     opacity: 0;
     transform: translateY(-60px) scale(0.5);
@@ -148,6 +137,7 @@ body {
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
@@ -191,8 +181,16 @@ body {
 }
 
 @keyframes blink-cursor {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
 }
 
 /* Button press effect */
@@ -211,9 +209,17 @@ body {
 
 /* Sticker placed animation */
 @keyframes sticker-place {
-  0% { transform: scale(0) rotate(-30deg); }
-  60% { transform: scale(1.3) rotate(10deg); }
-  100% { transform: scale(1) rotate(0deg); }
+  0% {
+    transform: scale(0) rotate(-30deg);
+  }
+
+  60% {
+    transform: scale(1.3) rotate(10deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
 }
 
 .sticker-placed {
@@ -222,8 +228,13 @@ body {
 
 /* Love meter fill animation */
 @keyframes love-fill {
-  0% { width: 0; }
-  100% { width: var(--fill-percent); }
+  0% {
+    width: 0;
+  }
+
+  100% {
+    width: var(--fill-percent);
+  }
 }
 
 .love-meter-fill {
@@ -232,8 +243,15 @@ body {
 
 /* Heart squeeze on long press */
 @keyframes squeeze {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(0.85); }
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0.85);
+  }
 }
 
 .squeeze-animate {
@@ -242,9 +260,19 @@ body {
 
 /* Heart pop on release */
 @keyframes heart-pop {
-  0% { transform: scale(0) translateY(0); opacity: 1; }
-  50% { transform: scale(1.2) translateY(-10px); }
-  100% { transform: scale(0.8) translateY(-30px); opacity: 0; }
+  0% {
+    transform: scale(0) translateY(0);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.2) translateY(-10px);
+  }
+
+  100% {
+    transform: scale(0.8) translateY(-30px);
+    opacity: 0;
+  }
 }
 
 .heart-pop {

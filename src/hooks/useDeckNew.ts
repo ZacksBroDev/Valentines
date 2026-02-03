@@ -1,6 +1,12 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { Card, CardCategory } from "../types";
-import { MoodKey, OpenWhenKey, OPEN_WHEN_CATEGORIES, CONFIG, FINAL_THREE_CATEGORIES } from "../config";
+import {
+  MoodKey,
+  OpenWhenKey,
+  OPEN_WHEN_CATEGORIES,
+  CONFIG,
+  FINAL_THREE_CATEGORIES,
+} from "../config";
 import { allCards, getAvailableCards, getCardById } from "../data/cards";
 import {
   getSeenIds,
@@ -36,7 +42,9 @@ export const useDeckNew = () => {
 
   // Filters
   const [currentMood, setCurrentMoodState] = useState<MoodKey>(getCurrentMood);
-  const [openWhenMode, setOpenWhenModeState] = useState<OpenWhenKey | null>(getOpenWhenMode);
+  const [openWhenMode, setOpenWhenModeState] = useState<OpenWhenKey | null>(
+    getOpenWhenMode,
+  );
   const [dailyModeEnabled, setDailyModeState] = useState(isDailyModeEnabled);
   const [dailyCardDrawn, setDailyCardDrawn] = useState(!canDrawToday());
 
@@ -46,7 +54,8 @@ export const useDeckNew = () => {
 
     // Apply Open When filter
     if (openWhenMode && OPEN_WHEN_CATEGORIES[openWhenMode]) {
-      const allowedCategories = OPEN_WHEN_CATEGORIES[openWhenMode].categories as readonly string[];
+      const allowedCategories = OPEN_WHEN_CATEGORIES[openWhenMode]
+        .categories as readonly string[];
       cards = cards.filter((c) => {
         const hasTag = c.tags?.includes(openWhenMode);
         const hasCategory = allowedCategories.includes(c.category);
@@ -88,7 +97,7 @@ export const useDeckNew = () => {
 
       setIsLoading(false);
     },
-    [availableCards]
+    [availableCards],
   );
 
   // Initial load
@@ -180,7 +189,10 @@ export const useDeckNew = () => {
       const totalAvailable = availableCards.length;
       const newDrawCount = drawCount + 1;
 
-      if (newSeenIds.length >= totalAvailable || newDrawCount >= CONFIG.drawThreshold) {
+      if (
+        newSeenIds.length >= totalAvailable ||
+        newDrawCount >= CONFIG.drawThreshold
+      ) {
         if (!hasShownEndScreen) {
           setIsDeckExhausted(true);
           setDeckExhausted();
@@ -252,14 +264,12 @@ export const useDeckNew = () => {
       const config = FINAL_THREE_CATEGORIES[category];
       const allowedCats = config.categories as readonly string[];
       const pool = allCards.filter(
-        (c) =>
-          allowedCats.includes(c.category) &&
-          c.category !== "secret"
+        (c) => allowedCats.includes(c.category) && c.category !== "secret",
       );
       const shuffled = shuffleArray(pool);
       return shuffled.slice(0, 3);
     },
-    []
+    [],
   );
 
   // Alias for daily mode

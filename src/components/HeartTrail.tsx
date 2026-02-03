@@ -15,16 +15,19 @@ export const HeartTrail = ({ enabled }: HeartTrailProps) => {
   const [hearts, setHearts] = useState<Heart[]>([]);
   const [nextId, setNextId] = useState(0);
 
-  const addHeart = useCallback((x: number, y: number) => {
-    const id = nextId;
-    setNextId((prev) => prev + 1);
-    setHearts((prev) => [...prev.slice(-12), { id, x, y }]); // Keep max 12 hearts
-    
-    // Remove heart after animation
-    setTimeout(() => {
-      setHearts((prev) => prev.filter((h) => h.id !== id));
-    }, 1000);
-  }, [nextId]);
+  const addHeart = useCallback(
+    (x: number, y: number) => {
+      const id = nextId;
+      setNextId((prev) => prev + 1);
+      setHearts((prev) => [...prev.slice(-12), { id, x, y }]); // Keep max 12 hearts
+
+      // Remove heart after animation
+      setTimeout(() => {
+        setHearts((prev) => prev.filter((h) => h.id !== id));
+      }, 1000);
+    },
+    [nextId],
+  );
 
   useEffect(() => {
     if (!enabled) return;
@@ -60,14 +63,14 @@ export const HeartTrail = ({ enabled }: HeartTrailProps) => {
         {hearts.map((heart) => (
           <motion.div
             key={heart.id}
-            initial={{ 
-              opacity: 0.8, 
+            initial={{
+              opacity: 0.8,
               scale: 0.5,
               x: heart.x - 8,
               y: heart.y - 8,
             }}
-            animate={{ 
-              opacity: 0, 
+            animate={{
+              opacity: 0,
               scale: 1,
               y: heart.y - 40,
             }}

@@ -15,7 +15,13 @@ interface SettingsModalProps {
   reasonsLogged: number;
 }
 
-const Toggle = ({ enabled, onToggle }: { enabled: boolean; onToggle: () => void }) => (
+const Toggle = ({
+  enabled,
+  onToggle,
+}: {
+  enabled: boolean;
+  onToggle: () => void;
+}) => (
   <button
     onClick={onToggle}
     className={`w-10 h-5 rounded-full transition-colors relative flex-shrink-0 ${
@@ -61,37 +67,50 @@ export const SettingsModal = ({
         {/* Theme Section */}
         <div>
           <div className="grid grid-cols-2 gap-1">
-            {(Object.entries(THEMES) as [ThemeKey, typeof THEMES[ThemeKey]][]).map(
-              ([key, theme]) => {
-                const isUnlocked = unlockedThemes.includes(key);
-                const isActive = currentTheme === key;
+            {(
+              Object.entries(THEMES) as [ThemeKey, (typeof THEMES)[ThemeKey]][]
+            ).map(([key, theme]) => {
+              const isUnlocked = unlockedThemes.includes(key);
+              const isActive = currentTheme === key;
 
-                return (
-                  <motion.button
-                    key={key}
-                    whileTap={isUnlocked ? { scale: 0.97 } : undefined}
-                    onClick={() => isUnlocked && onThemeChange(key)}
-                    disabled={!isUnlocked}
-                    className={`py-1.5 px-2 rounded-lg text-left transition-all relative ${
-                      isActive
-                        ? "ring-2 ring-accent-pink"
-                        : isUnlocked
+              return (
+                <motion.button
+                  key={key}
+                  whileTap={isUnlocked ? { scale: 0.97 } : undefined}
+                  onClick={() => isUnlocked && onThemeChange(key)}
+                  disabled={!isUnlocked}
+                  className={`py-1.5 px-2 rounded-lg text-left transition-all relative ${
+                    isActive
+                      ? "ring-2 ring-accent-pink"
+                      : isUnlocked
                         ? ""
                         : "opacity-50 cursor-not-allowed"
-                    }`}
-                    style={{ background: theme.gradient }}
+                  }`}
+                  style={{ background: theme.gradient }}
+                >
+                  <span
+                    className={`text-xs font-medium ${key === "night" ? "text-white" : "text-gray-700"}`}
                   >
-                    <span className={`text-xs font-medium ${key === "night" ? "text-white" : "text-gray-700"}`}>
-                      {theme.name}
+                    {theme.name}
+                  </span>
+                  {!isUnlocked && (
+                    <span className="absolute top-0.5 right-1 text-[10px]">
+                      🔒
                     </span>
-                    {!isUnlocked && <span className="absolute top-0.5 right-1 text-[10px]">🔒</span>}
-                  </motion.button>
-                );
-              }
-            )}
+                  )}
+                </motion.button>
+              );
+            })}
           </div>
           <p className="text-[10px] text-gray-400 mt-1">
-            {reasonsLogged} logged • {reasonsLogged < CONFIG.milestones.lavenderTheme ? `Next: ${getUnlockHint("lavender")}` : reasonsLogged < CONFIG.milestones.nightTheme ? `Next: ${getUnlockHint("night")}` : reasonsLogged < CONFIG.milestones.sunsetTheme ? `Next: ${getUnlockHint("sunset")}` : "All unlocked!"}
+            {reasonsLogged} logged •{" "}
+            {reasonsLogged < CONFIG.milestones.lavenderTheme
+              ? `Next: ${getUnlockHint("lavender")}`
+              : reasonsLogged < CONFIG.milestones.nightTheme
+                ? `Next: ${getUnlockHint("night")}`
+                : reasonsLogged < CONFIG.milestones.sunsetTheme
+                  ? `Next: ${getUnlockHint("sunset")}`
+                  : "All unlocked!"}
           </p>
         </div>
 

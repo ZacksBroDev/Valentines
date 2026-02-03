@@ -35,7 +35,9 @@ export const Header = ({
         <button
           onClick={onToggleMute}
           className={`w-10 h-10 rounded-full backdrop-blur-sm shadow-sm flex items-center justify-center text-lg transition-colors btn-press ${
-            isDark ? "bg-white/20 hover:bg-white/30" : "bg-white/70 hover:bg-white"
+            isDark
+              ? "bg-white/20 hover:bg-white/30"
+              : "bg-white/70 hover:bg-white"
           }`}
           aria-label={isMuted ? "Unmute sounds" : "Mute sounds"}
           title={isMuted ? "Unmute sounds" : "Mute sounds"}
@@ -47,7 +49,9 @@ export const Header = ({
         <button
           onClick={onOpenSettings}
           className={`w-10 h-10 rounded-full backdrop-blur-sm shadow-sm flex items-center justify-center text-lg transition-colors btn-press ${
-            isDark ? "bg-white/20 hover:bg-white/30" : "bg-white/70 hover:bg-white"
+            isDark
+              ? "bg-white/20 hover:bg-white/30"
+              : "bg-white/70 hover:bg-white"
           }`}
           aria-label="Settings"
           title="Settings"
@@ -58,10 +62,14 @@ export const Header = ({
 
       {/* Title */}
       <div className="flex flex-col items-center">
-        <h1 className={`text-lg font-semibold tracking-tight ${isDark ? "text-white" : "text-accent-pink"}`}>
+        <h1
+          className={`text-lg font-semibold tracking-tight ${isDark ? "text-white" : "text-accent-pink"}`}
+        >
           Compliment Deck
         </h1>
-        <span className={`text-xs opacity-70 ${isDark ? "text-gray-300" : "text-blush-500"}`}>
+        <span
+          className={`text-xs opacity-70 ${isDark ? "text-gray-300" : "text-blush-500"}`}
+        >
           made with 💕
         </span>
       </div>
@@ -72,7 +80,9 @@ export const Header = ({
         <button
           onClick={onOpenNotes}
           className={`relative w-10 h-10 rounded-full backdrop-blur-sm shadow-sm flex items-center justify-center text-lg transition-colors btn-press ${
-            isDark ? "bg-white/20 hover:bg-white/30" : "bg-white/70 hover:bg-white"
+            isDark
+              ? "bg-white/20 hover:bg-white/30"
+              : "bg-white/70 hover:bg-white"
           }`}
           aria-label={`Notes (${notesCount})`}
           title="Notes"
@@ -89,7 +99,9 @@ export const Header = ({
         <button
           onClick={onOpenFavorites}
           className={`relative w-10 h-10 rounded-full backdrop-blur-sm shadow-sm flex items-center justify-center text-lg transition-colors btn-press ${
-            isDark ? "bg-white/20 hover:bg-white/30" : "bg-white/70 hover:bg-white"
+            isDark
+              ? "bg-white/20 hover:bg-white/30"
+              : "bg-white/70 hover:bg-white"
           }`}
           aria-label={`View favorites (${favoritesCount})`}
           title="Favorites"

@@ -20,7 +20,12 @@ import { useProgress } from "./hooks/useProgress";
 import { useTheme } from "./hooks/useTheme";
 import { useHaptic } from "./hooks/useHaptic";
 import { shareCard } from "./utils/helpers";
-import { smallConfetti, secretUnlockConfetti, legendaryConfetti, sparkleConfetti } from "./utils/confetti";
+import {
+  smallConfetti,
+  secretUnlockConfetti,
+  legendaryConfetti,
+  sparkleConfetti,
+} from "./utils/confetti";
 import { MOODS, OPEN_WHEN_CATEGORIES } from "./config";
 import { Mood, OpenWhenCategory, isTextCard } from "./types";
 
@@ -29,16 +34,25 @@ interface AppContentProps {
   setHeartTrailEnabled: (enabled: boolean) => void;
 }
 
-const AppContent = ({ heartTrailEnabled, setHeartTrailEnabled }: AppContentProps) => {
+const AppContent = ({
+  heartTrailEnabled,
+  setHeartTrailEnabled,
+}: AppContentProps) => {
   const { showToast } = useToast();
   const { isMuted, toggleMute, playPop, playChime } = useSound();
-  const { reasonsLogged, unlockedThemes, logReason, addLovePoints, checkMilestone } = useProgress();
+  const {
+    reasonsLogged,
+    unlockedThemes,
+    logReason,
+    addLovePoints,
+    checkMilestone,
+  } = useProgress();
   const { currentTheme, setTheme } = useTheme(unlockedThemes);
   const { vibrate } = useHaptic();
-  
+
   // Track which cards have had reasons logged (only allow once per card)
   const [loggedCardIds, setLoggedCardIds] = useState<Set<string>>(new Set());
-  
+
   const {
     currentCard,
     drawCount,
@@ -107,7 +121,15 @@ const AppContent = ({ heartTrailEnabled, setHeartTrailEnabled }: AppContentProps
     } else {
       playPop();
     }
-  }, [secretUnlocked, handleHeartBuddyTap, unlockSecretDeck, playChime, playPop, showToast, vibrate]);
+  }, [
+    secretUnlocked,
+    handleHeartBuddyTap,
+    unlockSecretDeck,
+    playChime,
+    playPop,
+    showToast,
+    vibrate,
+  ]);
 
   // Handle HeartBuddy long press - only allow once per card
   const onHeartBuddyLongPress = useCallback(() => {
@@ -122,10 +144,17 @@ const AppContent = ({ heartTrailEnabled, setHeartTrailEnabled }: AppContentProps
     vibrate("medium");
     logReason();
     addLovePoints(5);
-    setLoggedCardIds(prev => new Set(prev).add(currentCard.id));
+    setLoggedCardIds((prev) => new Set(prev).add(currentCard.id));
     showToast("Love logged! 💕", "📝");
     sparkleConfetti();
-  }, [currentCard, loggedCardIds, vibrate, logReason, addLovePoints, showToast]);
+  }, [
+    currentCard,
+    loggedCardIds,
+    vibrate,
+    logReason,
+    addLovePoints,
+    showToast,
+  ]);
 
   // Handle draw
   const onDraw = useCallback(() => {
@@ -139,13 +168,17 @@ const AppContent = ({ heartTrailEnabled, setHeartTrailEnabled }: AppContentProps
     setCardKey((prev) => prev + 1);
     playPop();
     vibrate("short");
-    
+
     // Check for legendary card after draw - we'll check currentCard in next render
   }, [drawCard, playPop, vibrate, dailyMode, dailyCardDrawn, showToast]);
-  
+
   // Watch for legendary cards
   useEffect(() => {
-    if (currentCard && isTextCard(currentCard) && currentCard.rarity === "legendary") {
+    if (
+      currentCard &&
+      isTextCard(currentCard) &&
+      currentCard.rarity === "legendary"
+    ) {
       legendaryConfetti();
       showToast("✨ LEGENDARY CARD! ✨", "💎");
     }
@@ -175,7 +208,10 @@ const AppContent = ({ heartTrailEnabled, setHeartTrailEnabled }: AppContentProps
   const onShare = useCallback(async () => {
     if (!currentCard) return;
     const success = await shareCard(currentCard);
-    showToast(success ? "Copied to clipboard!" : "Could not share", success ? "📋" : "😕");
+    showToast(
+      success ? "Copied to clipboard!" : "Could not share",
+      success ? "📋" : "😕",
+    );
   }, [currentCard, showToast]);
 
   // Handle shuffle ritual
@@ -188,19 +224,28 @@ const AppContent = ({ heartTrailEnabled, setHeartTrailEnabled }: AppContentProps
   }, [shuffleDeck, vibrate, playPop, showToast]);
 
   // Handle OpenWhen selection
-  const onOpenWhenSelect = useCallback((category: OpenWhenCategory) => {
-    filterByOpenWhen(category);
-    setIsOpenWhenOpen(false);
-    setCardKey((prev) => prev + 1);
-    showToast(`Filtered: ${OPEN_WHEN_CATEGORIES[category]?.label || category}`, "📬");
-  }, [filterByOpenWhen, showToast]);
+  const onOpenWhenSelect = useCallback(
+    (category: OpenWhenCategory) => {
+      filterByOpenWhen(category);
+      setIsOpenWhenOpen(false);
+      setCardKey((prev) => prev + 1);
+      showToast(
+        `Filtered: ${OPEN_WHEN_CATEGORIES[category]?.label || category}`,
+        "📬",
+      );
+    },
+    [filterByOpenWhen, showToast],
+  );
 
   // Handle mood selection
-  const onMoodSelect = useCallback((mood: Mood) => {
-    setMood(mood);
-    setShowMoodPicker(false);
-    showToast(`Mood: ${MOODS[mood]?.label || mood}`, "💭");
-  }, [setMood, showToast]);
+  const onMoodSelect = useCallback(
+    (mood: Mood) => {
+      setMood(mood);
+      setShowMoodPicker(false);
+      showToast(`Mood: ${MOODS[mood]?.label || mood}`, "💭");
+    },
+    [setMood, showToast],
+  );
 
   // Handle restart
   const onRestart = useCallback(() => {
@@ -210,24 +255,38 @@ const AppContent = ({ heartTrailEnabled, setHeartTrailEnabled }: AppContentProps
   }, [resetDeck]);
 
   // Handle Final 3 from end screen
-  const onDrawFinalThree = useCallback((category: "comfort" | "hype" | "laugh") => {
-    const cards = drawFinalThree(category);
-    if (cards.length > 0) {
-      showToast(`Drew your Final 3 ${category} cards!`, "🎴");
-    }
-    return cards;
-  }, [drawFinalThree, showToast]);
+  const onDrawFinalThree = useCallback(
+    (category: "comfort" | "hype" | "laugh") => {
+      const cards = drawFinalThree(category);
+      if (cards.length > 0) {
+        showToast(`Drew your Final 3 ${category} cards!`, "🎴");
+      }
+      return cards;
+    },
+    [drawFinalThree, showToast],
+  );
 
   // Handle remove favorite
-  const onRemoveFavorite = useCallback((id: string) => {
-    toggleFavorite(id);
-    showToast("Removed from favorites", "💔");
-  }, [toggleFavorite, showToast]);
+  const onRemoveFavorite = useCallback(
+    (id: string) => {
+      toggleFavorite(id);
+      showToast("Removed from favorites", "💔");
+    },
+    [toggleFavorite, showToast],
+  );
 
   if (isLoading) {
     return (
-      <div className={`min-h-screen theme-bg hearts-bg hearts-pattern flex items-center justify-center theme-${currentTheme}`}>
-        <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="text-5xl">💕</motion.div>
+      <div
+        className={`min-h-screen theme-bg hearts-bg hearts-pattern flex items-center justify-center theme-${currentTheme}`}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-5xl"
+        >
+          💕
+        </motion.div>
       </div>
     );
   }
@@ -235,7 +294,9 @@ const AppContent = ({ heartTrailEnabled, setHeartTrailEnabled }: AppContentProps
   const isCurrentFavorite = currentCard ? isFavorite(currentCard.id) : false;
 
   return (
-    <div className={`min-h-screen theme-bg hearts-bg hearts-pattern flex flex-col relative overflow-hidden theme-${currentTheme}`}>
+    <div
+      className={`min-h-screen theme-bg hearts-bg hearts-pattern flex flex-col relative overflow-hidden theme-${currentTheme}`}
+    >
       <div className="hearts-pattern" />
 
       <Header
@@ -262,7 +323,7 @@ const AppContent = ({ heartTrailEnabled, setHeartTrailEnabled }: AppContentProps
           onClick={() => setShowMoodPicker(true)}
           className="mb-2 text-sm text-blush-500 flex items-center gap-1 hover:text-blush-700 transition-colors"
         >
-          {currentMood ? MOODS[currentMood]?.emoji : "💭"} 
+          {currentMood ? MOODS[currentMood]?.emoji : "💭"}
           {currentMood ? MOODS[currentMood]?.label : "Set mood"}
         </button>
 
@@ -274,7 +335,8 @@ const AppContent = ({ heartTrailEnabled, setHeartTrailEnabled }: AppContentProps
               exit={{ opacity: 0 }}
               className="text-sm text-blush-500 mb-4"
             >
-              Card {drawCount} {secretUnlocked && "(+ secrets)"} {dailyMode && "• Daily Mode"}
+              Card {drawCount} {secretUnlocked && "(+ secrets)"}{" "}
+              {dailyMode && "• Daily Mode"}
             </motion.p>
           )}
         </AnimatePresence>
@@ -324,10 +386,7 @@ const AppContent = ({ heartTrailEnabled, setHeartTrailEnabled }: AppContentProps
         reasonsLogged={reasonsLogged}
       />
 
-      <NotesModal
-        isOpen={isNotesOpen}
-        onClose={() => setIsNotesOpen(false)}
-      />
+      <NotesModal isOpen={isNotesOpen} onClose={() => setIsNotesOpen(false)} />
 
       <OpenWhenModal
         isOpen={isOpenWhenOpen}
@@ -351,10 +410,15 @@ const AppContent = ({ heartTrailEnabled, setHeartTrailEnabled }: AppContentProps
             className="bg-white rounded-t-3xl p-6 pb-10 w-full max-w-md"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-semibold text-center mb-4">How are you feeling?</h3>
+            <h3 className="text-lg font-semibold text-center mb-4">
+              How are you feeling?
+            </h3>
             <MoodPicker
               currentMood={currentMood}
-              onSelectMood={(mood) => { onMoodSelect(mood); setShowMoodPicker(false); }}
+              onSelectMood={(mood) => {
+                onMoodSelect(mood);
+                setShowMoodPicker(false);
+              }}
             />
           </motion.div>
         </motion.div>
@@ -363,7 +427,10 @@ const AppContent = ({ heartTrailEnabled, setHeartTrailEnabled }: AppContentProps
       <EndScreen
         isOpen={showEndScreen}
         onRestart={onRestart}
-        onViewFavorites={() => { setShowEndScreen(false); setIsFavoritesOpen(true); }}
+        onViewFavorites={() => {
+          setShowEndScreen(false);
+          setIsFavoritesOpen(true);
+        }}
         onFinalThree={onDrawFinalThree}
         playChime={playChime}
       />
@@ -382,13 +449,13 @@ function App() {
 // Wrapper to handle heart trail at top level
 const AppWithTrail = () => {
   const [heartTrailEnabled, setHeartTrailEnabled] = useState(false);
-  
+
   return (
     <>
       <HeartTrail enabled={heartTrailEnabled} />
-      <AppContent 
-        heartTrailEnabled={heartTrailEnabled} 
-        setHeartTrailEnabled={setHeartTrailEnabled} 
+      <AppContent
+        heartTrailEnabled={heartTrailEnabled}
+        setHeartTrailEnabled={setHeartTrailEnabled}
       />
     </>
   );

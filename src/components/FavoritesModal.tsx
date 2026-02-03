@@ -29,15 +29,20 @@ export const FavoritesModal = ({
       return { text: card.title, emoji: card.emoji || "🎟️" };
     }
     if (isPlaylistCard(card)) {
-      return { text: `${card.songTitle} by ${card.artist}`, emoji: card.emoji || "🎵" };
+      return {
+        text: `${card.songTitle} by ${card.artist}`,
+        emoji: card.emoji || "🎵",
+      };
     }
     return { text: "", emoji: "💕" };
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Favorites" icon="💝">
-      <p className="text-sm text-gray-400 mb-4">({favoriteCards.length} saved)</p>
-      
+      <p className="text-sm text-gray-400 mb-4">
+        ({favoriteCards.length} saved)
+      </p>
+
       {favoriteCards.length === 0 ? (
         <div className="text-center py-12">
           <span className="text-5xl mb-4 block">💔</span>
@@ -75,7 +80,9 @@ export const FavoritesModal = ({
                               <span
                                 key={level}
                                 className={`w-1.5 h-1.5 rounded-full ${
-                                  level <= card.intensity ? "bg-accent-pink" : "bg-blush-200"
+                                  level <= card.intensity
+                                    ? "bg-accent-pink"
+                                    : "bg-blush-200"
                                 }`}
                               />
                             ))}

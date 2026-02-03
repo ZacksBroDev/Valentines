@@ -14,7 +14,7 @@ export const MoodPicker = ({
 }: MoodPickerProps) => {
   return (
     <div className="flex items-center justify-center gap-2 flex-wrap">
-      {(Object.entries(MOODS) as [MoodKey, typeof MOODS[MoodKey]][]).map(
+      {(Object.entries(MOODS) as [MoodKey, (typeof MOODS)[MoodKey]][]).map(
         ([key, { label, emoji }]) => (
           <motion.button
             key={key}
@@ -34,7 +34,7 @@ export const MoodPicker = ({
             <span className="mr-1">{emoji}</span>
             {label}
           </motion.button>
-        )
+        ),
       )}
     </div>
   );

@@ -19,7 +19,13 @@ interface CardProps {
 }
 
 // Typewriter text component
-const TypewriterText = ({ text, delay = 0 }: { text: string; delay?: number }) => {
+const TypewriterText = ({
+  text,
+  delay = 0,
+}: {
+  text: string;
+  delay?: number;
+}) => {
   const [displayedText, setDisplayedText] = useState("");
   const reducedMotion = prefersReducedMotion();
 
@@ -90,7 +96,8 @@ export const ComplimentCard = ({
 
   // Check if voucher already redeemed
   const redeemedVouchers = useMemo(() => getRedeemedVouchers(), [cardKey]);
-  const isVoucherRedeemed = card && isVoucherCard(card) && redeemedVouchers[card.id];
+  const isVoucherRedeemed =
+    card && isVoucherCard(card) && redeemedVouchers[card.id];
 
   // Handle sticker animation
   useEffect(() => {
@@ -126,9 +133,16 @@ export const ComplimentCard = ({
         initial={{ opacity: 0, scale: 0.9, rotateY: -10 }}
         animate={{ opacity: 1, scale: 1, rotateY: 0 }}
         exit={{ opacity: 0, scale: 0.95, x: 50 }}
-        transition={{ type: "spring", stiffness: 300, damping: 25, duration: 0.4 }}
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          damping: 25,
+          duration: 0.4,
+        }}
         className={`relative w-full max-w-sm mx-auto aspect-[3/4] rounded-3xl shadow-card overflow-hidden ${
-          isDark ? "bg-gradient-to-br from-gray-800 to-gray-900" : "bg-gradient-card"
+          isDark
+            ? "bg-gradient-to-br from-gray-800 to-gray-900"
+            : "bg-gradient-card"
         } ${isLegendary ? "ring-2 ring-yellow-400/50" : ""}`}
       >
         {/* Legendary shimmer effect */}
@@ -156,8 +170,8 @@ export const ComplimentCard = ({
               card.category === "secret"
                 ? "bg-accent-lavender text-purple-700"
                 : isDark
-                ? "bg-white/20 text-white"
-                : "bg-blush-100 text-blush-700"
+                  ? "bg-white/20 text-white"
+                  : "bg-blush-100 text-blush-700"
             }`}
           >
             {formatCategory(card.category)}
@@ -172,8 +186,8 @@ export const ComplimentCard = ({
               card.rarity === "legendary"
                 ? "text-yellow-500"
                 : card.rarity === "rare"
-                ? "text-purple-400"
-                : "text-gray-300"
+                  ? "text-purple-400"
+                  : "text-gray-300"
             }`}
             title={rarity.label}
           >
@@ -230,7 +244,9 @@ export const ComplimentCard = ({
                   <span
                     key={level}
                     className={`w-2 h-2 rounded-full transition-colors ${
-                      level <= card.intensity ? "bg-accent-pink" : "bg-blush-200"
+                      level <= card.intensity
+                        ? "bg-accent-pink"
+                        : "bg-blush-200"
                     }`}
                   />
                 ))}
@@ -242,13 +258,19 @@ export const ComplimentCard = ({
           {isVoucherCard(card) && (
             <>
               <span className="text-5xl mb-4">{card.emoji || "🎟️"}</span>
-              <h3 className={`text-xl font-bold mb-4 text-center ${isDark ? "text-white" : "text-gray-800"}`}>
+              <h3
+                className={`text-xl font-bold mb-4 text-center ${isDark ? "text-white" : "text-gray-800"}`}
+              >
                 {card.title}
               </h3>
               {isVoucherRedeemed ? (
                 <div className="text-center">
-                  <p className="text-accent-pink font-medium mb-2">✓ Redeemed!</p>
-                  <p className={`text-sm ${isDark ? "text-gray-300" : "text-gray-500"}`}>
+                  <p className="text-accent-pink font-medium mb-2">
+                    ✓ Redeemed!
+                  </p>
+                  <p
+                    className={`text-sm ${isDark ? "text-gray-300" : "text-gray-500"}`}
+                  >
                     {redeemedVouchers[card.id]}
                   </p>
                 </div>
@@ -266,8 +288,8 @@ export const ComplimentCard = ({
                         selectedVoucher === option
                           ? "bg-accent-pink text-white"
                           : isDark
-                          ? "bg-white/10 text-white hover:bg-white/20"
-                          : "bg-blush-50 hover:bg-blush-100 text-gray-700"
+                            ? "bg-white/10 text-white hover:bg-white/20"
+                            : "bg-blush-50 hover:bg-blush-100 text-gray-700"
                       }`}
                     >
                       {option}
@@ -283,10 +305,14 @@ export const ComplimentCard = ({
             <>
               <span className="text-5xl mb-4">{card.emoji || "🎵"}</span>
               <Equalizer />
-              <h3 className={`text-xl font-bold mt-4 text-center ${isDark ? "text-white" : "text-gray-800"}`}>
+              <h3
+                className={`text-xl font-bold mt-4 text-center ${isDark ? "text-white" : "text-gray-800"}`}
+              >
                 {card.songTitle}
               </h3>
-              <p className={`text-sm mb-4 ${isDark ? "text-gray-300" : "text-gray-500"}`}>
+              <p
+                className={`text-sm mb-4 ${isDark ? "text-gray-300" : "text-gray-500"}`}
+              >
                 {card.artist}
               </p>
               <a

@@ -1,4 +1,10 @@
-import { Card, CardCategory, isTextCard, isVoucherCard, isPlaylistCard } from "../types";
+import {
+  Card,
+  CardCategory,
+  isTextCard,
+  isVoucherCard,
+  isPlaylistCard,
+} from "../types";
 import { getAvailableCards } from "../data/cards";
 
 // Fisher-Yates shuffle
@@ -18,10 +24,7 @@ export const createShuffledDeck = (secretUnlocked: boolean): string[] => {
 };
 
 // Get card by ID
-export const getCardById = (
-  id: string,
-  cards: Card[],
-): Card | undefined => {
+export const getCardById = (id: string, cards: Card[]): Card | undefined => {
   return cards.find((c) => c.id === id);
 };
 

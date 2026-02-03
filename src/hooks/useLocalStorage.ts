@@ -1,10 +1,16 @@
-import { useState, useCallback, useEffect, Dispatch, SetStateAction } from "react";
+import {
+  useState,
+  useCallback,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+} from "react";
 
 type SetValue<T> = Dispatch<SetStateAction<T>>;
 
 export function useLocalStorage<T>(
   key: string,
-  initialValue: T
+  initialValue: T,
 ): [T, SetValue<T>] {
   // Get from local storage then parse stored json or return initialValue
   const readValue = useCallback((): T => {
@@ -27,7 +33,9 @@ export function useLocalStorage<T>(
   const setValue: SetValue<T> = useCallback(
     (value) => {
       if (typeof window === "undefined") {
-        console.warn(`Tried setting localStorage key "${key}" even though environment is not a client`);
+        console.warn(
+          `Tried setting localStorage key "${key}" even though environment is not a client`,
+        );
       }
 
       try {
@@ -43,7 +51,7 @@ export function useLocalStorage<T>(
         console.warn(`Error setting localStorage key "${key}":`, error);
       }
     },
-    [key, storedValue]
+    [key, storedValue],
   );
 
   // Listen for changes in other tabs/windows

@@ -9,7 +9,13 @@ interface ModalProps {
   children: ReactNode;
 }
 
-export const Modal = ({ isOpen, onClose, title, icon, children }: ModalProps) => {
+export const Modal = ({
+  isOpen,
+  onClose,
+  title,
+  icon,
+  children,
+}: ModalProps) => {
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {

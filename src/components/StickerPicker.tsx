@@ -29,25 +29,26 @@ export const StickerPicker = ({
           transition={{ type: "spring", damping: 20, stiffness: 300 }}
           className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-white rounded-2xl shadow-xl p-2 flex gap-1 z-50"
         >
-          {(Object.entries(STICKERS) as [StickerKey, typeof STICKERS[StickerKey]][]).map(
-            ([key, { emoji, label }]) => (
-              <motion.button
-                key={key}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => handleSelect(key)}
-                className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl transition-colors ${
-                  currentSticker === key
-                    ? "bg-blush-100"
-                    : "hover:bg-blush-50"
-                }`}
-                title={label}
-                aria-label={`React with ${label}`}
-              >
-                {emoji}
-              </motion.button>
-            )
-          )}
+          {(
+            Object.entries(STICKERS) as [
+              StickerKey,
+              (typeof STICKERS)[StickerKey],
+            ][]
+          ).map(([key, { emoji, label }]) => (
+            <motion.button
+              key={key}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => handleSelect(key)}
+              className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl transition-colors ${
+                currentSticker === key ? "bg-blush-100" : "hover:bg-blush-50"
+              }`}
+              title={label}
+              aria-label={`React with ${label}`}
+            >
+              {emoji}
+            </motion.button>
+          ))}
 
           {/* Arrow pointer */}
           <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rotate-45 shadow-sm" />
@@ -63,7 +64,10 @@ interface StickerDisplayProps {
   isAnimating?: boolean;
 }
 
-export const StickerDisplay = ({ sticker, isAnimating }: StickerDisplayProps) => {
+export const StickerDisplay = ({
+  sticker,
+  isAnimating,
+}: StickerDisplayProps) => {
   const { emoji } = STICKERS[sticker];
 
   return (

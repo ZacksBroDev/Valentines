@@ -14,8 +14,10 @@ import {
 export const useProgress = () => {
   const [reasonsLogged, setReasonsLoggedState] = useState(getReasonsLogged);
   const [loveMeterValue, setLoveMeterValueState] = useState(getLoveMeter);
-  const [loveMeterComplete, setLoveMeterCompleteState] = useState(isLoveMeterComplete);
-  const [unlockedThemes, setUnlockedThemesState] = useState<ThemeKey[]>(getUnlockedThemes);
+  const [loveMeterComplete, setLoveMeterCompleteState] =
+    useState(isLoveMeterComplete);
+  const [unlockedThemes, setUnlockedThemesState] =
+    useState<ThemeKey[]>(getUnlockedThemes);
 
   const logReason = useCallback(() => {
     const newCount = reasonsLogged + 1;
@@ -27,7 +29,10 @@ export const useProgress = () => {
     (points: number) => {
       if (loveMeterComplete) return;
 
-      const newValue = Math.min(loveMeterValue + points, CONFIG.loveMeter.maxPoints);
+      const newValue = Math.min(
+        loveMeterValue + points,
+        CONFIG.loveMeter.maxPoints,
+      );
       setLoveMeterValueState(newValue);
       setLoveMeter(newValue);
 
@@ -36,7 +41,7 @@ export const useProgress = () => {
         setLoveMeterComplete(true);
       }
     },
-    [loveMeterValue, loveMeterComplete]
+    [loveMeterValue, loveMeterComplete],
   );
 
   const checkMilestone = useCallback((): ThemeKey | null => {

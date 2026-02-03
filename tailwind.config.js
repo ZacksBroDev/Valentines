@@ -88,8 +88,8 @@ export default {
           "100%": { backgroundPosition: "200% 0" },
         },
         typewriter: {
-          "from": { width: "0" },
-          "to": { width: "100%" },
+          from: { width: "0" },
+          to: { width: "100%" },
         },
         squeeze: {
           "0%, 100%": { transform: "scale(1)" },
