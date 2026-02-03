@@ -278,7 +278,7 @@ const AppContent = ({
   if (isLoading) {
     return (
       <div
-        className={`min-h-screen theme-bg hearts-bg hearts-pattern flex items-center justify-center theme-${currentTheme}`}
+        className={`min-h-screen hearts-bg hearts-pattern flex items-center justify-center theme-${currentTheme}`}
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
@@ -295,7 +295,7 @@ const AppContent = ({
 
   return (
     <div
-      className={`min-h-screen theme-bg hearts-bg hearts-pattern flex flex-col relative overflow-hidden theme-${currentTheme}`}
+      className={`min-h-screen hearts-bg hearts-pattern flex flex-col relative overflow-hidden theme-${currentTheme}`}
     >
       <div className="hearts-pattern" />
 
