@@ -83,6 +83,23 @@ export default {
           "60%": { transform: "scale(1.2) rotate(5deg)" },
           "100%": { opacity: "1", transform: "scale(1) rotate(0deg)" },
         },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        typewriter: {
+          "from": { width: "0" },
+          "to": { width: "100%" },
+        },
+        squeeze: {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%": { transform: "scale(0.85)" },
+        },
+        "heart-pop": {
+          "0%": { transform: "scale(0) translateY(0)", opacity: "1" },
+          "50%": { transform: "scale(1.2) translateY(-10px)" },
+          "100%": { transform: "scale(0.8) translateY(-30px)", opacity: "0" },
+        },
       },
     },
   },

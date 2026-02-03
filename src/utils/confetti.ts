@@ -104,3 +104,74 @@ export const heartConfetti = () => {
     ticks: 200,
   });
 };
+
+// Legendary card confetti - extra special
+export const legendaryConfetti = () => {
+  const star = confetti.shapeFromText({ text: "⭐", scalar: 2 });
+
+  // Initial burst
+  confetti({
+    particleCount: 40,
+    spread: 70,
+    origin: { y: 0.6 },
+    colors: ["#ffd700", "#ffec8b", "#ffa500", "#ff4da6", "#e6d5ff"],
+    shapes: ["circle", star],
+    scalar: 1.2,
+  });
+
+  // Side sparkles
+  setTimeout(() => {
+    confetti({
+      particleCount: 15,
+      angle: 60,
+      spread: 40,
+      origin: { x: 0, y: 0.6 },
+      colors: ["#ffd700", "#ffec8b"],
+    });
+    confetti({
+      particleCount: 15,
+      angle: 120,
+      spread: 40,
+      origin: { x: 1, y: 0.6 },
+      colors: ["#ffd700", "#ffec8b"],
+    });
+  }, 200);
+};
+
+// Love meter complete celebration
+export const loveMeterCompleteConfetti = () => {
+  const heart = confetti.shapeFromText({ text: "💖", scalar: 2 });
+
+  const duration = 2000;
+  const end = Date.now() + duration;
+
+  const frame = () => {
+    confetti({
+      shapes: [heart, "circle"],
+      particleCount: 5,
+      spread: 80,
+      origin: { x: Math.random(), y: Math.random() * 0.5 },
+      colors: ["#ff4da6", "#ff6b9d", "#e6d5ff", "#ffd700"],
+      scalar: 1.3,
+    });
+
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  };
+
+  frame();
+};
+
+// Sparkle burst for milestones
+export const sparkleConfetti = () => {
+  confetti({
+    particleCount: 25,
+    spread: 50,
+    origin: { y: 0.7 },
+    colors: ["#ffd700", "#ffec8b", "#fff", "#e6d5ff"],
+    scalar: 0.8,
+    gravity: 1.5,
+    ticks: 100,
+  });
+};

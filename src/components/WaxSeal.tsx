@@ -1,6 +1,27 @@
 import { motion } from "framer-motion";
+import { useState, useCallback } from "react";
+import { CONFIG } from "../config";
 
-export const WaxSeal = () => {
+interface WaxSealProps {
+  onHintReveal?: () => void;
+}
+
+export const WaxSeal = ({ onHintReveal }: WaxSealProps) => {
+  const [tapCount, setTapCount] = useState(0);
+
+  const handleTap = useCallback(() => {
+    const newCount = tapCount + 1;
+    setTapCount(newCount);
+
+    if (newCount >= CONFIG.sealHintTaps && onHintReveal) {
+      onHintReveal();
+      setTapCount(0);
+    }
+
+    // Reset after timeout
+    setTimeout(() => setTapCount(0), 2000);
+  }, [tapCount, onHintReveal]);
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0, rotate: -20 }}
@@ -11,7 +32,9 @@ export const WaxSeal = () => {
         damping: 15,
         delay: 0.3,
       }}
-      className="relative"
+      className="relative cursor-pointer"
+      onClick={handleTap}
+      whileTap={{ scale: 0.95 }}
     >
       <svg
         viewBox="0 0 60 60"
@@ -88,18 +111,18 @@ export const WaxSeal = () => {
           opacity="0.9"
         />
 
-        {/* "For You" text arc - simplified */}
+        {/* Signature text */}
         <text
           x="30"
           y="46"
           textAnchor="middle"
           fill="#fff"
-          fontSize="6"
+          fontSize="5"
           fontFamily="system-ui, sans-serif"
           fontWeight="600"
           opacity="0.9"
         >
-          FOR YOU
+          {CONFIG.sealText.toUpperCase()}
         </text>
       </svg>
 

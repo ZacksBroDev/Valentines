@@ -1,0 +1,190 @@
+// ============================================================
+// CARD DATA - All compliments, vouchers, and playlists
+// CUSTOMIZATION: Edit these to personalize for your partner!
+// ============================================================
+
+import { Card, TextCard, VoucherCard, PlaylistCard } from "../types";
+
+// ===== TEXT COMPLIMENTS =====
+const textCards: TextCard[] = [
+  // ----- SWEET (15) -----
+  { id: "sweet-1", type: "text", text: "You make ordinary moments feel extraordinary.", category: "sweet", intensity: 2, emoji: "✨", rarity: "common", tags: ["lonely"] },
+  { id: "sweet-2", type: "text", text: "My favorite place is next to you.", category: "sweet", intensity: 2, emoji: "🏠", rarity: "common", tags: ["lonely"] },
+  { id: "sweet-3", type: "text", text: "You're the reason I believe in love stories.", category: "sweet", intensity: 3, emoji: "📖", rarity: "rare", tags: ["doubting"] },
+  { id: "sweet-4", type: "text", text: "Every love song makes sense because of you.", category: "sweet", intensity: 2, emoji: "🎵", rarity: "common" },
+  { id: "sweet-5", type: "text", text: "You have the most beautiful soul I've ever known.", category: "sweet", intensity: 3, emoji: "💫", rarity: "rare", tags: ["doubting"] },
+  { id: "sweet-6", type: "text", text: "Falling for you was the best decision I never made.", category: "sweet", intensity: 2, emoji: "🍂", rarity: "common" },
+  { id: "sweet-7", type: "text", text: "You're my favorite notification.", category: "sweet", intensity: 1, emoji: "📱", rarity: "common" },
+  { id: "sweet-8", type: "text", text: "I'd choose you in every lifetime.", category: "sweet", intensity: 3, emoji: "♾️", rarity: "legendary", tags: ["lonely"] },
+  { id: "sweet-9", type: "text", text: "Your smile is my favorite sight in the whole world.", category: "sweet", intensity: 2, emoji: "😊", rarity: "common" },
+  { id: "sweet-10", type: "text", text: "You make my heart do that fluttery thing.", category: "sweet", intensity: 1, emoji: "🦋", rarity: "common" },
+  { id: "sweet-11", type: "text", text: "Being loved by you is the greatest gift.", category: "sweet", intensity: 3, emoji: "🎁", rarity: "rare" },
+  { id: "sweet-12", type: "text", text: "You're my person. Always.", category: "sweet", intensity: 2, emoji: "💕", rarity: "common", tags: ["lonely"] },
+  { id: "sweet-13", type: "text", text: "Home is wherever I'm with you.", category: "sweet", intensity: 2, emoji: "🏡", rarity: "common", tags: ["stressed"] },
+  { id: "sweet-14", type: "text", text: "You make everything better just by being here.", category: "sweet", intensity: 1, emoji: "🌸", rarity: "common", tags: ["stressed"] },
+  { id: "sweet-15", type: "text", text: "I fall more in love with you every single day.", category: "sweet", intensity: 3, emoji: "💝", rarity: "rare" },
+
+  // ----- FUNNY (12) -----
+  { id: "funny-1", type: "text", text: "You're the cheese to my macaroni (I'm very serious about this).", category: "funny", intensity: 1, emoji: "🧀", rarity: "common", tags: ["laugh"] },
+  { id: "funny-2", type: "text", text: "I love you more than pizza. And I REALLY love pizza.", category: "funny", intensity: 1, emoji: "🍕", rarity: "common", tags: ["laugh"] },
+  { id: "funny-3", type: "text", text: "You're so cute it's actually annoying (in the best way).", category: "funny", intensity: 1, emoji: "😤", rarity: "common", tags: ["laugh"] },
+  { id: "funny-4", type: "text", text: "If you were a vegetable, you'd be a cute-cumber.", category: "funny", intensity: 1, emoji: "🥒", rarity: "common", tags: ["laugh"] },
+  { id: "funny-5", type: "text", text: "I like you even when I'm hungry. That's real love.", category: "funny", intensity: 2, emoji: "🍔", rarity: "rare", tags: ["laugh"] },
+  { id: "funny-6", type: "text", text: "You're the only person whose snoring I find adorable.", category: "funny", intensity: 1, emoji: "😴", rarity: "common" },
+  { id: "funny-7", type: "text", text: "My Netflix password? That's commitment.", category: "funny", intensity: 1, emoji: "📺", rarity: "common", tags: ["laugh"] },
+  { id: "funny-8", type: "text", text: "You make my dopamine levels do crazy things.", category: "funny", intensity: 1, emoji: "🧠", rarity: "common" },
+  { id: "funny-9", type: "text", text: "Are you a parking ticket? Because you've got fine written all over you.", category: "funny", intensity: 1, emoji: "🎫", rarity: "common", tags: ["laugh"] },
+  { id: "funny-10", type: "text", text: "You're the reason I check my phone 47 times a day.", category: "funny", intensity: 1, emoji: "👀", rarity: "common" },
+  { id: "funny-11", type: "text", text: "Thanks for being the big spoon. And the little spoon. And the fork.", category: "funny", intensity: 1, emoji: "🥄", rarity: "common", tags: ["laugh"] },
+  { id: "funny-12", type: "text", text: "You're like a dictionary—you add meaning to my life (and I'm not even sorry for that pun).", category: "funny", intensity: 1, emoji: "📚", rarity: "rare", tags: ["laugh"] },
+
+  // ----- SUPPORTIVE (12) -----
+  { id: "supportive-1", type: "text", text: "I believe in you more than you believe in yourself.", category: "supportive", intensity: 2, emoji: "💪", rarity: "common", tags: ["doubting", "stressed"] },
+  { id: "supportive-2", type: "text", text: "Your strength inspires me every day.", category: "supportive", intensity: 2, emoji: "🌟", rarity: "common", tags: ["doubting"] },
+  { id: "supportive-3", type: "text", text: "Whatever you're going through, I'm right here.", category: "supportive", intensity: 2, emoji: "🤝", rarity: "common", tags: ["stressed", "lonely"] },
+  { id: "supportive-4", type: "text", text: "You handle life's challenges with such grace.", category: "supportive", intensity: 2, emoji: "👑", rarity: "rare", tags: ["stressed"] },
+  { id: "supportive-5", type: "text", text: "I'm so proud of who you are and who you're becoming.", category: "supportive", intensity: 3, emoji: "🌱", rarity: "rare", tags: ["doubting"] },
+  { id: "supportive-6", type: "text", text: "Your dreams matter to me as much as my own.", category: "supportive", intensity: 3, emoji: "🚀", rarity: "rare" },
+  { id: "supportive-7", type: "text", text: "You deserve every good thing coming your way.", category: "supportive", intensity: 2, emoji: "🎯", rarity: "common", tags: ["doubting"] },
+  { id: "supportive-8", type: "text", text: "Even on hard days, you're incredible.", category: "supportive", intensity: 2, emoji: "💎", rarity: "common", tags: ["stressed"] },
+  { id: "supportive-9", type: "text", text: "I'll always be your biggest fan.", category: "supportive", intensity: 2, emoji: "📣", rarity: "common" },
+  { id: "supportive-10", type: "text", text: "You make me want to be a better person.", category: "supportive", intensity: 3, emoji: "🌈", rarity: "rare" },
+  { id: "supportive-11", type: "text", text: "You've got this. And even if you didn't, we'd figure it out together.", category: "supportive", intensity: 2, emoji: "🤗", rarity: "common", tags: ["stressed", "doubting"] },
+  { id: "supportive-12", type: "text", text: "Your potential is limitless, and I see it every day.", category: "supportive", intensity: 3, emoji: "🌠", rarity: "rare", tags: ["doubting"] },
+
+  // ----- SPICY-LITE (8) -----
+  { id: "spicy-1", type: "text", text: "Is it hot in here or is it just you?", category: "spicy-lite", intensity: 1, emoji: "🔥", rarity: "common" },
+  { id: "spicy-2", type: "text", text: "You're absolutely stunning and I'm so lucky.", category: "spicy-lite", intensity: 2, emoji: "😍", rarity: "common" },
+  { id: "spicy-3", type: "text", text: "The way you look at me makes me forget how to think.", category: "spicy-lite", intensity: 2, emoji: "🫠", rarity: "rare" },
+  { id: "spicy-4", type: "text", text: "You have this effect on me that I can't explain.", category: "spicy-lite", intensity: 2, emoji: "✨", rarity: "common" },
+  { id: "spicy-5", type: "text", text: "Every time I see you, I fall for you all over again.", category: "spicy-lite", intensity: 2, emoji: "💘", rarity: "common" },
+  { id: "spicy-6", type: "text", text: "You're the most attractive person in any room.", category: "spicy-lite", intensity: 2, emoji: "🌹", rarity: "rare" },
+  { id: "spicy-7", type: "text", text: "That smile of yours should come with a warning label.", category: "spicy-lite", intensity: 1, emoji: "⚠️", rarity: "common" },
+  { id: "spicy-8", type: "text", text: "I never knew what butterflies felt like until I met you.", category: "spicy-lite", intensity: 2, emoji: "🦋", rarity: "common" },
+
+  // ----- SECRET (12) - Unlocked via easter egg -----
+  { id: "secret-1", type: "text", text: "This is just between us: you're the one I've been waiting for my whole life.", category: "secret", intensity: 3, emoji: "🔐", rarity: "legendary", tags: ["lonely"] },
+  { id: "secret-2", type: "text", text: "Secret confession: I think about you way more than I let on.", category: "secret", intensity: 2, emoji: "🤫", rarity: "rare" },
+  { id: "secret-3", type: "text", text: "In my dreams, it's always you.", category: "secret", intensity: 3, emoji: "💭", rarity: "legendary" },
+  { id: "secret-4", type: "text", text: "You found the secret deck! Just like you found your way into my heart.", category: "secret", intensity: 2, emoji: "🗝️", rarity: "rare" },
+  { id: "secret-5", type: "text", text: "I wrote this one just for you: You're my forever person.", category: "secret", intensity: 3, emoji: "✍️", rarity: "legendary", tags: ["lonely"] },
+  { id: "secret-6", type: "text", text: "Whisper mode: I love everything about you. Even the weird stuff.", category: "secret", intensity: 2, emoji: "🌙", rarity: "rare" },
+  { id: "secret-7", type: "text", text: "Top secret: My heart races every time you're near.", category: "secret", intensity: 2, emoji: "💓", rarity: "rare" },
+  { id: "secret-8", type: "text", text: "Hidden message: You + Me = Everything I've ever wanted.", category: "secret", intensity: 3, emoji: "💌", rarity: "legendary" },
+  { id: "secret-9", type: "text", text: "For your eyes only: I'm head over heels, completely, hopelessly in love with you.", category: "secret", intensity: 3, emoji: "👁️", rarity: "legendary" },
+  { id: "secret-10", type: "text", text: "Classified: You make me believe in soulmates.", category: "secret", intensity: 3, emoji: "🔏", rarity: "rare" },
+  { id: "secret-11", type: "text", text: "Private note: You're the plot twist I never saw coming.", category: "secret", intensity: 2, emoji: "📝", rarity: "rare" },
+  { id: "secret-12", type: "text", text: "Secret's out: You're the love of my life. There. I said it. 💕", category: "secret", intensity: 3, emoji: "💕", rarity: "legendary" },
+];
+
+// ===== VOUCHER CARDS =====
+// CUSTOMIZATION: Edit these date ideas for your partner!
+const voucherCards: VoucherCard[] = [
+  {
+    id: "voucher-1",
+    type: "voucher",
+    title: "Date Night of Your Choice",
+    options: ["Cozy movie night at home", "Fancy dinner out", "Sunset picnic in the park"],
+    category: "sweet",
+    emoji: "🎟️",
+    rarity: "legendary",
+  },
+  {
+    id: "voucher-2",
+    type: "voucher",
+    title: "Breakfast in Bed",
+    options: ["Pancakes & coffee", "Avocado toast & mimosa", "Your favorite cereal (yes, the sugary one)"],
+    category: "sweet",
+    emoji: "🍳",
+    rarity: "rare",
+  },
+  {
+    id: "voucher-3",
+    type: "voucher",
+    title: "Adventure Day",
+    options: ["Road trip to somewhere new", "Try a new hobby together", "Stay-in spa day"],
+    category: "funny",
+    emoji: "🗺️",
+    rarity: "rare",
+  },
+];
+
+// ===== PLAYLIST CARDS =====
+// CUSTOMIZATION: Add your special songs!
+const playlistCards: PlaylistCard[] = [
+  {
+    id: "playlist-1",
+    type: "playlist",
+    songTitle: "At Last",
+    artist: "Etta James",
+    link: "https://open.spotify.com/track/3XVBdLihbNbxUwZosxcGuJ",
+    category: "sweet",
+    emoji: "🎵",
+    rarity: "rare",
+  },
+  {
+    id: "playlist-2",
+    type: "playlist",
+    songTitle: "Can't Help Falling in Love",
+    artist: "Elvis Presley",
+    link: "https://open.spotify.com/track/44AyOl4qVkzS48vBsbNXaC",
+    category: "sweet",
+    emoji: "🎶",
+    rarity: "rare",
+  },
+  {
+    id: "playlist-3",
+    type: "playlist",
+    songTitle: "All of Me",
+    artist: "John Legend",
+    link: "https://open.spotify.com/track/3U4isOIWM3VvDubwSI3y7a",
+    category: "sweet",
+    emoji: "🎹",
+    rarity: "legendary",
+  },
+  {
+    id: "playlist-4",
+    type: "playlist",
+    songTitle: "Lover",
+    artist: "Taylor Swift",
+    link: "https://open.spotify.com/track/1dGr1c8CrMLDpV6mPbImSI",
+    category: "sweet",
+    emoji: "🌟",
+    rarity: "rare",
+  },
+  {
+    id: "playlist-5",
+    type: "playlist",
+    songTitle: "Perfect",
+    artist: "Ed Sheeran",
+    link: "https://open.spotify.com/track/0tgVpDi06FyKpA1z0VMD4v",
+    category: "sweet",
+    emoji: "💫",
+    rarity: "rare",
+  },
+];
+
+// ===== COMBINED DECK =====
+export const allCards: Card[] = [...textCards, ...voucherCards, ...playlistCards];
+
+// ===== HELPERS =====
+export const getRegularCards = (): Card[] =>
+  allCards.filter((c) => c.category !== "secret");
+
+export const getSecretCards = (): Card[] =>
+  allCards.filter((c) => c.category === "secret");
+
+export const getAvailableCards = (secretUnlocked: boolean): Card[] =>
+  secretUnlocked ? allCards : getRegularCards();
+
+export const getCardById = (id: string): Card | undefined =>
+  allCards.find((c) => c.id === id);
+
+export const getCardsByCategory = (category: string): Card[] =>
+  allCards.filter((c) => c.category === category);
+
+export const getCardsByTag = (tag: string): Card[] =>
+  allCards.filter((c) => c.tags?.includes(tag));
+
+export const getCardsByRarity = (rarity: string): Card[] =>
+  allCards.filter((c) => c.rarity === rarity);

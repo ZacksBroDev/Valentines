@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 
 interface MascotsProps {
   onHeartBuddyTap: () => void;
+  onHeartBuddyLongPress?: () => void;
   isHeartBuddyBlushing?: boolean;
   showFloatingHeart?: boolean;
   isEnvelopeOpen?: boolean;
@@ -13,6 +14,7 @@ interface MascotsProps {
 
 export const Mascots = ({
   onHeartBuddyTap,
+  onHeartBuddyLongPress,
   isHeartBuddyBlushing,
   showFloatingHeart,
   isEnvelopeOpen,
@@ -30,6 +32,7 @@ export const Mascots = ({
       <div className="relative">
         <HeartBuddy
           onTap={onHeartBuddyTap}
+          onLongPress={onHeartBuddyLongPress}
           isBlusing={isHeartBuddyBlushing}
           showFloatingHeart={showFloatingHeart}
         />

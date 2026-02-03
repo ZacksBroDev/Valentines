@@ -2,6 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme Variables */
+:root {
+  --theme-primary: #ff4d85;
+  --theme-secondary: #ffe8ed;
+  --theme-accent: #ff4da6;
+  --theme-bg-start: #fff5f7;
+  --theme-bg-mid: #ffe8ed;
+  --theme-bg-end: #ffd6e0;
+}
+
+.theme-blush {
+  --theme-primary: #ff4d85;
+  --theme-secondary: #ffe8ed;
+  --theme-accent: #ff4da6;
+  --theme-bg-start: #fff5f7;
+  --theme-bg-mid: #ffe8ed;
+  --theme-bg-end: #ffd6e0;
+}
+
+.theme-lavender {
+  --theme-primary: #9b6dff;
+  --theme-secondary: #e6d5ff;
+  --theme-accent: #b794f6;
+  --theme-bg-start: #f3e8ff;
+  --theme-bg-mid: #e6d5ff;
+  --theme-bg-end: #dcc8ff;
+}
+
+.theme-night {
+  --theme-primary: #ff6b9d;
+  --theme-secondary: #1a1a2e;
+  --theme-accent: #ff4da6;
+  --theme-bg-start: #1a1a2e;
+  --theme-bg-mid: #16213e;
+  --theme-bg-end: #0f3460;
+}
+
+.theme-sunset {
+  --theme-primary: #ff6b6b;
+  --theme-secondary: #ffecd2;
+  --theme-accent: #ff8c42;
+  --theme-bg-start: #fff5eb;
+  --theme-bg-mid: #ffecd2;
+  --theme-bg-end: #ffdfb8;
+}
+
+/* Dynamic theme background */
+.theme-bg {
+  background: linear-gradient(135deg, var(--theme-bg-start) 0%, var(--theme-bg-mid) 50%, var(--theme-bg-end) 100%);
+}
+
+/* Night theme text adjustments */
+.theme-night .text-blush-500 {
+  color: #ff8fb3;
+}
+
+.theme-night .text-gray-700,
+.theme-night .text-gray-800 {
+  color: #e0e0e0;
+}
+
 /* Custom scrollbar for the app */
 ::-webkit-scrollbar {
   width: 6px;
@@ -52,13 +113,10 @@ body {
 
 /* Blush animation for HeartBuddy */
 @keyframes blush-pulse {
-
-  0%,
-  100% {
+  0%, 100% {
     opacity: 0.4;
     transform: scale(1);
   }
-
   50% {
     opacity: 0.9;
     transform: scale(1.1);
@@ -75,7 +133,6 @@ body {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
-
   100% {
     opacity: 0;
     transform: translateY(-60px) scale(0.5);
@@ -91,7 +148,6 @@ body {
   0% {
     background-position: -200% 0;
   }
-
   100% {
     background-position: 200% 0;
   }
@@ -106,6 +162,39 @@ body {
   animation: shimmer 2s infinite;
 }
 
+/* Legendary card shimmer */
+.shimmer-legendary {
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 215, 0, 0.6) 25%,
+      rgba(255, 255, 255, 0.8) 50%,
+      rgba(255, 215, 0, 0.6) 75%,
+      transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Rare card glow */
+.glow-rare {
+  box-shadow: 0 0 20px rgba(155, 109, 255, 0.4);
+}
+
+/* Legendary card glow */
+.glow-legendary {
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+}
+
+/* Typewriter cursor */
+.typewriter-cursor::after {
+  content: '|';
+  animation: blink-cursor 0.8s infinite;
+}
+
+@keyframes blink-cursor {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
 /* Button press effect */
 .btn-press:active {
   transform: scale(0.96);
@@ -118,4 +207,46 @@ body {
 
 .safe-top {
   padding-top: max(env(safe-area-inset-top), 16px);
+}
+
+/* Sticker placed animation */
+@keyframes sticker-place {
+  0% { transform: scale(0) rotate(-30deg); }
+  60% { transform: scale(1.3) rotate(10deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.sticker-placed {
+  animation: sticker-place 0.4s ease-out forwards;
+}
+
+/* Love meter fill animation */
+@keyframes love-fill {
+  0% { width: 0; }
+  100% { width: var(--fill-percent); }
+}
+
+.love-meter-fill {
+  animation: love-fill 1s ease-out forwards;
+}
+
+/* Heart squeeze on long press */
+@keyframes squeeze {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(0.85); }
+}
+
+.squeeze-animate {
+  animation: squeeze 0.3s ease-in-out;
+}
+
+/* Heart pop on release */
+@keyframes heart-pop {
+  0% { transform: scale(0) translateY(0); opacity: 1; }
+  50% { transform: scale(1.2) translateY(-10px); }
+  100% { transform: scale(0.8) translateY(-30px); opacity: 0; }
+}
+
+.heart-pop {
+  animation: heart-pop 0.6s ease-out forwards;
 }

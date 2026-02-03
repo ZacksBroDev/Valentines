@@ -1,9 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
-import {
-  compliments,
-  Compliment,
-  getAvailableCompliments,
-} from "../data/compliments";
+import { Card } from "../types";
+import { getAvailableCards, getCardById } from "../data/cards";
 import {
   getSeenIds,
   saveSeenIds,
@@ -14,10 +11,10 @@ import {
   setDeckExhausted,
   resetDeckExhausted,
 } from "../utils/storage";
-import { shuffleArray, getComplimentById } from "../utils/helpers";
+import { shuffleArray } from "../utils/helpers";
 
 interface UseDeckReturn {
-  currentCard: Compliment | null;
+  currentCard: Card | null;
   drawCount: number;
   isLoading: boolean;
   isDeckExhausted: boolean;
@@ -34,22 +31,22 @@ export const useDeck = (): UseDeckReturn => {
   const [seenIds, setSeenIds] = useState<string[]>(() => getSeenIds());
   const [shuffledDeck, setShuffledDeck] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [currentCard, setCurrentCard] = useState<Compliment | null>(null);
+  const [currentCard, setCurrentCard] = useState<Card | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeckExhausted, setIsDeckExhausted] = useState(false);
   const [drawCount, setDrawCount] = useState(0);
   const [hasShownEndScreen, setHasShownEndScreen] = useState(false);
 
-  // Get available compliments based on secret unlock status
-  const availableCompliments = useMemo(
-    () => getAvailableCompliments(secretUnlocked),
+  // Get available cards based on secret unlock status
+  const availableCards = useMemo(
+    () => getAvailableCards(secretUnlocked),
     [secretUnlocked],
   );
 
   // Initialize or reshuffle deck
   const initializeDeck = useCallback(
     (preserveSeen = false) => {
-      const ids = availableCompliments.map((c) => c.id);
+      const ids = availableCards.map((c) => c.id);
       const shuffled = shuffleArray(ids);
       setShuffledDeck(shuffled);
       setCurrentIndex(0);
@@ -64,7 +61,7 @@ export const useDeck = (): UseDeckReturn => {
 
       setIsLoading(false);
     },
-    [availableCompliments],
+    [availableCards],
   );
 
   // Initial load
@@ -83,7 +80,7 @@ export const useDeck = (): UseDeckReturn => {
 
       // Set the last seen card as current
       const lastSeenId = savedSeenIds[savedSeenIds.length - 1];
-      const lastCard = getComplimentById(lastSeenId, compliments);
+      const lastCard = getCardById(lastSeenId);
       if (lastCard) {
         setCurrentCard(lastCard);
       }
@@ -101,7 +98,7 @@ export const useDeck = (): UseDeckReturn => {
   // Draw a new card
   const drawCard = useCallback(() => {
     // Find next unseen card
-    let nextCard: Compliment | null = null;
+    let nextCard: Card | null = null;
     let searchIndex = currentIndex;
     let looped = false;
 
@@ -123,7 +120,7 @@ export const useDeck = (): UseDeckReturn => {
 
       const candidateId = shuffledDeck[searchIndex];
       if (!seenIds.includes(candidateId)) {
-        nextCard = getComplimentById(candidateId, compliments) || null;
+        nextCard = getCardById(candidateId) || null;
         if (nextCard) {
           setCurrentIndex(searchIndex + 1);
           break;
@@ -147,7 +144,7 @@ export const useDeck = (): UseDeckReturn => {
       setDrawCount((prev) => prev + 1);
 
       // Check for deck exhaustion
-      const totalAvailable = availableCompliments.length;
+      const totalAvailable = availableCards.length;
       const newDrawCount = drawCount + 1;
 
       if (
@@ -165,7 +162,7 @@ export const useDeck = (): UseDeckReturn => {
     currentIndex,
     seenIds,
     drawCount,
-    availableCompliments,
+    availableCards,
     hasShownEndScreen,
     initializeDeck,
   ]);

@@ -1,31 +1,65 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useHaptic } from "../../hooks/useHaptic";
 
 interface HeartBuddyProps {
   onTap: () => void;
+  onLongPress?: () => void;
   isBlusing?: boolean;
   showFloatingHeart?: boolean;
 }
 
 export const HeartBuddy = ({
   onTap,
+  onLongPress,
   isBlusing,
   showFloatingHeart,
 }: HeartBuddyProps) => {
   const [isBlinking, setIsBlinking] = useState(false);
+  const [isSqueezed, setIsSqueezed] = useState(false);
+  const [showHeartPop, setShowHeartPop] = useState(false);
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const isLongPress = useRef(false);
+  const { vibrate } = useHaptic();
 
-  // Blink animation every few seconds
+  // Blink animation
   useEffect(() => {
     const interval = setInterval(
       () => {
         setIsBlinking(true);
         setTimeout(() => setIsBlinking(false), 150);
       },
-      4000 + Math.random() * 2000,
+      4000 + Math.random() * 2000
     );
-
     return () => clearInterval(interval);
   }, []);
+
+  const handlePressStart = useCallback(() => {
+    isLongPress.current = false;
+    longPressTimer.current = setTimeout(() => {
+      isLongPress.current = true;
+      setIsSqueezed(true);
+      setShowHeartPop(true);
+      vibrate("medium");
+      onLongPress?.();
+
+      setTimeout(() => {
+        setIsSqueezed(false);
+        setShowHeartPop(false);
+      }, 600);
+    }, 450);
+  }, [onLongPress, vibrate]);
+
+  const handlePressEnd = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+
+    if (!isLongPress.current) {
+      onTap();
+    }
+  }, [onTap]);
 
   return (
     <div className="relative inline-block">
@@ -44,21 +78,44 @@ export const HeartBuddy = ({
         )}
       </AnimatePresence>
 
+      {/* Heart pop on long press */}
+      <AnimatePresence>
+        {showHeartPop && (
+          <motion.span
+            initial={{ opacity: 1, scale: 0 }}
+            animate={{ opacity: 0, scale: 1.5, y: -30 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="absolute -top-2 left-1/2 -translate-x-1/2 text-xl pointer-events-none z-10"
+          >
+            💖
+          </motion.span>
+        )}
+      </AnimatePresence>
+
       <motion.svg
         viewBox="0 0 100 90"
         className="w-20 h-20 cursor-pointer select-none"
-        onClick={onTap}
+        onMouseDown={handlePressStart}
+        onMouseUp={handlePressEnd}
+        onMouseLeave={() => {
+          if (longPressTimer.current) {
+            clearTimeout(longPressTimer.current);
+          }
+        }}
+        onTouchStart={handlePressStart}
+        onTouchEnd={handlePressEnd}
         animate={{
-          y: [0, -6, 0],
+          y: isSqueezed ? [0, 0] : [0, -6, 0],
+          scale: isSqueezed ? 0.9 : 1,
         }}
-        transition={{
-          duration: 2.5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-        whileTap={{ scale: 0.95 }}
+        transition={
+          isSqueezed
+            ? { duration: 0.15 }
+            : { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
+        }
         role="button"
-        aria-label="HeartBuddy mascot - tap me!"
+        aria-label="HeartBuddy mascot - tap or hold me!"
       >
         {/* Heart body with gradient */}
         <defs>

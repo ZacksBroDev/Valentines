@@ -1,4 +1,5 @@
-import { Compliment, getAvailableCompliments } from "../data/compliments";
+import { Card, CardCategory, isTextCard, isVoucherCard, isPlaylistCard } from "../types";
+import { getAvailableCards } from "../data/cards";
 
 // Fisher-Yates shuffle
 export const shuffleArray = <T>(array: T[]): T[] => {
@@ -10,18 +11,32 @@ export const shuffleArray = <T>(array: T[]): T[] => {
   return shuffled;
 };
 
-// Create a shuffled deck of compliment IDs
+// Create a shuffled deck of card IDs
 export const createShuffledDeck = (secretUnlocked: boolean): string[] => {
-  const compliments = getAvailableCompliments(secretUnlocked);
-  return shuffleArray(compliments.map((c) => c.id));
+  const cards = getAvailableCards(secretUnlocked);
+  return shuffleArray(cards.map((c) => c.id));
 };
 
-// Get compliment by ID
-export const getComplimentById = (
+// Get card by ID
+export const getCardById = (
   id: string,
-  compliments: Compliment[],
-): Compliment | undefined => {
-  return compliments.find((c) => c.id === id);
+  cards: Card[],
+): Card | undefined => {
+  return cards.find((c) => c.id === id);
+};
+
+// Get text representation of a card
+export const getCardText = (card: Card): string => {
+  if (isTextCard(card)) {
+    return `${card.emoji || "💕"} ${card.text}`;
+  }
+  if (isVoucherCard(card)) {
+    return `${card.emoji || "🎟️"} ${card.title}`;
+  }
+  if (isPlaylistCard(card)) {
+    return `${card.emoji || "🎵"} ${card.songTitle} by ${card.artist}`;
+  }
+  return "";
 };
 
 // Check if a tap sequence qualifies as rapid taps
@@ -71,14 +86,32 @@ export const shareCompliment = async (text: string): Promise<boolean> => {
   }
 };
 
+// Share a card
+export const shareCard = async (card: Card): Promise<boolean> => {
+  const text = getCardText(card);
+  return shareCompliment(text);
+};
+
 // Format category for display
-export const formatCategory = (category: Compliment["category"]): string => {
-  const labels: Record<Compliment["category"], string> = {
+export const formatCategory = (category: CardCategory): string => {
+  const labels: Record<CardCategory, string> = {
     sweet: "💗 Sweet",
     funny: "😄 Funny",
     supportive: "💪 Supportive",
     "spicy-lite": "🔥 Spicy",
     secret: "🔐 Secret",
   };
-  return labels[category];
+  return labels[category] || category;
+};
+
+// Check reduced motion preference
+export const prefersReducedMotion = (): boolean => {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+};
+
+// Check if device has fine pointer (desktop)
+export const hasFinPointer = (): boolean => {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(pointer: fine)").matches;
 };
