@@ -113,10 +113,10 @@ export const ComplimentCard = ({
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="w-full max-w-sm mx-auto aspect-[3/4] rounded-3xl bg-gradient-card shadow-card flex flex-col items-center justify-center p-8 text-center"
+        className="w-full aspect-[3/4] max-h-[50vh] lg:max-h-[60vh] rounded-2xl bg-gradient-card shadow-card flex flex-col items-center justify-center p-4 sm:p-6 text-center"
       >
-        <div className="text-6xl mb-4">💌</div>
-        <p className="text-gray-500 text-lg">
+        <div className="text-3xl sm:text-4xl lg:text-5xl mb-3">💌</div>
+        <p className="text-gray-500 text-xs sm:text-sm lg:text-base">
           Tap "Draw" to reveal a compliment just for you
         </p>
       </motion.div>
@@ -139,7 +139,7 @@ export const ComplimentCard = ({
           damping: 25,
           duration: 0.4,
         }}
-        className={`relative w-full max-w-sm mx-auto aspect-[3/4] rounded-3xl shadow-card overflow-hidden ${
+        className={`relative w-full aspect-[3/4] max-h-[50vh] lg:max-h-[60vh] rounded-2xl lg:rounded-3xl shadow-card overflow-hidden ${
           isDark
             ? "bg-gradient-to-br from-gray-800 to-gray-900"
             : "bg-gradient-card"
@@ -161,12 +161,12 @@ export const ComplimentCard = ({
         </div>
 
         {/* Top row: Category + Rarity */}
-        <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+        <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
           <motion.span
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
-            className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${
               card.category === "secret"
                 ? "bg-accent-lavender text-purple-700"
                 : isDark
@@ -202,15 +202,15 @@ export const ComplimentCard = ({
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0 }}
-              className="absolute top-12 right-4"
+              className="absolute top-8 right-3"
             >
-              <span className="text-2xl">💖</span>
+              <span className="text-lg">💖</span>
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* Main content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-8 pt-16">
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 pt-10 sm:pt-12">
           {/* Text Card */}
           {isTextCard(card) && (
             <>
@@ -219,7 +219,7 @@ export const ComplimentCard = ({
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1, type: "spring" }}
-                  className="text-5xl mb-6"
+                  className="text-3xl sm:text-4xl lg:text-5xl mb-2 sm:mb-4"
                 >
                   {card.emoji}
                 </motion.span>
@@ -228,8 +228,8 @@ export const ComplimentCard = ({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
-                className={`text-xl md:text-2xl text-center font-medium leading-relaxed ${
-                  isDark ? "text-white" : "text-gray-700"
+                className={`text-sm sm:text-base md:text-lg lg:text-xl text-center font-medium leading-relaxed ${
+                  isDark ? "text-white" : "text-gray-800"
                 }`}
               >
                 "<TypewriterText text={card.text} delay={200} />"
@@ -238,12 +238,12 @@ export const ComplimentCard = ({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="flex gap-1.5 mt-6"
+                className="flex gap-1 sm:gap-1.5 mt-2 sm:mt-4"
               >
                 {[1, 2, 3].map((level) => (
                   <span
                     key={level}
-                    className={`w-2 h-2 rounded-full transition-colors ${
+                    className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-colors ${
                       level <= card.intensity
                         ? "bg-accent-pink"
                         : "bg-blush-200"
@@ -257,9 +257,9 @@ export const ComplimentCard = ({
           {/* Voucher Card */}
           {isVoucherCard(card) && (
             <>
-              <span className="text-5xl mb-4">{card.emoji || "🎟️"}</span>
+              <span className="text-3xl mb-2">{card.emoji || "🎫"}</span>
               <h3
-                className={`text-xl font-bold mb-4 text-center ${isDark ? "text-white" : "text-gray-800"}`}
+                className={`text-base font-bold mb-2 text-center ${isDark ? "text-white" : "text-gray-800"}`}
               >
                 {card.title}
               </h3>

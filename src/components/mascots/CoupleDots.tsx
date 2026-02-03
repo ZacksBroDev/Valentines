@@ -54,20 +54,20 @@ export const CoupleDots = () => {
       >
         <defs>
           <linearGradient id="pinkDotGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ffb8ca" />
-            <stop offset="100%" stopColor="#ff8aa8" />
+            <stop offset="0%" stopColor="#ffa0b8" />
+            <stop offset="100%" stopColor="#ff6690" />
           </linearGradient>
           <linearGradient id="redDotGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ff6b9d" />
-            <stop offset="100%" stopColor="#e60054" />
+            <stop offset="0%" stopColor="#ff5588" />
+            <stop offset="100%" stopColor="#cc0044" />
           </linearGradient>
           <filter id="dotShadow" x="-30%" y="-30%" width="160%" height="160%">
             <feDropShadow
               dx="0"
               dy="2"
               stdDeviation="2"
-              floodColor="#ff4da6"
-              floodOpacity="0.25"
+              floodColor="#cc0055"
+              floodOpacity="0.35"
             />
           </filter>
         </defs>
@@ -85,6 +85,8 @@ export const CoupleDots = () => {
             r="18"
             fill="url(#pinkDotGrad)"
             filter="url(#dotShadow)"
+            stroke="#cc0055"
+            strokeWidth="1"
           />
 
           {/* Left eye */}
@@ -141,6 +143,8 @@ export const CoupleDots = () => {
             r="18"
             fill="url(#redDotGrad)"
             filter="url(#dotShadow)"
+            stroke="#990033"
+            strokeWidth="1"
           />
 
           {/* Left eye */}

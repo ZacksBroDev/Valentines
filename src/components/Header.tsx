@@ -27,14 +27,14 @@ export const Header = ({
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full flex items-center justify-between px-4 py-3 safe-top"
+      className="w-full flex items-center justify-between px-3 py-2 safe-top"
     >
       {/* Left buttons */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         {/* Sound toggle */}
         <button
           onClick={onToggleMute}
-          className={`w-10 h-10 rounded-full backdrop-blur-sm shadow-sm flex items-center justify-center text-lg transition-colors btn-press ${
+          className={`w-8 h-8 rounded-full backdrop-blur-sm shadow-sm flex items-center justify-center text-sm transition-colors btn-press ${
             isDark
               ? "bg-white/20 hover:bg-white/30"
               : "bg-white/70 hover:bg-white"
@@ -48,7 +48,7 @@ export const Header = ({
         {/* Settings */}
         <button
           onClick={onOpenSettings}
-          className={`w-10 h-10 rounded-full backdrop-blur-sm shadow-sm flex items-center justify-center text-lg transition-colors btn-press ${
+          className={`w-8 h-8 rounded-full backdrop-blur-sm shadow-sm flex items-center justify-center text-sm transition-colors btn-press ${
             isDark
               ? "bg-white/20 hover:bg-white/30"
               : "bg-white/70 hover:bg-white"
@@ -63,23 +63,27 @@ export const Header = ({
       {/* Title */}
       <div className="flex flex-col items-center">
         <h1
-          className={`text-lg font-semibold tracking-tight ${isDark ? "text-white" : "text-accent-pink"}`}
+          className={`text-base font-semibold tracking-tight ${
+            isDark ? "text-white" : "text-accent-pink"
+          }`}
         >
           Compliment Deck
         </h1>
         <span
-          className={`text-xs opacity-70 ${isDark ? "text-gray-300" : "text-blush-500"}`}
+          className={`text-[10px] opacity-70 ${
+            isDark ? "text-gray-300" : "text-blush-500"
+          }`}
         >
           made with 💕
         </span>
       </div>
 
       {/* Right buttons */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         {/* Notes */}
         <button
           onClick={onOpenNotes}
-          className={`relative w-10 h-10 rounded-full backdrop-blur-sm shadow-sm flex items-center justify-center text-lg transition-colors btn-press ${
+          className={`relative w-8 h-8 rounded-full backdrop-blur-sm shadow-sm flex items-center justify-center text-sm transition-colors btn-press ${
             isDark
               ? "bg-white/20 hover:bg-white/30"
               : "bg-white/70 hover:bg-white"
@@ -89,7 +93,7 @@ export const Header = ({
         >
           📝
           {notesCount > 0 && (
-            <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-accent-pink text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+            <span className="absolute -top-0.5 -right-0.5 min-w-3 h-3 px-0.5 bg-accent-pink text-white text-[8px] font-bold rounded-full flex items-center justify-center">
               {notesCount}
             </span>
           )}

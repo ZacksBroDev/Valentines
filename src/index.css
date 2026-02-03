@@ -31,14 +31,22 @@
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
 }
 
-.theme-night .text-blush-500,
-.theme-night .text-gray-700,
-.theme-night .text-gray-800 {
+/* Night theme - only change text colors for elements OUTSIDE the card */
+.theme-night>.text-blush-500,
+.theme-night>header .text-gray-700,
+.theme-night>header .text-gray-800 {
   color: #e0e0e0 !important;
 }
 
 .theme-night .bg-white {
   background-color: #16213e !important;
+}
+
+/* Ensure card text is always dark and readable on white cards */
+.theme-lavender .text-gray-800,
+.theme-blush .text-gray-800,
+.theme-sunset .text-gray-800 {
+  color: #1f2937 !important;
 }
 
 .theme-sunset {

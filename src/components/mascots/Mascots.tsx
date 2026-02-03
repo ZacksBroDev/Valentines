@@ -25,7 +25,7 @@ export const Mascots = ({
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3, duration: 0.5 }}
-      className="flex items-center justify-center gap-3 mb-4"
+      className="flex items-center justify-center gap-3 mb-2 scale-75 lg:scale-100 bg-white/40 backdrop-blur-sm rounded-2xl px-4 py-2 shadow-sm"
     >
       <CoupleDots />
 
@@ -40,7 +40,7 @@ export const Mascots = ({
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="absolute -top-1 -right-1 w-5 h-5 bg-accent-lavender rounded-full flex items-center justify-center text-xs"
+            className="absolute -top-1 -right-1 w-4 h-4 bg-accent-lavender rounded-full flex items-center justify-center text-[10px]"
             title="Secret deck unlocked!"
           >
             🔓

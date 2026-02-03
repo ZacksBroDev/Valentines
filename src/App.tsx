@@ -295,7 +295,7 @@ const AppContent = ({
 
   return (
     <div
-      className={`min-h-screen hearts-bg hearts-pattern flex flex-col relative overflow-hidden theme-${currentTheme}`}
+      className={`h-screen max-h-screen overflow-hidden hearts-bg hearts-pattern flex flex-col relative theme-${currentTheme}`}
     >
       <div className="hearts-pattern" />
 
@@ -308,7 +308,8 @@ const AppContent = ({
         favoritesCount={favorites.length}
       />
 
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-4 relative z-10">
+      <main className="flex-1 flex flex-col items-center justify-center px-3 py-1 relative z-10 min-h-0">
+        {/* Mascots - always visible above card */}
         <Mascots
           onHeartBuddyTap={onHeartBuddyTap}
           onHeartBuddyLongPress={onHeartBuddyLongPress}
@@ -321,10 +322,10 @@ const AppContent = ({
         {/* Mood Picker Toggle */}
         <button
           onClick={() => setShowMoodPicker(true)}
-          className="mb-2 text-sm text-blush-500 flex items-center gap-1 hover:text-blush-700 transition-colors"
+          className="mb-1 text-xs text-blush-500 flex items-center gap-1 hover:text-blush-700 transition-colors"
         >
           {currentMood ? MOODS[currentMood]?.emoji : "💭"}
-          {currentMood ? MOODS[currentMood]?.label : "Set mood"}
+          {currentMood ? MOODS[currentMood]?.label : "All"}
         </button>
 
         <AnimatePresence>
@@ -333,26 +334,69 @@ const AppContent = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="text-sm text-blush-500 mb-4"
+              className="text-xs text-blush-500 mb-1"
             >
-              Card {drawCount} {secretUnlocked && "(+ secrets)"}{" "}
-              {dailyMode && "• Daily Mode"}
+              Card {drawCount} {secretUnlocked && "(+ secrets)"}
             </motion.p>
           )}
         </AnimatePresence>
 
-        <div className="w-full max-w-sm mx-auto mb-6">
-          <ComplimentCard
-            card={currentCard}
-            isFavorite={isCurrentFavorite}
-            cardKey={cardKey}
-            sticker={selectedSticker as any}
-            onStickerClick={() => {}}
-          />
+        {/* Desktop: 3-column layout with side panels */}
+        <div className="w-full flex-1 flex items-center justify-center min-h-0 gap-4 lg:gap-8">
+          {/* Left Panel - Stats (desktop only) */}
+          <div className="hidden lg:flex flex-col items-center justify-center gap-4 w-32">
+            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-3 text-center">
+              <p className="text-2xl font-bold text-accent-pink">
+                {favorites.length}
+              </p>
+              <p className="text-xs text-gray-600">Favorites</p>
+            </div>
+            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-3 text-center">
+              <p className="text-2xl font-bold text-accent-pink">
+                {reasonsLogged}
+              </p>
+              <p className="text-xs text-gray-600">Love logged</p>
+            </div>
+          </div>
+
+          {/* Card - Responsive sizing */}
+          <div className="w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[400px] xl:max-w-[440px] flex items-center min-h-0">
+            <ComplimentCard
+              card={currentCard}
+              isFavorite={isCurrentFavorite}
+              cardKey={cardKey}
+              sticker={selectedSticker as any}
+              onStickerClick={() => {}}
+            />
+          </div>
+
+          {/* Right Panel - Tips (desktop only) */}
+          <div className="hidden lg:flex flex-col items-center justify-center gap-4 w-32">
+            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-3 text-center">
+              <p className="text-sm mb-1">💡 Tip</p>
+              <p className="text-[10px] text-gray-600 leading-tight">
+                Long-press the heart mascot to log why you love your partner!
+              </p>
+            </div>
+            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-3 text-center">
+              <p className="text-sm mb-1">🔮 Secret</p>
+              <p className="text-[10px] text-gray-600 leading-tight">
+                Tap the heart 5x fast to unlock secret cards!
+              </p>
+            </div>
+            {secretUnlocked && (
+              <div className="bg-accent-lavender/50 backdrop-blur-sm rounded-xl p-3 text-center">
+                <p className="text-sm">🔓</p>
+                <p className="text-[10px] text-purple-700">
+                  Secret deck active!
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </main>
 
-      <div className="sticky bottom-0 pb-4 pt-2 bg-gradient-to-t from-blush-100/80 to-transparent backdrop-blur-sm">
+      <div className="pb-2 pt-1">
         <ActionBar
           onDraw={onDraw}
           onSave={onSave}

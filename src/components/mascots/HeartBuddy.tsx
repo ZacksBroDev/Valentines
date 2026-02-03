@@ -126,16 +126,16 @@ export const HeartBuddy = ({
             x2="100%"
             y2="100%"
           >
-            <stop offset="0%" stopColor="#ff6b9d" />
-            <stop offset="100%" stopColor="#ff4da6" />
+            <stop offset="0%" stopColor="#ff5588" />
+            <stop offset="100%" stopColor="#e6006e" />
           </linearGradient>
           <filter id="heartShadow" x="-20%" y="-20%" width="140%" height="140%">
             <feDropShadow
               dx="0"
               dy="3"
               stdDeviation="3"
-              floodColor="#ff4da6"
-              floodOpacity="0.3"
+              floodColor="#cc0055"
+              floodOpacity="0.4"
             />
           </filter>
         </defs>
@@ -145,6 +145,8 @@ export const HeartBuddy = ({
           d="M50 85 C15 55 5 35 5 25 C5 10 20 5 35 5 C42 5 48 10 50 15 C52 10 58 5 65 5 C80 5 95 10 95 25 C95 35 85 55 50 85"
           fill="url(#heartGradient)"
           filter="url(#heartShadow)"
+          stroke="#cc0055"
+          strokeWidth="1.5"
           animate={{
             scale: isBlusing ? [1, 1.05, 1] : 1,
           }}

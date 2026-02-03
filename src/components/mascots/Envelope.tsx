@@ -13,8 +13,8 @@ export const Envelope = ({ isOpen = false }: EnvelopeProps) => {
     >
       <defs>
         <linearGradient id="envelopeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#fff5f7" />
-          <stop offset="100%" stopColor="#ffe8ed" />
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="100%" stopColor="#ffe0e8" />
         </linearGradient>
         <linearGradient
           id="envelopeFlapGrad"
@@ -23,8 +23,8 @@ export const Envelope = ({ isOpen = false }: EnvelopeProps) => {
           x2="100%"
           y2="0%"
         >
-          <stop offset="0%" stopColor="#ffb8ca" />
-          <stop offset="100%" stopColor="#ffd6e0" />
+          <stop offset="0%" stopColor="#ff90b0" />
+          <stop offset="100%" stopColor="#ffc0d0" />
         </linearGradient>
         <filter
           id="envelopeShadow"
@@ -37,8 +37,8 @@ export const Envelope = ({ isOpen = false }: EnvelopeProps) => {
             dx="0"
             dy="2"
             stdDeviation="2"
-            floodColor="#ff4da6"
-            floodOpacity="0.2"
+            floodColor="#cc0055"
+            floodOpacity="0.3"
           />
         </filter>
       </defs>
@@ -51,7 +51,7 @@ export const Envelope = ({ isOpen = false }: EnvelopeProps) => {
         height="38"
         rx="4"
         fill="url(#envelopeGrad)"
-        stroke="#ffb8ca"
+        stroke="#ff6690"
         strokeWidth="2"
         filter="url(#envelopeShadow)"
       />

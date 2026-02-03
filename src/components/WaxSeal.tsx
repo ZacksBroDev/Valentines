@@ -38,7 +38,7 @@ export const WaxSeal = ({ onHintReveal }: WaxSealProps) => {
     >
       <svg
         viewBox="0 0 60 60"
-        className="w-14 h-14"
+        className="w-10 h-10"
         aria-label="Wax seal stamp"
       >
         <defs>
