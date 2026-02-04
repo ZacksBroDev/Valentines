@@ -10,7 +10,7 @@ export const useRapidTap = (
   maxDuration: number = 3000,
 ): UseRapidTapReturn => {
   const [tapTimestamps, setTapTimestamps] = useState<number[]>([]);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const reset = useCallback(() => {
     setTapTimestamps([]);

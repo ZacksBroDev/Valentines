@@ -54,7 +54,7 @@ describe("ToastContext", () => {
 
   it("should schedule toast removal after timeout", () => {
     // This test verifies the setTimeout is called, not the animation completion
-    const setTimeoutSpy = vi.spyOn(global, "setTimeout");
+    const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
     
     render(<WrappedTestComponent />);
     fireEvent.click(screen.getByText("Show Toast"));

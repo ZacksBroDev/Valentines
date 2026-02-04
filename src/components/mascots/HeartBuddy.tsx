@@ -18,7 +18,7 @@ export const HeartBuddy = ({
   const [isBlinking, setIsBlinking] = useState(false);
   const [isSqueezed, setIsSqueezed] = useState(false);
   const [showHeartPop, setShowHeartPop] = useState(false);
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isLongPress = useRef(false);
   const { vibrate } = useHaptic();
 
