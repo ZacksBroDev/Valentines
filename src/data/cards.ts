@@ -110,7 +110,6 @@ const textCards: TextCard[] = [
   { id: "out-001", type: "text", category: "sweet", rarity: "common", intensity: 2, emoji: "🥾", tags: ["lonely"], text: "I love that you love hiking. You make life feel bigger." },
   { id: "out-002", type: "text", category: "sweet", rarity: "common", intensity: 2, emoji: "🧗", tags: ["lonely"], text: "Climbing with you feels like being with a superhero." },
   { id: "out-003", type: "text", category: "sweet", rarity: "common", intensity: 2, emoji: "🏕️", tags: ["lonely"], text: "Camping with you feels like a core memory every time." },
-  { id: "out-004", type: "text", category: "sweet", rarity: "common", intensity: 2, emoji: "🏂", tags: ["lonely"], text: "Snowboarding with you is my favorite kind of chaos." },
   { id: "out-005", type: "text", category: "supportive", rarity: "common", intensity: 2, emoji: "🌲", tags: ["stressed"], text: "When life is heavy, let's go outside. You always breathe life back into me." },
   { id: "out-006", type: "text", category: "sweet", rarity: "common", intensity: 2, emoji: "🗺️", tags: ["lonely"], text: "I want to keep doing adventures with you for a long time." },
 
@@ -251,41 +250,8 @@ const voucherCards: VoucherCard[] = [
 ];
 
 // ===== PLAYLIST CARDS =====
-const playlistCards: PlaylistCard[] = [
-  {
-    id: "playlist-001",
-    type: "playlist",
-    category: "sweet",
-    rarity: "rare",
-    tags: ["lonely"],
-    emoji: "🎵",
-    songTitle: "Our Avs-date song",
-    artist: "Artist TBD",
-    link: "https://open.spotify.com",
-  },
-  {
-    id: "playlist-002",
-    type: "playlist",
-    category: "supportive",
-    rarity: "rare",
-    tags: ["stressed"],
-    emoji: "🎧",
-    songTitle: "Calm reset song",
-    artist: "Artist TBD",
-    link: "https://open.spotify.com",
-  },
-  {
-    id: "playlist-003",
-    type: "playlist",
-    category: "supportive",
-    rarity: "rare",
-    tags: ["doubting"],
-    emoji: "💪",
-    songTitle: "Confidence song",
-    artist: "Artist TBD",
-    link: "https://open.spotify.com",
-  },
-];
+// Playlist cards removed - add your own songs here if desired
+const playlistCards: PlaylistCard[] = [];
 
 // ===== COMBINE ALL CARDS =====
 export const allCards: Card[] = [...textCards, ...voucherCards, ...playlistCards];

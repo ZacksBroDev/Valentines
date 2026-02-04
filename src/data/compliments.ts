@@ -117,7 +117,6 @@ export const compliments: Compliment[] = [
   { id: "out-001", category: "sweet", intensity: 2, emoji: "🥾", text: "I love that you love hiking. You make life feel bigger." },
   { id: "out-002", category: "sweet", intensity: 2, emoji: "🧗", text: "Climbing with you feels like being with a superhero." },
   { id: "out-003", category: "sweet", intensity: 2, emoji: "🏕️", text: "Camping with you feels like a core memory every time." },
-  { id: "out-004", category: "sweet", intensity: 2, emoji: "🏂", text: "Snowboarding with you is my favorite kind of chaos." },
   { id: "out-005", category: "supportive", intensity: 2, emoji: "🌲", text: "When life is heavy, let's go outside. You always breathe life back into me." },
   { id: "out-006", category: "sweet", intensity: 2, emoji: "🗺️", text: "I want to keep doing adventures with you for a long time." },
 

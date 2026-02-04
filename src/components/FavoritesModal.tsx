@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, isTextCard, isVoucherCard, isPlaylistCard } from "../types";
-import { allCards } from "../data/cards";
+import { allCards, withPet } from "../data/cards";
 import { formatCategory } from "../utils/helpers";
 import { Modal } from "./Modal";
 
@@ -23,7 +23,7 @@ export const FavoritesModal = ({
 
   const getCardDisplay = (card: Card): { text: string; emoji: string } => {
     if (isTextCard(card)) {
-      return { text: card.text, emoji: card.emoji || "💕" };
+      return { text: withPet(card.text), emoji: card.emoji || "💕" };
     }
     if (isVoucherCard(card)) {
       return { text: card.title, emoji: card.emoji || "🎟️" };
