@@ -2,7 +2,6 @@ import { useState, useCallback } from "react";
 import {
   getFavorites,
   toggleFavorite as storageToggleFavorite,
-  isFavorite,
 } from "../utils/storage";
 
 interface UseFavoritesReturn {
