@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, isTextCard, isVoucherCard, isPlaylistCard } from "../types";
 import { RARITIES, StickerKey } from "../config";
+import { withPet } from "../data/cards";
 import { formatCategory, prefersReducedMotion } from "../utils/helpers";
 import { WaxSeal } from "./WaxSeal";
 import { StickerDisplay } from "./StickerPicker";
@@ -232,7 +233,7 @@ export const ComplimentCard = ({
                   isDark ? "text-white" : "text-gray-800"
                 }`}
               >
-                "<TypewriterText text={card.text} delay={200} />"
+                "<TypewriterText text={withPet(card.text)} delay={200} />"
               </motion.p>
               <motion.div
                 initial={{ opacity: 0 }}
