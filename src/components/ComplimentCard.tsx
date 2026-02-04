@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Compliment } from "../data/compliments";
+import { Compliment, withPet } from "../data/compliments";
 import { formatCategory } from "../utils/helpers";
 import { WaxSeal } from "./WaxSeal";
 
@@ -105,7 +105,7 @@ export const ComplimentCard = ({
             transition={{ delay: 0.15 }}
             className="text-xl md:text-2xl text-gray-700 text-center font-medium leading-relaxed"
           >
-            "{compliment.text}"
+            "{withPet(compliment.text)}"
           </motion.p>
 
           {/* Intensity dots */}

@@ -1,3 +1,25 @@
+// ============================================================
+// COMPLIMENT DATA - Personal compliments for Caitlyn
+// ============================================================
+
+// ===== PET NAME SYSTEM =====
+const PET_POOL = ["babe", "baby", "Caitlyn"] as const;
+const PET_WEIGHTS = [0.6, 0.25, 0.15];
+
+export function pickPet(): string {
+  const r = Math.random();
+  let acc = 0;
+  for (let i = 0; i < PET_POOL.length; i++) {
+    acc += PET_WEIGHTS[i];
+    if (r <= acc) return PET_POOL[i];
+  }
+  return "Caitlyn";
+}
+
+export function withPet(text: string): string {
+  return text.replace(/{pet}/g, pickPet());
+}
+
 export interface Compliment {
   id: string;
   text: string;
@@ -6,415 +28,177 @@ export interface Compliment {
   emoji?: string;
 }
 
-// ============================================================
-// CUSTOMIZATION: Edit these compliments to personalize!
-// - Add your partner's name where you see [Name]
-// - Add inside jokes and personal references
-// - Adjust intensity (1=mild, 2=medium, 3=strong)
-// ============================================================
-
 export const compliments: Compliment[] = [
-  // ===== SWEET (15) =====
-  {
-    id: "sweet-1",
-    text: "You make ordinary moments feel extraordinary.",
-    category: "sweet",
-    intensity: 2,
-    emoji: "✨",
-  },
-  {
-    id: "sweet-2",
-    text: "My favorite place is next to you.",
-    category: "sweet",
-    intensity: 2,
-    emoji: "🏠",
-  },
-  {
-    id: "sweet-3",
-    text: "You're the reason I believe in love stories.",
-    category: "sweet",
-    intensity: 3,
-    emoji: "📖",
-  },
-  {
-    id: "sweet-4",
-    text: "Every love song makes sense because of you.",
-    category: "sweet",
-    intensity: 2,
-    emoji: "🎵",
-  },
-  {
-    id: "sweet-5",
-    text: "You have the most beautiful soul I've ever known.",
-    category: "sweet",
-    intensity: 3,
-    emoji: "💫",
-  },
-  {
-    id: "sweet-6",
-    text: "Falling for you was the best decision I never made.",
-    category: "sweet",
-    intensity: 2,
-    emoji: "🍂",
-  },
-  {
-    id: "sweet-7",
-    text: "You're my favorite notification.",
-    category: "sweet",
-    intensity: 1,
-    emoji: "📱",
-  },
-  {
-    id: "sweet-8",
-    text: "I'd choose you in every lifetime.",
-    category: "sweet",
-    intensity: 3,
-    emoji: "♾️",
-  },
-  {
-    id: "sweet-9",
-    text: "Your smile is my favorite sight in the whole world.",
-    category: "sweet",
-    intensity: 2,
-    emoji: "😊",
-  },
-  {
-    id: "sweet-10",
-    text: "You make my heart do that fluttery thing.",
-    category: "sweet",
-    intensity: 1,
-    emoji: "🦋",
-  },
-  {
-    id: "sweet-11",
-    text: "Being loved by you is the greatest gift.",
-    category: "sweet",
-    intensity: 3,
-    emoji: "🎁",
-  },
-  {
-    id: "sweet-12",
-    text: "You're my person. Always.",
-    category: "sweet",
-    intensity: 2,
-    emoji: "💕",
-  },
-  {
-    id: "sweet-13",
-    text: "Home is wherever I'm with you.",
-    category: "sweet",
-    intensity: 2,
-    emoji: "🏡",
-  },
-  {
-    id: "sweet-14",
-    text: "You make everything better just by being here.",
-    category: "sweet",
-    intensity: 1,
-    emoji: "🌸",
-  },
-  {
-    id: "sweet-15",
-    text: "I fall more in love with you every single day.",
-    category: "sweet",
-    intensity: 3,
-    emoji: "💝",
-  },
+  // ---------------- SWEET / ROMANTIC ----------------
+  { id: "sweet-001", category: "sweet", intensity: 2, emoji: "💕", text: "{pet}, you're my favorite part of every day." },
+  { id: "sweet-002", category: "sweet", intensity: 2, emoji: "🥹", text: "I still can't believe I get to love you." },
+  { id: "sweet-003", category: "sweet", intensity: 2, emoji: "✨", text: "You're beautiful, kind, smart, funny, and somehow all of that at once." },
+  { id: "sweet-004", category: "sweet", intensity: 2, emoji: "💪", text: "You're not 'out of my league.' You're my person. That's it." },
+  { id: "sweet-005", category: "sweet", intensity: 2, emoji: "🪞", text: "I love who I am when I'm with you." },
+  { id: "sweet-006", category: "sweet", intensity: 2, emoji: "😊", text: "Your smile fixes my mood faster than anything." },
+  { id: "sweet-007", category: "sweet", intensity: 2, emoji: "🌟", text: "You make normal days feel like the best days." },
+  { id: "sweet-008", category: "sweet", intensity: 2, emoji: "🔄", text: "I'd pick you again. Every time. No hesitation." },
+  { id: "sweet-009", category: "sweet", intensity: 1, emoji: "🏠", text: "You feel like home to me." },
+  { id: "sweet-010", category: "sweet", intensity: 2, emoji: "👑", text: "You're my favorite human." },
+  { id: "sweet-011", category: "sweet", intensity: 2, emoji: "🎵", text: "I love your laugh. It's my favorite sound." },
+  { id: "sweet-012", category: "sweet", intensity: 1, emoji: "🙏", text: "I'm grateful for you in the everyday, real-life way." },
+  { id: "sweet-013", category: "sweet", intensity: 2, emoji: "🧸", text: "You make my life softer in the best way." },
+  { id: "sweet-014", category: "sweet", intensity: 2, emoji: "✨", text: "I love the way you light up when you're happy." },
+  { id: "sweet-015", category: "sweet", intensity: 2, emoji: "💗", text: "I love being yours." },
+  { id: "sweet-016", category: "sweet", intensity: 2, emoji: "📅", text: "Since April 13, 2024, my world has been better on purpose." },
+  { id: "sweet-017", category: "sweet", intensity: 2, emoji: "💯", text: "662 days with you… and I'm still obsessed." },
+  { id: "sweet-018", category: "sweet", intensity: 2, emoji: "🏡", text: "I want a life with you. The real kind." },
+  { id: "sweet-019", category: "sweet", intensity: 2, emoji: "💝", text: "I love you more than I know how to explain." },
+  { id: "sweet-020", category: "sweet", intensity: 1, emoji: "🛡️", text: "You're my safest place." },
 
-  // ===== FUNNY (10) =====
-  {
-    id: "funny-1",
-    text: "You're the cheese to my macaroni (I'm very serious about this).",
-    category: "funny",
-    intensity: 1,
-    emoji: "🧀",
-  },
-  {
-    id: "funny-2",
-    text: "I love you more than pizza. And I REALLY love pizza.",
-    category: "funny",
-    intensity: 1,
-    emoji: "🍕",
-  },
-  {
-    id: "funny-3",
-    text: "You're so cute it's actually annoying (in the best way).",
-    category: "funny",
-    intensity: 1,
-    emoji: "😤",
-  },
-  {
-    id: "funny-4",
-    text: "If you were a vegetable, you'd be a cute-cumber.",
-    category: "funny",
-    intensity: 1,
-    emoji: "🥒",
-  },
-  {
-    id: "funny-5",
-    text: "I like you even when I'm hungry. That's real love.",
-    category: "funny",
-    intensity: 2,
-    emoji: "🍔",
-  },
-  {
-    id: "funny-6",
-    text: "You're the only person whose snoring I find adorable.",
-    category: "funny",
-    intensity: 1,
-    emoji: "😴",
-  },
-  {
-    id: "funny-7",
-    text: "My Netflix password? That's commitment.",
-    category: "funny",
-    intensity: 1,
-    emoji: "📺",
-  },
-  {
-    id: "funny-8",
-    text: "You make my dopamine levels do crazy things.",
-    category: "funny",
-    intensity: 1,
-    emoji: "🧠",
-  },
-  {
-    id: "funny-9",
-    text: "Are you a parking ticket? Because you've got fine written all over you.",
-    category: "funny",
-    intensity: 1,
-    emoji: "🎫",
-  },
-  {
-    id: "funny-10",
-    text: "You're the reason I check my phone 47 times a day.",
-    category: "funny",
-    intensity: 1,
-    emoji: "👀",
-  },
+  // ---------------- SPECIFIC MEMORIES ----------------
+  { id: "mem-001", category: "sweet", intensity: 3, emoji: "🏒", text: "Our first date at the Avalanche game is still one of my favorite memories." },
+  { id: "mem-002", category: "sweet", intensity: 3, emoji: "😍", text: "Seeing you all dolled up at the Avs game made my heart melt. I couldn't stop staring." },
+  { id: "mem-003", category: "sweet", intensity: 3, emoji: "📣", text: "You cheering with that big smile—your whole face glowing—was unreal." },
+  { id: "mem-004", category: "sweet", intensity: 3, emoji: "🏕️", text: "May 6, 2024: hiking with you, finding that teepee made of sticks… core memory." },
+  { id: "mem-005", category: "sweet", intensity: 3, emoji: "🧗", text: "That moment you were on the little cliff—strong, fearless, beautiful—yeah. I remember." },
+  { id: "mem-006", category: "sweet", intensity: 2, emoji: "🥾", text: "I love remembering how fun that hike felt with you. Just us and the outdoors." },
+  { id: "mem-007", category: "sweet", intensity: 3, emoji: "🤗", text: "The way you greet me when I come over—arms wide, huge smile—hits me every time." },
+  { id: "mem-008", category: "sweet", intensity: 3, emoji: "❄️", text: "You come outside to hug and kiss me even when it's freezing. That's love, Caitlyn." },
+  { id: "mem-009", category: "sweet", intensity: 2, emoji: "😴", text: "When you sleep with your legs crossed and upright… it's the cutest thing I've ever seen." },
+  { id: "mem-010", category: "sweet", intensity: 2, emoji: "🏒", text: "When we play hockey together and we're both goofy—yeah… that's us. Perfect." },
 
-  // ===== SUPPORTIVE (10) =====
-  {
-    id: "supportive-1",
-    text: "I believe in you more than you believe in yourself.",
-    category: "supportive",
-    intensity: 2,
-    emoji: "💪",
-  },
-  {
-    id: "supportive-2",
-    text: "Your strength inspires me every day.",
-    category: "supportive",
-    intensity: 2,
-    emoji: "🌟",
-  },
-  {
-    id: "supportive-3",
-    text: "Whatever you're going through, I'm right here.",
-    category: "supportive",
-    intensity: 2,
-    emoji: "🤝",
-  },
-  {
-    id: "supportive-4",
-    text: "You handle life's challenges with such grace.",
-    category: "supportive",
-    intensity: 2,
-    emoji: "👑",
-  },
-  {
-    id: "supportive-5",
-    text: "I'm so proud of who you are and who you're becoming.",
-    category: "supportive",
-    intensity: 3,
-    emoji: "🌱",
-  },
-  {
-    id: "supportive-6",
-    text: "Your dreams matter to me as much as my own.",
-    category: "supportive",
-    intensity: 3,
-    emoji: "🚀",
-  },
-  {
-    id: "supportive-7",
-    text: "You deserve every good thing coming your way.",
-    category: "supportive",
-    intensity: 2,
-    emoji: "🎯",
-  },
-  {
-    id: "supportive-8",
-    text: "Even on hard days, you're incredible.",
-    category: "supportive",
-    intensity: 2,
-    emoji: "💎",
-  },
-  {
-    id: "supportive-9",
-    text: "I'll always be your biggest fan.",
-    category: "supportive",
-    intensity: 2,
-    emoji: "📣",
-  },
-  {
-    id: "supportive-10",
-    text: "You make me want to be a better person.",
-    category: "supportive",
-    intensity: 3,
-    emoji: "🌈",
-  },
+  // ---------------- SUPPORTIVE (PhD / clinic / life goals) ----------------
+  { id: "sup-001", category: "supportive", intensity: 2, emoji: "🎓", text: "Your PhD is hard. You're harder." },
+  { id: "sup-002", category: "supportive", intensity: 2, emoji: "🌬️", text: "You don't need to earn rest. You're allowed to breathe." },
+  { id: "sup-003", category: "supportive", intensity: 2, emoji: "🏗️", text: "You're not behind. You're building." },
+  { id: "sup-004", category: "supportive", intensity: 2, emoji: "👏", text: "I'm proud of you for how you keep showing up." },
+  { id: "sup-005", category: "supportive", intensity: 2, emoji: "🧠", text: "You're ridiculously smart. Watching you learn medicine stuff is honestly attractive." },
+  { id: "sup-006", category: "supportive", intensity: 2, emoji: "🦴", text: "I don't need to understand all the bones and nerves to know you're brilliant." },
+  { id: "sup-007", category: "supportive", intensity: 2, emoji: "🏥", text: "Your future PT clinic is going to be real. I can already see your name on the door." },
+  { id: "sup-008", category: "supportive", intensity: 2, emoji: "🩺", text: "Your future patients are going to feel so safe with you." },
+  { id: "sup-009", category: "supportive", intensity: 2, emoji: "💪", text: "You're the kind of person who makes hard things look doable." },
+  { id: "sup-010", category: "supportive", intensity: 1, emoji: "💧", text: "Drink water. Unclench your jaw. I love you." },
 
-  // ===== SPICY-LITE (7) =====
-  {
-    id: "spicy-1",
-    text: "Is it hot in here or is it just you?",
-    category: "spicy-lite",
-    intensity: 1,
-    emoji: "🔥",
-  },
-  {
-    id: "spicy-2",
-    text: "You're absolutely stunning and I'm so lucky.",
-    category: "spicy-lite",
-    intensity: 2,
-    emoji: "😍",
-  },
-  {
-    id: "spicy-3",
-    text: "The way you look at me makes me forget how to think.",
-    category: "spicy-lite",
-    intensity: 2,
-    emoji: "🫠",
-  },
-  {
-    id: "spicy-4",
-    text: "You have this effect on me that I can't explain.",
-    category: "spicy-lite",
-    intensity: 2,
-    emoji: "✨",
-  },
-  {
-    id: "spicy-5",
-    text: "Every time I see you, I fall for you all over again.",
-    category: "spicy-lite",
-    intensity: 2,
-    emoji: "💘",
-  },
-  {
-    id: "spicy-6",
-    text: "You're the most attractive person in any room.",
-    category: "spicy-lite",
-    intensity: 2,
-    emoji: "🌹",
-  },
-  {
-    id: "spicy-7",
-    text: "That smile of yours should come with a warning label.",
-    category: "spicy-lite",
-    intensity: 1,
-    emoji: "⚠️",
-  },
+  // ---------------- BODY IMAGE ----------------
+  { id: "bi-001", category: "supportive", intensity: 2, emoji: "💗", text: "I hate that you feel bad about your body sometimes. I love you exactly as you are." },
+  { id: "bi-002", category: "supportive", intensity: 2, emoji: "🏃", text: "Your body is strong—it hikes, climbs, skates, snowboards, and carries you through everything." },
+  { id: "bi-003", category: "supportive", intensity: 2, emoji: "🌸", text: "When your brain is mean to you, I'm going to be extra gentle with you." },
+  { id: "bi-004", category: "supportive", intensity: 2, emoji: "👀", text: "You don't see what I see. I see beautiful. I see powerful. I see Caitlyn." },
+  { id: "bi-005", category: "supportive", intensity: 2, emoji: "🤍", text: "You deserve kindness from everyone—including you." },
 
-  // ============================================================
-  // SECRET COMPLIMENTS (12) - Unlocked via easter egg
-  // CUSTOMIZATION: Make these extra personal!
-  // ============================================================
-  {
-    id: "secret-1",
-    text: "This is just between us: you're the one I've been waiting for my whole life.",
-    category: "secret",
-    intensity: 3,
-    emoji: "🔐",
-  },
-  {
-    id: "secret-2",
-    text: "Secret confession: I think about you way more than I let on.",
-    category: "secret",
-    intensity: 2,
-    emoji: "🤫",
-  },
-  {
-    id: "secret-3",
-    text: "In my dreams, it's always you.",
-    category: "secret",
-    intensity: 3,
-    emoji: "💭",
-  },
-  {
-    id: "secret-4",
-    text: "You found the secret deck! Just like you found your way into my heart.",
-    category: "secret",
-    intensity: 2,
-    emoji: "🗝️",
-  },
-  {
-    id: "secret-5",
-    text: "I wrote this one just for you: You're my forever person.",
-    category: "secret",
-    intensity: 3,
-    emoji: "✍️",
-  },
-  {
-    id: "secret-6",
-    text: "Whisper mode: I love everything about you. Even the weird stuff.",
-    category: "secret",
-    intensity: 2,
-    emoji: "🌙",
-  },
-  {
-    id: "secret-7",
-    text: "Top secret: My heart races every time you're near.",
-    category: "secret",
-    intensity: 2,
-    emoji: "💓",
-  },
-  {
-    id: "secret-8",
-    text: "Hidden message: You + Me = Everything I've ever wanted.",
-    category: "secret",
-    intensity: 3,
-    emoji: "💌",
-  },
-  {
-    id: "secret-9",
-    text: "For your eyes only: I'm head over heels, completely, hopelessly in love with you.",
-    category: "secret",
-    intensity: 3,
-    emoji: "👁️",
-  },
-  {
-    id: "secret-10",
-    text: "Classified: You make me believe in soulmates.",
-    category: "secret",
-    intensity: 3,
-    emoji: "🔏",
-  },
-  {
-    id: "secret-11",
-    text: "Private note: You're the plot twist I never saw coming.",
-    category: "secret",
-    intensity: 2,
-    emoji: "📝",
-  },
-  {
-    id: "secret-12",
-    text: "Secret's out: You're the love of my life. There. I said it. 💕",
-    category: "secret",
-    intensity: 3,
-    emoji: "💕",
-  },
+  // ---------------- OVERTHINKING / OVERSTIMULATION ----------------
+  { id: "calm-001", category: "supportive", intensity: 2, emoji: "🔇", text: "If you're overstimulated, I'll lower the volume and stay close. No questions." },
+  { id: "calm-002", category: "supportive", intensity: 2, emoji: "🤝", text: "You don't have to explain perfectly. I'm not going anywhere." },
+  { id: "calm-003", category: "supportive", intensity: 2, emoji: "🧘", text: "If your brain is racing, I'll be your calm. We can just exist together." },
+  { id: "calm-004", category: "supportive", intensity: 2, emoji: "🌀", text: "Overthinking is just your brain trying to protect you. I've got you." },
+  { id: "calm-005", category: "supportive", intensity: 2, emoji: "⚔️", text: "You don't have to carry everything alone. I'm on your side." },
+
+  // ---------------- FUNNY / PLAYFUL ----------------
+  { id: "fun-001", category: "funny", intensity: 1, emoji: "🔥", text: "You're hot AND smart. It's honestly unfair." },
+  { id: "fun-002", category: "funny", intensity: 1, emoji: "🔬", text: "I support women in STEM. Especially when the woman is you." },
+  { id: "fun-003", category: "funny", intensity: 1, emoji: "🦴", text: "You know bones and blood vessels. I barely know what day it is. I'm still proud of us." },
+  { id: "fun-004", category: "funny", intensity: 1, emoji: "🧩", text: "You overthink. I underthink. Together we make one functional adult." },
+  { id: "fun-005", category: "funny", intensity: 1, emoji: "🐛", text: "If loving you is a bug, I'm not fixing it." },
+  { id: "fun-006", category: "funny", intensity: 1, emoji: "📱", text: "You're my favorite notification." },
+  { id: "fun-007", category: "funny", intensity: 1, emoji: "🍟", text: "I'd share my fries with you. That's real love." },
+  { id: "fun-008", category: "funny", intensity: 1, emoji: "😤", text: "You're the cutest overreactor I've ever met. Respectfully." },
+  { id: "fun-009", category: "funny", intensity: 1, emoji: "😈", text: "I rage-bait you because your reactions are elite… but I stop when you say stop." },
+  { id: "fun-010", category: "funny", intensity: 1, emoji: "🏒", text: "When we play hockey and you look goofy—good. Because I'm goofy too. We match." },
+  { id: "fun-011", category: "funny", intensity: 1, emoji: "👯", text: "We're goofy together. That's basically marriage." },
+  { id: "fun-012", category: "funny", intensity: 1, emoji: "📄", text: "If you were a research paper, I'd actually read the whole thing." },
+  { id: "fun-013", category: "funny", intensity: 1, emoji: "🌻", text: "If you want flowers, just say the word. I'm trainable." },
+  { id: "fun-014", category: "funny", intensity: 1, emoji: "😜", text: "Open when you need a laugh: you're the cutest menace I know." },
+  { id: "fun-015", category: "funny", intensity: 1, emoji: "🦷", text: "Open when you need a laugh: I'd still choose you even if you tried to bite me." },
+
+  // ---------------- FLIRTY-LITE ----------------
+  { id: "flirt-001", category: "spicy-lite", intensity: 2, emoji: "⚠️", text: "You're dangerously pretty." },
+  { id: "flirt-002", category: "spicy-lite", intensity: 2, emoji: "🤗", text: "Come here. I need a hug from you specifically." },
+  { id: "flirt-003", category: "spicy-lite", intensity: 2, emoji: "🎮", text: "Your smile is basically a cheat code." },
+  { id: "flirt-004", category: "spicy-lite", intensity: 2, emoji: "🚨", text: "I'm very into you. This is not a drill." },
+  { id: "flirt-005", category: "spicy-lite", intensity: 2, emoji: "💯", text: "I love your body. I love your mind. I love you. Simple." },
+
+  // ---------------- OUTDOORS / ADVENTURE ----------------
+  { id: "out-001", category: "sweet", intensity: 2, emoji: "🥾", text: "I love that you love hiking. You make life feel bigger." },
+  { id: "out-002", category: "sweet", intensity: 2, emoji: "🧗", text: "Climbing with you feels like being with a superhero." },
+  { id: "out-003", category: "sweet", intensity: 2, emoji: "🏕️", text: "Camping with you feels like a core memory every time." },
+  { id: "out-004", category: "sweet", intensity: 2, emoji: "🏂", text: "Snowboarding with you is my favorite kind of chaos." },
+  { id: "out-005", category: "supportive", intensity: 2, emoji: "🌲", text: "When life is heavy, let's go outside. You always breathe life back into me." },
+  { id: "out-006", category: "sweet", intensity: 2, emoji: "🗺️", text: "I want to keep doing adventures with you for a long time." },
+
+  // ---------------- FLOWERS / LITTLE LOVE ----------------
+  { id: "flw-001", category: "sweet", intensity: 2, emoji: "💐", text: "You deserve flowers way more often than I get them. I'm fixing that." },
+  { id: "flw-002", category: "sweet", intensity: 1, emoji: "🌷", text: "I love how happy flowers make you. It's adorable." },
+
+  // ---------------- FUTURE / MARRIAGE / MOVING OUT ----------------
+  { id: "fut-001", category: "sweet", intensity: 3, emoji: "🏡", text: "I want to move out with you and build our little life together." },
+  { id: "fut-002", category: "sweet", intensity: 3, emoji: "♾️", text: "When I imagine 'forever,' your face shows up first." },
+  { id: "fut-003", category: "supportive", intensity: 2, emoji: "✅", text: "Clinic dream. Home dream. Marriage dream. I'm in." },
+  { id: "fut-004", category: "sweet", intensity: 3, emoji: "💑", text: "I don't want a life *near* you. I want a life *with* you." },
+
+  // ---------------- SECRET (earned, personal) ----------------
+  { id: "secret-001", category: "secret", intensity: 3, emoji: "🎬", text: "The Avs game first date still plays in my head like a movie." },
+  { id: "secret-002", category: "secret", intensity: 3, emoji: "🏔️", text: "That May 6th cliff moment—yeah. That's when I thought: 'she's incredible.'" },
+  { id: "secret-003", category: "secret", intensity: 3, emoji: "🤗", text: "Your cold-weather greeting hug is one of my favorite things in the world." },
+  { id: "secret-004", category: "secret", intensity: 3, emoji: "😴", text: "When you sleep with your legs crossed and upright I want to protect you from the universe." },
+  { id: "secret-005", category: "secret", intensity: 3, emoji: "💍", text: "I want to marry you. Not as an idea—like, actually you." },
+  { id: "secret-006", category: "secret", intensity: 3, emoji: "💖", text: "Caitlyn Hoffman, you're it for me." },
+
+  // ---------------- OPEN WHEN (supportive) ----------------
+  { id: "ow-001", category: "supportive", intensity: 2, emoji: "😮‍💨", text: "Open when you're stressed: You don't have to do it all today." },
+  { id: "ow-002", category: "supportive", intensity: 2, emoji: "🏆", text: "Open when you're stressed: I'm proud of you for still trying." },
+  { id: "ow-003", category: "supportive", intensity: 2, emoji: "📈", text: "Open when you're doubting yourself: your track record is proof." },
+  { id: "ow-004", category: "supportive", intensity: 2, emoji: "🧠", text: "Open when you're doubting yourself: you're brilliant and capable—no debate." },
+  { id: "ow-005", category: "supportive", intensity: 2, emoji: "🤫", text: "Open when you're overstimulated: no talking required, I'm here." },
+  { id: "ow-006", category: "supportive", intensity: 2, emoji: "🤍", text: "Open when you're overstimulated: we can do quiet together." },
+  { id: "ow-007", category: "sweet", intensity: 2, emoji: "💭", text: "Open when you feel lonely: I'm thinking about you right now." },
+  { id: "ow-008", category: "sweet", intensity: 2, emoji: "💗", text: "Open when you feel lonely: you're loved more than you know." },
+
+  // ---------------- EXTRA PET NAME CARDS ----------------
+  { id: "pet-001", category: "sweet", intensity: 3, emoji: "🎬", text: "{pet}, our first date at the Avalanche game still plays in my head like a movie." },
+  { id: "pet-002", category: "sweet", intensity: 3, emoji: "😍", text: "Seeing you all dolled up at the Avs game made my heart melt, {pet}." },
+  { id: "pet-003", category: "sweet", intensity: 3, emoji: "📣", text: "That smile you had cheering at the Avs game? I was done for, {pet}." },
+  { id: "pet-004", category: "sweet", intensity: 3, emoji: "🏕️", text: "May 6, 2024—hiking with you and finding that little teepee—core memory, {pet}." },
+  { id: "pet-005", category: "sweet", intensity: 2, emoji: "🤗", text: "Your 'arms wide + giant smile' greeting is my favorite welcome in the world, {pet}." },
+  { id: "pet-006", category: "supportive", intensity: 2, emoji: "🎓", text: "{pet}, you're doing a PhD. That's not 'hard'—that's insane. And you're doing it." },
+  { id: "pet-007", category: "supportive", intensity: 2, emoji: "🧠", text: "I don't need to understand your medical studies to know you're brilliant, {pet}." },
+  { id: "pet-008", category: "supportive", intensity: 2, emoji: "🏥", text: "You're going to change people's lives with your clinic, {pet}. That's not hype—that's fact." },
+  { id: "pet-009", category: "supportive", intensity: 2, emoji: "🌬️", text: "You're allowed to rest without 'earning' it, {pet}." },
+  { id: "pet-010", category: "supportive", intensity: 2, emoji: "💗", text: "{pet}, I'm sorry your brain is mean to you sometimes. I love you exactly as you are." },
+  { id: "pet-011", category: "supportive", intensity: 2, emoji: "🔇", text: "{pet}, if you're overstimulated, I'll stop joking and start protecting your peace." },
+  { id: "pet-012", category: "supportive", intensity: 2, emoji: "⚔️", text: "I'm on your side, {pet}. Not 'versus you.' Always on your side." },
+  { id: "pet-013", category: "supportive", intensity: 2, emoji: "🌊", text: "It's okay to feel a lot. I can handle you, {pet}." },
+  { id: "pet-014", category: "sweet", intensity: 2, emoji: "🥾", text: "I love that you love the outdoors, {pet}. You make life feel bigger." },
+  { id: "pet-015", category: "sweet", intensity: 2, emoji: "🗺️", text: "You're my favorite adventure partner, {pet}." },
+  { id: "pet-016", category: "sweet", intensity: 2, emoji: "💐", text: "{pet}, you deserve flowers more often than I get them. I'm fixing that." },
+  { id: "pet-017", category: "sweet", intensity: 2, emoji: "💪", text: "I want to be consistent for you, {pet}." },
+  { id: "pet-018", category: "sweet", intensity: 3, emoji: "🏡", text: "I want to move out together and build our little world, {pet}." },
+  { id: "pet-019", category: "sweet", intensity: 3, emoji: "♾️", text: "I want forever with you, {pet}. The real kind." },
+  { id: "pet-020", category: "sweet", intensity: 2, emoji: "🧘", text: "I want to be the calm in your life, {pet}." },
+  { id: "pet-021", category: "funny", intensity: 1, emoji: "😈", text: "{pet}, I rage-bait you because your reactions are elite… but I stop when you say stop." },
+  { id: "pet-022", category: "funny", intensity: 1, emoji: "🔥", text: "You're hot and smart. That's an illegal combo, {pet}." },
+  { id: "pet-023", category: "funny", intensity: 1, emoji: "👯", text: "We're goofy together, {pet}. That's basically soulmates." },
+  { id: "pet-024", category: "spicy-lite", intensity: 2, emoji: "⚠️", text: "{pet}, you're dangerously pretty." },
+  { id: "pet-025", category: "spicy-lite", intensity: 2, emoji: "🎮", text: "Your smile is a cheat code, {pet}." },
+
+  // ---------------- SHORT "INFINITE FEEL" MINIS ----------------
+  { id: "mini-001", category: "sweet", intensity: 1, emoji: "💗", text: "You're my favorite." },
+  { id: "mini-002", category: "sweet", intensity: 1, emoji: "❤️", text: "I love you." },
+  { id: "mini-003", category: "supportive", intensity: 1, emoji: "🏆", text: "I'm proud of you." },
+  { id: "mini-004", category: "supportive", intensity: 1, emoji: "👣", text: "One step at a time. I'm with you." },
+  { id: "mini-005", category: "supportive", intensity: 1, emoji: "💪", text: "You've got this." },
+  { id: "mini-006", category: "funny", intensity: 1, emoji: "🏅", text: "Certified cutie moment. It's you." },
+  { id: "mini-007", category: "sweet", intensity: 1, emoji: "🥺", text: "I miss you." },
+  { id: "mini-008", category: "sweet", intensity: 1, emoji: "🥇", text: "You're the best." },
+  { id: "mini-009", category: "supportive", intensity: 1, emoji: "🤫", text: "Quiet time. Close to me." },
+  { id: "mini-010", category: "sweet", intensity: 1, emoji: "🍀", text: "I'm lucky it's you." },
+  { id: "mini-011", category: "sweet", intensity: 1, emoji: "👋", text: "{pet}. Come here." },
+  { id: "mini-012", category: "sweet", intensity: 1, emoji: "💭", text: "I miss you, {pet}." },
+  { id: "mini-013", category: "supportive", intensity: 1, emoji: "🏆", text: "Proud of you, {pet}." },
+  { id: "mini-014", category: "supportive", intensity: 1, emoji: "🛡️", text: "You're safe with me." },
+  { id: "mini-015", category: "sweet", intensity: 1, emoji: "💝", text: "You're loved. Period." },
+  { id: "mini-016", category: "supportive", intensity: 1, emoji: "🌬️", text: "Breathe. I've got you." },
+  { id: "mini-017", category: "supportive", intensity: 1, emoji: "⚔️", text: "I'm on your team, {pet}." },
+  { id: "mini-018", category: "sweet", intensity: 1, emoji: "⭐", text: "I love you, {pet}." },
+  { id: "mini-019", category: "supportive", intensity: 1, emoji: "✨", text: "You're doing great." },
+  { id: "mini-020", category: "supportive", intensity: 1, emoji: "💯", text: "You're enough." },
+  { id: "mini-021", category: "sweet", intensity: 1, emoji: "🌟", text: "You're amazing, {pet}." },
 ];
 
-// Helper to get non-secret compliments
-export const getRegularCompliments = (): Compliment[] =>
-  compliments.filter((c) => c.category !== "secret");
-
-// Helper to get secret compliments
-export const getSecretCompliments = (): Compliment[] =>
-  compliments.filter((c) => c.category === "secret");
-
-// Get all available compliments based on unlock status
-export const getAvailableCompliments = (
-  secretUnlocked: boolean,
-): Compliment[] => (secretUnlocked ? compliments : getRegularCompliments());
+// Export for backwards compatibility
+export default compliments;

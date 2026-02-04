@@ -16,7 +16,7 @@ export const CONFIG = {
 
   // ----- PARTNER NAME -----
   // Used in personalized compliments
-  partnerName: "My Love",
+  partnerName: "Caitlyn",
 
   // ----- DECK SETTINGS -----
   // Show end screen after this many draws OR when deck exhausted
@@ -107,6 +107,12 @@ export const OPEN_WHEN_CATEGORIES = {
     emoji: "🥺",
     description: "For when you need love",
     categories: ["sweet", "secret"] as const,
+  },
+  overstimulated: {
+    label: "Overstimulated",
+    emoji: "😵‍💫",
+    description: "For when you need quiet",
+    categories: ["supportive"] as const,
   },
 } as const;
 
