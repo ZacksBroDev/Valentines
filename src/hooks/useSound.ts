@@ -68,7 +68,7 @@ export const useSound = (): UseSoundReturn => {
 
       oscillator.start(ctx.currentTime);
       oscillator.stop(ctx.currentTime + 0.1);
-    } catch (e) {
+    } catch {
       // Silently fail
     }
   }, [isMuted]);
@@ -101,7 +101,7 @@ export const useSound = (): UseSoundReturn => {
       const now = ctx.currentTime;
       playNote(523.25, now, 0.3); // C5
       playNote(659.25, now + 0.1, 0.4); // E5
-    } catch (e) {
+    } catch {
       // Silently fail
     }
   }, [isMuted]);

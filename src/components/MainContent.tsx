@@ -77,7 +77,7 @@ const MoodPickerModal = ({
   isOpen: boolean;
   currentMood: MoodKey;
   onClose: () => void;
-  onSelect: (mood: any) => void;
+  onSelect: (mood: MoodKey) => void;
 }) => {
   if (!isOpen) return null;
 
