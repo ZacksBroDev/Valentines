@@ -5,6 +5,7 @@
 
 import { ThemeKey, StickerKey, MoodKey, OpenWhenKey } from "../config";
 import { Note } from "../types";
+import { submitVoucherRequest } from "./cloudStorage";
 
 const PREFIX = "valentine-deck-";
 
@@ -156,10 +157,21 @@ export const setCardSticker = (cardId: string, sticker: StickerKey) => {
 // ----- VOUCHERS -----
 export const getRedeemedVouchers = (): Record<string, string> =>
   get(STORAGE_KEYS.REDEEMED_VOUCHERS, {});
-export const redeemVoucher = (cardId: string, option: string) => {
+export const redeemVoucher = (cardId: string, option: string, voucherTitle?: string) => {
+  // Save locally
   const vouchers = getRedeemedVouchers();
   vouchers[cardId] = option;
   set(STORAGE_KEYS.REDEEMED_VOUCHERS, vouchers);
+  
+  // Also sync to cloud for admin to see
+  console.log("📤 Syncing voucher to cloud:", { cardId, option, voucherTitle });
+  submitVoucherRequest({
+    voucherType: cardId,
+    voucherTitle: voucherTitle || option,
+    requestedDate: null,
+  })
+    .then(result => console.log("✅ Voucher synced to cloud:", result))
+    .catch(err => console.error("❌ Failed to sync voucher to cloud:", err));
 };
 
 // ----- NOTES -----

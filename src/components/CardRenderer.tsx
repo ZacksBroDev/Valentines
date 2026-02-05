@@ -1,34 +1,34 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, isTextCard, isVoucherCard, isPlaylistCard } from "../types";
-import { RARITIES, StickerKey } from "../config";
+import { RARITIES } from "../config";
 import { withPet } from "../data/cards";
 import { formatCategory, prefersReducedMotion } from "../utils/helpers";
-import { WaxSeal } from "./WaxSeal";
-import { StickerDisplay } from "./StickerPicker";
 import { redeemVoucher, getRedeemedVouchers } from "../utils/storage";
 
 interface CardProps {
   card: Card | null;
   isFavorite: boolean;
   cardKey: number;
-  sticker?: StickerKey;
-  onStickerClick?: () => void;
+  onSave?: () => void;
   onVoucherRedeem?: (option: string) => void;
-  onSealHint?: () => void;
   isDark?: boolean;
+  reduceMotion?: boolean;
 }
 
 // Typewriter text component
 const TypewriterText = ({
   text,
   delay = 0,
+  forceReduceMotion = false,
 }: {
   text: string;
   delay?: number;
+  forceReduceMotion?: boolean;
 }) => {
   const [displayedText, setDisplayedText] = useState("");
-  const reducedMotion = prefersReducedMotion();
+  const systemReducedMotion = prefersReducedMotion();
+  const reducedMotion = forceReduceMotion || systemReducedMotion;
 
   useEffect(() => {
     if (reducedMotion) {
@@ -86,35 +86,24 @@ export const ComplimentCard = ({
   card,
   isFavorite,
   cardKey,
-  sticker,
-  onStickerClick,
+  onSave,
   onVoucherRedeem,
-  onSealHint,
   isDark,
+  reduceMotion,
 }: CardProps) => {
   const [selectedVoucher, setSelectedVoucher] = useState<string | null>(null);
-  const [stickerAnimating, setStickerAnimating] = useState(false);
 
   // Check if voucher already redeemed
   const redeemedVouchers = useMemo(() => getRedeemedVouchers(), [cardKey]);
   const isVoucherRedeemed =
     card && isVoucherCard(card) && redeemedVouchers[card.id];
 
-  // Handle sticker animation
-  useEffect(() => {
-    if (sticker) {
-      setStickerAnimating(true);
-      const timer = setTimeout(() => setStickerAnimating(false), 500);
-      return () => clearTimeout(timer);
-    }
-  }, [sticker]);
-
   if (!card) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="w-full aspect-[3/4] max-h-[50vh] lg:max-h-[60vh] rounded-2xl bg-gradient-card shadow-card flex flex-col items-center justify-center p-4 sm:p-6 text-center"
+        className="w-full aspect-[3/4] max-h-[42vh] sm:max-h-[50vh] lg:max-h-[60vh] rounded-2xl bg-gradient-card shadow-card flex flex-col items-center justify-center p-4 sm:p-6 text-center"
       >
         <div className="text-3xl sm:text-4xl lg:text-5xl mb-3">💌</div>
         <p className="text-gray-500 text-xs sm:text-sm lg:text-base">
@@ -140,7 +129,7 @@ export const ComplimentCard = ({
           damping: 25,
           duration: 0.4,
         }}
-        className={`relative w-full aspect-[3/4] max-h-[50vh] lg:max-h-[60vh] rounded-2xl lg:rounded-3xl shadow-card overflow-hidden ${
+        className={`relative w-full aspect-[3/4] max-h-[42vh] sm:max-h-[50vh] lg:max-h-[60vh] rounded-2xl lg:rounded-3xl shadow-card overflow-hidden ${
           isDark
             ? "bg-gradient-to-br from-gray-800 to-gray-900"
             : "bg-gradient-card"
@@ -196,19 +185,34 @@ export const ComplimentCard = ({
           </motion.span>
         </div>
 
-        {/* Favorite indicator */}
-        <AnimatePresence>
-          {isFavorite && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0 }}
-              className="absolute top-8 right-3"
+        {/* Favorite button - always visible, toggleable */}
+        {onSave && (
+          <motion.button
+            onClick={(e) => {
+              e.stopPropagation();
+              onSave();
+            }}
+            whileTap={{ scale: 0.85 }}
+            whileHover={{ scale: 1.1 }}
+            className={`absolute top-8 right-3 z-20 w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-all cursor-pointer ${
+              isFavorite 
+                ? "bg-accent-pink/20" 
+                : isDark ? "bg-white/10 hover:bg-white/20" : "bg-white/80 hover:bg-white"
+            }`}
+            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            type="button"
+          >
+            <motion.span
+              key={isFavorite ? "saved" : "unsaved"}
+              initial={{ scale: 0.5 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 500 }}
+              className="text-xl"
             >
-              <span className="text-lg">💖</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              {isFavorite ? "💖" : "🤍"}
+            </motion.span>
+          </motion.button>
+        )}
 
         {/* Main content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 pt-10 sm:pt-12">
@@ -233,7 +237,7 @@ export const ComplimentCard = ({
                   isDark ? "text-white" : "text-gray-800"
                 }`}
               >
-                "<TypewriterText text={withPet(card.text)} delay={200} />"
+                "<TypewriterText text={withPet(card.text)} delay={200} forceReduceMotion={reduceMotion} />"
               </motion.p>
               <motion.div
                 initial={{ opacity: 0 }}
@@ -282,7 +286,7 @@ export const ComplimentCard = ({
                       key={i}
                       onClick={() => {
                         setSelectedVoucher(option);
-                        redeemVoucher(card.id, option);
+                        redeemVoucher(card.id, option, card.title);
                         onVoucherRedeem?.(option);
                       }}
                       className={`w-full p-3 rounded-xl text-sm transition-all ${
@@ -326,44 +330,6 @@ export const ComplimentCard = ({
               </a>
             </>
           )}
-        </div>
-
-        {/* Sticker (if applied) */}
-        {sticker && (
-          <motion.div
-            className="absolute top-14 left-4 cursor-pointer"
-            onClick={onStickerClick}
-          >
-            <StickerDisplay sticker={sticker} isAnimating={stickerAnimating} />
-          </motion.div>
-        )}
-
-        {/* Sticker button (if no sticker) */}
-        {!sticker && onStickerClick && (
-          <button
-            onClick={onStickerClick}
-            className="absolute top-14 left-4 w-10 h-10 rounded-full bg-white/50 hover:bg-white/80 flex items-center justify-center text-lg transition-colors"
-            aria-label="Add sticker reaction"
-          >
-            😊
-          </button>
-        )}
-
-        {/* Wax seal */}
-        <div className="absolute bottom-6 right-6">
-          <WaxSeal key={cardKey} onHintReveal={onSealHint} />
-        </div>
-
-        {/* Corner flourishes */}
-        <div className="absolute top-0 left-0 w-20 h-20 pointer-events-none opacity-20">
-          <svg viewBox="0 0 80 80" className="w-full h-full text-blush-300">
-            <path d="M0 0 Q40 10 40 40 Q10 40 0 0" fill="currentColor" />
-          </svg>
-        </div>
-        <div className="absolute bottom-0 right-0 w-20 h-20 pointer-events-none opacity-20 rotate-180">
-          <svg viewBox="0 0 80 80" className="w-full h-full text-blush-300">
-            <path d="M0 0 Q40 10 40 40 Q10 40 0 0" fill="currentColor" />
-          </svg>
         </div>
       </motion.div>
     </AnimatePresence>

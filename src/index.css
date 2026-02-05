@@ -2,11 +2,78 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Theme Variables */
+/* ============================================================
+   VIEWPORT & SAFE AREA SETUP
+   Critical for iOS no-scroll behavior
+   ============================================================ */
+
+/* Ensure proper viewport height on all devices */
+html {
+  /* Use dvh (dynamic viewport height) for proper mobile behavior */
+  height: 100dvh;
+  height: 100svh; /* Fallback for older browsers */
+  height: -webkit-fill-available; /* Safari fallback */
+}
+
+body {
+  height: 100dvh;
+  height: 100svh;
+  height: -webkit-fill-available;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+  /* Prevent pull-to-refresh on iOS */
+  position: fixed;
+  width: 100%;
+}
+
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* App shell - the main container */
+.app-shell {
+  height: 100dvh;
+  height: 100svh;
+  height: -webkit-fill-available;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* Safe area insets built into padding where needed */
+}
+
+/* Safe area utilities */
+.safe-top {
+  padding-top: max(env(safe-area-inset-top, 0px), 8px);
+}
+
+.safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+
 :root {
   --theme-primary: #ff4d85;
   --theme-secondary: #ffe8ed;
   --theme-accent: #ff4da6;
+  
+  /* Safe area CSS variables for JS access if needed */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
 }
 
 /* Each theme applies its own background directly */
@@ -80,6 +147,17 @@ html,
 body {
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
+  /* Additional iOS scroll lock */
+  touch-action: pan-x pan-y;
+}
+
+/* Gradient button utility */
+.bg-gradient-button {
+  background: linear-gradient(135deg, #ff4d85 0%, #ff4da6 100%);
+}
+
+.bg-gradient-button:hover {
+  background: linear-gradient(135deg, #ff3d75 0%, #ff3d96 100%);
 }
 
 /* Hearts background pattern */
@@ -206,13 +284,18 @@ body {
   transform: scale(0.96);
 }
 
-/* Safe area for iOS */
+/* Safe area for iOS - UPDATED with better fallbacks */
 .safe-bottom {
-  padding-bottom: max(env(safe-area-inset-bottom), 16px);
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
 }
 
 .safe-top {
-  padding-top: max(env(safe-area-inset-top), 16px);
+  padding-top: max(env(safe-area-inset-top, 0px), 8px);
+}
+
+/* Bottom nav specific - sits above home indicator */
+.bottom-nav-safe {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
 }
 
 /* Sticker placed animation */

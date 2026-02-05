@@ -22,10 +22,10 @@ export const Mascots = ({
 }: MascotsProps) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: -20 }}
+      initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3, duration: 0.5 }}
-      className="flex items-center justify-center gap-3 mb-2 scale-75 lg:scale-100 bg-white/40 backdrop-blur-sm rounded-2xl px-4 py-2 shadow-sm"
+      transition={{ delay: 0.3, duration: 0.4 }}
+      className="flex items-center justify-center gap-1 scale-[0.4] sm:scale-[0.55] md:scale-75 lg:scale-100 mt-2 sm:mt-4 lg:mt-0 -mb-4 sm:-mb-2 lg:mb-0"
     >
       <CoupleDots />
 

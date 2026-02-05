@@ -1,11 +1,12 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ReactNode, useEffect } from "react";
+import { X } from "lucide-react";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  icon?: string;
+  icon?: ReactNode; // Changed from string to ReactNode for Lucide icons
   children: ReactNode;
 }
 
@@ -68,15 +69,15 @@ export const Modal = ({
                 id="modal-title"
                 className="text-base font-semibold text-gray-800 flex items-center gap-2"
               >
-                {icon && <span>{icon}</span>}
+                {icon && <span className="text-accent-pink">{icon}</span>}
                 {title}
               </h2>
               <button
                 onClick={onClose}
-                className="w-8 h-8 rounded-full hover:bg-blush-50 flex items-center justify-center transition-colors text-sm"
+                className="w-8 h-8 rounded-full hover:bg-blush-50 flex items-center justify-center transition-colors"
                 aria-label="Close"
               >
-                ✕
+                <X size={18} className="text-gray-500" />
               </button>
             </div>
 

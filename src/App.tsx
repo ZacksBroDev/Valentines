@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { HeartTrail } from "./components/HeartTrail";
-import { MainContent } from "./components/MainContent";
+import { MainContentV2 } from "./components/MainContentV2";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { ToastProvider } from "./context/ToastContext";
 import { useAppState } from "./hooks/useAppState";
@@ -24,7 +24,7 @@ const AppContent = () => {
   return (
     <>
       <HeartTrail enabled={heartTrailEnabled} />
-      <MainContent state={state} />
+      <MainContentV2 state={state} />
     </>
   );
 };
