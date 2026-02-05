@@ -11,7 +11,7 @@ import { CardCategory } from "../types";
 interface CardCounterProps {
   currentIndex: number;
   totalCards: number;
-  seenCount: number;
+  seenCount?: number;
   
   // Current filters
   currentMood?: MoodKey;
@@ -29,7 +29,7 @@ interface CardCounterProps {
 export const CardCounter = ({
   currentIndex,
   totalCards,
-  seenCount: _seenCount,
+  // seenCount available in props for future use
   currentMood,
   openWhenMode,
   currentCategory,

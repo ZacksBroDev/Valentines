@@ -106,7 +106,7 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
     dailyCardDrawn,
     currentMood,
     cardKey,
-    selectedSticker,
+    // selectedSticker available but not currently used
 
     // Favorites
     favorites,
@@ -144,7 +144,7 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
     onHeartBuddyLongPress,
     onDraw,
     onSave: _onSave,
-    onShare: _onShare,
+    // onShare available in state but not currently used
     onShuffle,
     onOpenWhenSelect,
     onMoodSelect,

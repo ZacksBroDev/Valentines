@@ -148,7 +148,9 @@ interface RedemptionFlowProps {
   onCancel: () => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const RedemptionFlow = ({ instance: _instance, template, onConfirm, onCancel }: RedemptionFlowProps) => {
+  // _instance reserved for future use (e.g., showing remaining uses)
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const Icon = getVoucherIcon(template);
@@ -241,7 +243,7 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
     inventory,
     isLoading,
     error,
-    pendingRedemptions,
+    // pendingRedemptions available for future use
     requestRedemption,
     refreshInventory,
   } = useVoucherInventory();

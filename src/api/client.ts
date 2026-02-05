@@ -670,7 +670,9 @@ export const streaksApi = {
     throw new Error("Not implemented");
   },
 
-  async logLove(_message?: string): Promise<StreakInfo> {
+  async logLove(message?: string): Promise<StreakInfo> {
+    // message parameter reserved for future cloud implementation
+    void message;
     if (MOCK_MODE) {
       const profile = await userProfileApi.get();
       if (!profile) throw new Error("No profile found");

@@ -72,8 +72,9 @@ export const fetchVoucherRequests = async (): Promise<CloudVoucherRequest[]> => 
       authMode: "apiKey", // Use API key for public access
     });
     
-    const items = (response as any)?.data?.listVoucherRequests?.items || [];
-    return items.filter((item: any) => item !== null) as CloudVoucherRequest[];
+    const data = response as { data?: { listVoucherRequests?: { items?: CloudVoucherRequest[] } } };
+    const items = data?.data?.listVoucherRequests?.items || [];
+    return items.filter((item): item is CloudVoucherRequest => item !== null);
   } catch (error) {
     console.error("Error fetching voucher requests:", error);
     return [];
@@ -105,6 +106,7 @@ export const submitVoucherRequest = async (request: {
     });
     
     console.log("✅ GraphQL response:", response);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (response as any)?.data?.createVoucherRequest as CloudVoucherRequest;
   } catch (error) {
     console.error("❌ Error creating voucher request:", error);
@@ -135,6 +137,7 @@ export const updateVoucherRequestStatus = async (
       authMode: "apiKey",
     });
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (response as any)?.data?.updateVoucherRequest as CloudVoucherRequest;
   } catch (error) {
     console.error("Error updating voucher request:", error);
@@ -183,7 +186,9 @@ export const fetchSharedNotes = async (): Promise<CloudSharedNote[]> => {
       authMode: "apiKey",
     });
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const items = (response as any)?.data?.listSharedNotes?.items || [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return items.filter((item: any) => item !== null) as CloudSharedNote[];
   } catch (error) {
     console.error("Error fetching shared notes:", error);
@@ -211,6 +216,7 @@ export const submitSharedNote = async (
       authMode: "apiKey",
     });
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (response as any)?.data?.createSharedNote as CloudSharedNote;
   } catch (error) {
     console.error("Error creating shared note:", error);
@@ -299,7 +305,9 @@ export const fetchVoucherTemplates = async (): Promise<CloudVoucherTemplate[]> =
       authMode: "apiKey",
     });
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const items = (response as any)?.data?.listVoucherTemplates?.items || [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return items.filter((item: any) => item !== null) as CloudVoucherTemplate[];
   } catch (error) {
     console.error("Error fetching voucher templates:", error);
@@ -325,6 +333,7 @@ export const createCloudVoucherTemplate = async (template: {
       authMode: "apiKey",
     });
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (response as any)?.data?.createVoucherTemplate as CloudVoucherTemplate;
   } catch (error) {
     console.error("Error creating voucher template:", error);
@@ -353,6 +362,7 @@ export const updateCloudVoucherTemplate = async (
       authMode: "apiKey",
     });
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (response as any)?.data?.updateVoucherTemplate as CloudVoucherTemplate;
   } catch (error) {
     console.error("Error updating voucher template:", error);

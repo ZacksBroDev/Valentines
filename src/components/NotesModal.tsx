@@ -24,7 +24,7 @@ export const NotesModal = ({ isOpen, onClose }: NotesModalProps) => {
   const [isComposing, setIsComposing] = useState(false);
   const [sendToHim, setSendToHim] = useState(false); // Toggle for sharing
   const [activeTab, setActiveTab] = useState<"personal" | "shared">("personal");
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
 
   const refreshNotes = useCallback(async () => {
     setNotes(getNotes());

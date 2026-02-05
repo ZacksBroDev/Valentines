@@ -121,6 +121,7 @@ export const useDeckNew = () => {
     if (!isLoading) {
       initializeDeck(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentMood, openWhenMode, secretUnlocked]);
 
   // Check daily mode on mount and date changes

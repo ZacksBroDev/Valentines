@@ -373,7 +373,7 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
   const [showCounterForm, setShowCounterForm] = useState<string | null>(null);
   const [newNoteContent, setNewNoteContent] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
 
   // Load data from cloud storage
   const loadData = useCallback(async () => {

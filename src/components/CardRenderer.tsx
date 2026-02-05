@@ -94,7 +94,8 @@ export const ComplimentCard = ({
   const [selectedVoucher, setSelectedVoucher] = useState<string | null>(null);
 
   // Check if voucher already redeemed
-  const redeemedVouchers = useMemo(() => getRedeemedVouchers(), [cardKey]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const redeemedVouchers = useMemo(() => getRedeemedVouchers(), [card?.id]);
   const isVoucherRedeemed =
     card && isVoucherCard(card) && redeemedVouchers[card.id];
 

@@ -27,7 +27,7 @@ export const BottomNav = ({
   onShuffle,
   canDraw,
   favoritesCount,
-  notesCount,
+  // notesCount is available in props but not currently displayed
   unreadNotesCount = 0,
   activeTab,
 }: BottomNavProps) => {
