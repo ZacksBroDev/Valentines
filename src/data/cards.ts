@@ -1463,16 +1463,6 @@ const textCards: TextCard[] = [
     text: "I'm lucky it's you.",
   },
   {
-    id: "mini-011",
-    type: "text",
-    category: "sweet",
-    rarity: "common",
-    intensity: 1,
-    emoji: "👋",
-    tags: ["lonely"],
-    text: "{pet}. Come here.",
-  },
-  {
     id: "mini-012",
     type: "text",
     category: "sweet",

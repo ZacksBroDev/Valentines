@@ -967,13 +967,6 @@ export const compliments: Compliment[] = [
     text: "I'm lucky it's you.",
   },
   {
-    id: "mini-011",
-    category: "sweet",
-    intensity: 1,
-    emoji: "👋",
-    text: "{pet}. Come here.",
-  },
-  {
     id: "mini-012",
     category: "sweet",
     intensity: 1,
