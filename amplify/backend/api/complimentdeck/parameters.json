@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "complimentdeck",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authcomplimentdeck842267af",
+      "Outputs.UserPoolId"
+    ]
+  }
+}

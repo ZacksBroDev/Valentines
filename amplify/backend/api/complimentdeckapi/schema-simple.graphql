@@ -1,0 +1,40 @@
+# Simplified schema for initial deployment
+# Public API key access for easy cross-device sync
+
+type SharedNote @model @auth(rules: [
+  { allow: public, provider: apiKey }
+]) {
+  id: ID!
+  content: String!
+  from: String! # "admin" or "her"
+  read: Boolean!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type VoucherRequest @model @auth(rules: [
+  { allow: public, provider: apiKey }
+]) {
+  id: ID!
+  voucherType: String!
+  voucherTitle: String!
+  requestedDate: String
+  status: String! # "pending", "approved", "denied", "counter"
+  counterDate: String
+  adminNote: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Card @model @auth(rules: [
+  { allow: public, provider: apiKey }
+]) {
+  id: ID!
+  text: String!
+  emoji: String!
+  category: String!
+  subCategory: String
+  rarity: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}

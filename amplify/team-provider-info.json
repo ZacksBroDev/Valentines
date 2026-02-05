@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-complimentdeck-dev-4ec1c-authRole",
+      "UnauthRoleArn": "arn:aws:iam::332649688532:role/amplify-complimentdeck-dev-4ec1c-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::332649688532:role/amplify-complimentdeck-dev-4ec1c-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-complimentdeck-dev-4ec1c-deployment",
+      "UnauthRoleName": "amplify-complimentdeck-dev-4ec1c-unauthRole",
+      "StackName": "amplify-complimentdeck-dev-4ec1c",
+      "StackId": "arn:aws:cloudformation:us-east-1:332649688532:stack/amplify-complimentdeck-dev-4ec1c/ea122a80-0259-11f1-a6e5-12d8c6ab2f41",
+      "AmplifyAppId": "d3661loxlczopn"
+    },
+    "categories": {
+      "auth": {
+        "complimentdeck842267af": {}
+      },
+      "api": {
+        "complimentdeck": {}
+      }
+    }
+  }
+}
