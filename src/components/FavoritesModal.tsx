@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { Heart } from "lucide-react";
 import { Card, isTextCard, isVoucherCard, isPlaylistCard } from "../types";
 import { allCards, withPet } from "../data/cards";
 import { formatCategory } from "../utils/helpers";
@@ -38,14 +39,14 @@ export const FavoritesModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Favorites" icon="💝">
+    <Modal isOpen={isOpen} onClose={onClose} title="Favorites">
       <p className="text-sm text-gray-400 mb-4">
         ({favoriteCards.length} saved)
       </p>
 
       {favoriteCards.length === 0 ? (
         <div className="text-center py-12">
-          <span className="text-5xl mb-4 block">💔</span>
+          <Heart size={48} className="mx-auto mb-4 text-gray-300" />
           <p className="text-gray-500">No favorites yet!</p>
           <p className="text-gray-400 text-sm mt-1">
             Tap the heart to save compliments you love

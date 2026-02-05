@@ -6,15 +6,18 @@ import {
   ReactNode,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Check, Info, AlertCircle } from "lucide-react";
+
+type ToastType = "success" | "info" | "error" | string;
 
 interface Toast {
   id: string;
   message: string;
-  emoji?: string;
+  type?: ToastType;
 }
 
 interface ToastContextType {
-  showToast: (message: string, emoji?: string) => void;
+  showToast: (message: string, type?: ToastType) => void;
 }
 
 const ToastContext = createContext<ToastContextType | null>(null);
@@ -27,12 +30,24 @@ export const useToast = () => {
   return context;
 };
 
+const ToastIcon = ({ type }: { type?: ToastType }) => {
+  switch (type) {
+    case "success":
+      return <Check size={16} className="text-green-500" />;
+    case "error":
+      return <AlertCircle size={16} className="text-red-500" />;
+    case "info":
+    default:
+      return <Info size={16} className="text-accent-pink" />;
+  }
+};
+
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = useCallback((message: string, emoji?: string) => {
+  const showToast = useCallback((message: string, type?: ToastType) => {
     const id = Date.now().toString();
-    setToasts((prev) => [...prev, { id, message, emoji }]);
+    setToasts((prev) => [...prev, { id, message, type }]);
 
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -52,7 +67,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
               exit={{ opacity: 0, y: -10, scale: 0.9 }}
               className="bg-white/95 backdrop-blur-sm text-gray-800 px-5 py-3 rounded-full shadow-card text-sm font-medium flex items-center gap-2"
             >
-              {toast.emoji && <span className="text-lg">{toast.emoji}</span>}
+              <ToastIcon type={toast.type} />
               <span>{toast.message}</span>
             </motion.div>
           ))}

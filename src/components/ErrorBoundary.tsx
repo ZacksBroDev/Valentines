@@ -1,5 +1,6 @@
 import { Component, ReactNode, ErrorInfo } from "react";
 import { motion } from "framer-motion";
+import { HeartCrack, Heart } from "lucide-react";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -86,9 +87,9 @@ export const ErrorFallback = ({ onReset, error }: ErrorFallbackProps) => {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", delay: 0.1 }}
-          className="text-6xl mb-4"
+          className="text-6xl mb-4 flex justify-center"
         >
-          💔
+          <HeartCrack size={64} className="text-gray-300" />
         </motion.div>
 
         <h1 className="text-2xl font-bold text-gray-800 mb-2">
@@ -115,9 +116,9 @@ export const ErrorFallback = ({ onReset, error }: ErrorFallbackProps) => {
           <motion.button
             onClick={onReset}
             whileTap={{ scale: 0.95 }}
-            className="w-full py-3 px-6 bg-gradient-to-r from-pink-400 to-pink-500 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-shadow"
+            className="w-full py-3 px-6 bg-gradient-to-r from-pink-400 to-pink-500 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center gap-2"
           >
-            Try Again 💕
+            Try Again <Heart size={16} fill="currentColor" />
           </motion.button>
 
           <motion.button

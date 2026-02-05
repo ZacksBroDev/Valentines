@@ -63,6 +63,34 @@ export const useAppState = ({
   const { favorites, isFavorite, toggleFavorite } = useFavorites();
   const { handleTap: handleHeartBuddyTap } = useRapidTap(5, 3000);
 
+  // Reduce motion setting (persisted in localStorage)
+  const [reduceMotionEnabled, setReduceMotionEnabled] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("reduce-motion") === "true";
+  });
+
+  const toggleReduceMotion = useCallback(() => {
+    setReduceMotionEnabled((prev) => {
+      const next = !prev;
+      localStorage.setItem("reduce-motion", String(next));
+      return next;
+    });
+  }, []);
+
+  // No repeat setting (persisted in localStorage)
+  const [noRepeatEnabled, setNoRepeatEnabled] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("no-repeat") === "true";
+  });
+
+  const toggleNoRepeat = useCallback(() => {
+    setNoRepeatEnabled((prev) => {
+      const next = !prev;
+      localStorage.setItem("no-repeat", String(next));
+      return next;
+    });
+  }, []);
+
   // UI state
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -87,7 +115,7 @@ export const useAppState = ({
   useEffect(() => {
     const newTheme = checkMilestone();
     if (newTheme) {
-      showToast(`🎉 Unlocked ${newTheme} theme!`, "🎉");
+      showToast(`Unlocked ${newTheme} theme!`, "success");
       sparkleConfetti();
     }
   }, [reasonsLogged, checkMilestone, showToast]);
@@ -96,7 +124,7 @@ export const useAppState = ({
   const onHeartBuddyTap = useCallback(() => {
     vibrate("short");
     if (secretUnlocked) {
-      showToast("Secret deck already unlocked!", "🔓");
+      showToast("Secret deck already unlocked!", "info");
       return;
     }
     const shouldUnlock = handleHeartBuddyTap();
@@ -104,7 +132,7 @@ export const useAppState = ({
       unlockSecretDeck();
       secretUnlockConfetti();
       playChime();
-      showToast("Secret deck unlocked!", "💘");
+      showToast("Secret deck unlocked!", "success");
       vibrate("long");
     } else {
       playPop();
@@ -122,18 +150,18 @@ export const useAppState = ({
   // Handle HeartBuddy long press - only allow once per card
   const onHeartBuddyLongPress = useCallback(() => {
     if (!currentCard) {
-      showToast("Draw a card first!", "💭");
+      showToast("Draw a card first!", "info");
       return;
     }
     if (loggedCardIds.has(currentCard.id)) {
-      showToast("Already logged on this card! Draw a new one 💕", "✨");
+      showToast("Already logged on this card! Draw a new one.", "info");
       return;
     }
     vibrate("medium");
     logReason();
     addLovePoints(5);
     setLoggedCardIds((prev) => new Set(prev).add(currentCard.id));
-    showToast("Love logged! 💕", "📝");
+    showToast("Love logged!", "success");
     sparkleConfetti();
   }, [
     currentCard,
@@ -147,7 +175,7 @@ export const useAppState = ({
   // Handle draw
   const onDraw = useCallback(() => {
     if (dailyMode && dailyCardDrawn) {
-      showToast("Daily card already drawn! Come back tomorrow 💕", "🌙");
+      showToast("Daily card already drawn! Come back tomorrow.", "info");
       return;
     }
     setIsEnvelopeOpen(true);
@@ -166,7 +194,7 @@ export const useAppState = ({
       currentCard.rarity === "legendary"
     ) {
       legendaryConfetti();
-      showToast("✨ LEGENDARY CARD! ✨", "💎");
+      showToast("LEGENDARY CARD!", "success");
     }
   }, [currentCard, showToast]);
 
@@ -184,9 +212,9 @@ export const useAppState = ({
       smallConfetti();
       playPop();
       vibrate("short");
-      showToast("Saved to favorites!", "💖");
+      showToast("Saved to favorites!", "success");
     } else {
-      showToast("Removed from favorites", "💔");
+      showToast("Removed from favorites", "info");
     }
   }, [currentCard, toggleFavorite, playPop, vibrate, showToast]);
 
@@ -196,7 +224,7 @@ export const useAppState = ({
     const success = await shareCard(currentCard);
     showToast(
       success ? "Copied to clipboard!" : "Could not share",
-      success ? "📋" : "😕"
+      success ? "success" : "error"
     );
   }, [currentCard, showToast]);
 
@@ -205,7 +233,7 @@ export const useAppState = ({
     shuffleDeck();
     vibrate("medium");
     playPop();
-    showToast("Deck shuffled with love! 💝", "🔀");
+    showToast("Deck shuffled with love!", "success");
     sparkleConfetti();
   }, [shuffleDeck, vibrate, playPop, showToast]);
 
@@ -217,7 +245,7 @@ export const useAppState = ({
       setCardKey((prev) => prev + 1);
       showToast(
         `Filtered: ${OPEN_WHEN_CATEGORIES[category]?.label || category}`,
-        "📬"
+        "success"
       );
     },
     [filterByOpenWhen, showToast]
@@ -228,7 +256,7 @@ export const useAppState = ({
     (mood: Mood) => {
       setMood(mood);
       setShowMoodPicker(false);
-      showToast(`Mood: ${MOODS[mood]?.label || mood}`, "💭");
+      showToast(`Mood: ${MOODS[mood]?.label || mood}`, "info");
     },
     [setMood, showToast]
   );
@@ -314,6 +342,10 @@ export const useAppState = ({
     heartTrailEnabled,
     setHeartTrailEnabled,
     toggleDailyMode,
+    reduceMotionEnabled,
+    toggleReduceMotion,
+    noRepeatEnabled,
+    toggleNoRepeat,
 
     // Handlers
     onHeartBuddyTap,

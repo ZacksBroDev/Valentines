@@ -11,7 +11,7 @@ export const CONFIG = {
   // ----- END SCREEN -----
   // Shown when the deck is exhausted
   endMessage: "That's the whole deck—still true every time.",
-  endSubtitle: "Every compliment was written with you in mind 💕",
+  endSubtitle: "Every compliment was written with you in mind.",
   signedBy: "Love, Zack",
 
   // ----- PARTNER NAME -----
@@ -86,31 +86,31 @@ export type ThemeKey = keyof typeof THEMES;
 export const OPEN_WHEN_CATEGORIES = {
   stressed: {
     label: "Stressed",
-    emoji: "😮‍💨",
+    icon: "Brain",
     description: "For when you need calm",
     categories: ["supportive", "sweet"] as const,
   },
   laugh: {
     label: "Need a laugh",
-    emoji: "😂",
+    icon: "Smile",
     description: "For when you need joy",
     categories: ["funny"] as const,
   },
   doubting: {
     label: "Doubting yourself",
-    emoji: "🤔",
+    icon: "HelpCircle",
     description: "For when you need confidence",
     categories: ["supportive"] as const,
   },
   lonely: {
     label: "Feeling lonely",
-    emoji: "🥺",
+    icon: "Heart",
     description: "For when you need love",
     categories: ["sweet", "secret"] as const,
   },
   overstimulated: {
     label: "Overstimulated",
-    emoji: "😵‍💫",
+    icon: "Volume2",
     description: "For when you need quiet",
     categories: ["supportive"] as const,
   },
@@ -120,11 +120,11 @@ export type OpenWhenKey = keyof typeof OPEN_WHEN_CATEGORIES;
 
 // Mood categories
 export const MOODS = {
-  all: { label: "All", emoji: "✨", accent: null },
-  soft: { label: "Soft", emoji: "🌸", accent: "#ffb8ca" },
-  funny: { label: "Funny", emoji: "😄", accent: "#fbbf24" },
-  hype: { label: "Hype", emoji: "🔥", accent: "#f97316" },
-  flirty: { label: "Flirty", emoji: "😏", accent: "#ec4899" },
+  all: { label: "All", icon: "Sparkles", accent: null },
+  soft: { label: "Soft", icon: "Flower2", accent: "#ffb8ca" },
+  funny: { label: "Funny", icon: "Smile", accent: "#fbbf24" },
+  hype: { label: "Hype", icon: "Flame", accent: "#f97316" },
+  flirty: { label: "Flirty", icon: "Heart", accent: "#ec4899" },
 } as const;
 
 export type MoodKey = keyof typeof MOODS;
@@ -133,27 +133,27 @@ export type MoodKey = keyof typeof MOODS;
 export const FINAL_THREE_CATEGORIES = {
   comfort: {
     label: "Comfort",
-    emoji: "🫂",
+    icon: "Users",
     categories: ["sweet", "supportive"] as const,
   },
   hype: {
     label: "Hype",
-    emoji: "🎉",
+    icon: "PartyPopper",
     categories: ["funny", "spicy-lite"] as const,
   },
   laugh: {
     label: "Laugh",
-    emoji: "😂",
+    icon: "Smile",
     categories: ["funny"] as const,
   },
 } as const;
 
 // Sticker options
 export const STICKERS = {
-  love: { emoji: "💖", label: "Love" },
-  lol: { emoji: "😂", label: "LOL" },
-  aww: { emoji: "🥹", label: "Aww" },
-  fave: { emoji: "⭐", label: "Fave" },
+  love: { icon: "Heart", label: "Love" },
+  lol: { icon: "Laugh", label: "LOL" },
+  aww: { icon: "HeartHandshake", label: "Aww" },
+  fave: { icon: "Star", label: "Fave" },
 } as const;
 
 export type StickerKey = keyof typeof STICKERS;

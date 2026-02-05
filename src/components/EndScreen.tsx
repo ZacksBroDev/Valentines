@@ -1,8 +1,16 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import { Users, PartyPopper, Smile, type LucideIcon } from "lucide-react";
 import { bigConfetti } from "../utils/confetti";
 import { CONFIG, FINAL_THREE_CATEGORIES } from "../config";
 import { Card } from "../types";
+
+// Map icon names to Lucide components
+const FINAL_THREE_ICONS: Record<string, LucideIcon> = {
+  Users,
+  PartyPopper,
+  Smile,
+};
 
 interface EndScreenProps {
   isOpen: boolean;
@@ -161,16 +169,19 @@ export const EndScreen = ({
                           keyof typeof FINAL_THREE_CATEGORIES,
                           (typeof FINAL_THREE_CATEGORIES)[keyof typeof FINAL_THREE_CATEGORIES],
                         ][]
-                      ).map(([key, { label, emoji }]) => (
-                        <button
-                          key={key}
-                          onClick={() => handleFinalThree(key)}
-                          className="px-4 py-2 rounded-full bg-white/70 hover:bg-white text-sm font-medium text-gray-700 transition-colors flex items-center gap-1"
-                        >
-                          <span>{emoji}</span>
-                          <span>{label}</span>
-                        </button>
-                      ))}
+                      ).map(([key, { label, icon }]) => {
+                        const IconComponent = FINAL_THREE_ICONS[icon] || Smile;
+                        return (
+                          <button
+                            key={key}
+                            onClick={() => handleFinalThree(key)}
+                            className="px-4 py-2 rounded-full bg-white/70 hover:bg-white text-sm font-medium text-gray-700 transition-colors flex items-center gap-1"
+                          >
+                            <IconComponent size={16} />
+                            <span>{label}</span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </motion.div>

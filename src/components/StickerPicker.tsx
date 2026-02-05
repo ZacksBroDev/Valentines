@@ -1,5 +1,14 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { Heart, Laugh, HeartHandshake, Star, type LucideIcon } from "lucide-react";
 import { STICKERS, StickerKey } from "../config";
+
+// Map icon names to Lucide components
+const STICKER_ICONS: Record<string, LucideIcon> = {
+  Heart,
+  Laugh,
+  HeartHandshake,
+  Star,
+};
 
 interface StickerPickerProps {
   isOpen: boolean;
@@ -34,21 +43,24 @@ export const StickerPicker = ({
               StickerKey,
               (typeof STICKERS)[StickerKey],
             ][]
-          ).map(([key, { emoji, label }]) => (
-            <motion.button
-              key={key}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => handleSelect(key)}
-              className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl transition-colors ${
-                currentSticker === key ? "bg-blush-100" : "hover:bg-blush-50"
-              }`}
-              title={label}
-              aria-label={`React with ${label}`}
-            >
-              {emoji}
-            </motion.button>
-          ))}
+          ).map(([key, { icon, label }]) => {
+            const IconComponent = STICKER_ICONS[icon] || Heart;
+            return (
+              <motion.button
+                key={key}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => handleSelect(key)}
+                className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
+                  currentSticker === key ? "bg-blush-100 text-accent-pink" : "hover:bg-blush-50 text-gray-600"
+                }`}
+                title={label}
+                aria-label={`React with ${label}`}
+              >
+                <IconComponent size={24} />
+              </motion.button>
+            );
+          })}
 
           {/* Arrow pointer */}
           <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rotate-45 shadow-sm" />
@@ -68,7 +80,8 @@ export const StickerDisplay = ({
   sticker,
   isAnimating,
 }: StickerDisplayProps) => {
-  const { emoji } = STICKERS[sticker];
+  const { icon } = STICKERS[sticker];
+  const IconComponent = STICKER_ICONS[icon] || Heart;
 
   return (
     <motion.div
@@ -79,9 +92,9 @@ export const StickerDisplay = ({
           ? { type: "spring", stiffness: 400, damping: 15 }
           : undefined
       }
-      className="text-3xl drop-shadow-lg"
+      className="text-accent-pink drop-shadow-lg"
     >
-      {emoji}
+      <IconComponent size={32} />
     </motion.div>
   );
 };

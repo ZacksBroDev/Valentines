@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Lock } from "lucide-react";
 import { Modal } from "./Modal";
 import { THEMES, ThemeKey, CONFIG } from "../config";
 
@@ -12,6 +13,10 @@ interface SettingsModalProps {
   onDailyModeToggle: () => void;
   heartTrailEnabled: boolean;
   onHeartTrailToggle: () => void;
+  reduceMotionEnabled: boolean;
+  onReduceMotionToggle: () => void;
+  noRepeatEnabled: boolean;
+  onNoRepeatToggle: () => void;
   reasonsLogged: number;
 }
 
@@ -48,6 +53,10 @@ export const SettingsModal = ({
   onDailyModeToggle,
   heartTrailEnabled,
   onHeartTrailToggle,
+  reduceMotionEnabled,
+  onReduceMotionToggle,
+  noRepeatEnabled,
+  onNoRepeatToggle,
   reasonsLogged,
 }: SettingsModalProps) => {
   const isDesktop =
@@ -62,7 +71,7 @@ export const SettingsModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Settings" icon="⚙️">
+    <Modal isOpen={isOpen} onClose={onClose} title="Settings">
       <div className="space-y-2">
         {/* Theme Section */}
         <div>
@@ -94,8 +103,8 @@ export const SettingsModal = ({
                     {theme.name}
                   </span>
                   {!isUnlocked && (
-                    <span className="absolute top-0.5 right-1 text-[10px]">
-                      🔒
+                    <span className="absolute top-0.5 right-1">
+                      <Lock size={10} className="text-gray-500" />
                     </span>
                   )}
                 </motion.button>
@@ -118,6 +127,22 @@ export const SettingsModal = ({
         <div className="flex items-center justify-between gap-2 pt-1 border-t border-gray-100">
           <span className="text-xs text-gray-700">Daily Mode</span>
           <Toggle enabled={dailyModeEnabled} onToggle={onDailyModeToggle} />
+        </div>
+
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <span className="text-xs text-gray-700">Reduce Motion</span>
+            <p className="text-[10px] text-gray-400">Disables typing animation</p>
+          </div>
+          <Toggle enabled={reduceMotionEnabled} onToggle={onReduceMotionToggle} />
+        </div>
+
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <span className="text-xs text-gray-700">No Repeat</span>
+            <p className="text-[10px] text-gray-400">Don't show seen cards</p>
+          </div>
+          <Toggle enabled={noRepeatEnabled} onToggle={onNoRepeatToggle} />
         </div>
 
         {isDesktop && (
