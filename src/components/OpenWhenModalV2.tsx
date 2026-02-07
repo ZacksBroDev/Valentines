@@ -97,18 +97,13 @@ export const OpenWhenModalV2 = ({
   onSelectMode,
   secretUnlocked,
 }: OpenWhenModalV2Props) => {
-  // Calculate card counts for each category
+  // Calculate card counts for each category (tag-based only)
   const categoryCounts = useMemo(() => {
     const available = getAvailableCards(secretUnlocked);
     const counts: Record<string, number> = {};
     
-    for (const [key, config] of Object.entries(OPEN_WHEN_CATEGORIES)) {
-      const allowedCategories = config.categories as readonly string[];
-      counts[key] = available.filter((card) => {
-        const hasTag = card.tags?.includes(key);
-        const hasCategory = allowedCategories.includes(card.category);
-        return hasTag || hasCategory;
-      }).length;
+    for (const key of Object.keys(OPEN_WHEN_CATEGORIES)) {
+      counts[key] = available.filter((card) => card.tags?.includes(key)).length;
     }
     
     return counts;
