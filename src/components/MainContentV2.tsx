@@ -20,7 +20,7 @@ import { MoodKey } from "../config";
 import { AppStateReturn } from "../hooks/useAppState";
 import { Card } from "../types";
 import { useVoucherInventory } from "../api/hooks";
-import { allCards, getAvailableCards } from "../data/cards";
+import { allCards, getAvailableCards, getAllCards } from "../data/cards";
 import { getNotes, getRedeemedVoucherCount } from "../utils/storage";
 import { fetchUnreadNotesCount, fetchSharedNotes } from "../utils/cloudStorage";
 
@@ -258,44 +258,45 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
 
   // Calculate stats for drawer
   const stats = useMemo(() => {
-    const all = allCards;
+    // Use getAllCards() for totals (includes all cards regardless of filters)
+    const all = getAllCards();
     const available = availableCards;
     
-    // By type
-    const textCards = available.filter(c => c.type === "text");
-    const voucherCards = available.filter(c => c.type === "voucher");
-    const playlistCards = available.filter(c => c.type === "playlist");
+    // By type - use ALL cards for accurate totals
+    const allTextCards = all.filter(c => c.type === "text");
+    const allVoucherCards = all.filter(c => c.type === "voucher");
+    const allPlaylistCards = all.filter(c => c.type === "playlist");
     
-    // By category
-    const sweetCards = available.filter(c => c.category === "sweet");
-    const funnyCards = available.filter(c => c.category === "funny");
-    const supportiveCards = available.filter(c => c.category === "supportive");
-    const spicyCards = available.filter(c => c.category === "spicy-lite");
-    const secretCards = all.filter(c => c.category === "secret");
+    // By category - use ALL cards for accurate totals
+    const allSweetCards = all.filter(c => c.category === "sweet");
+    const allFunnyCards = all.filter(c => c.category === "funny");
+    const allSupportiveCards = all.filter(c => c.category === "supportive");
+    const allSpicyCards = all.filter(c => c.category === "spicy-lite");
+    const allSecretCards = all.filter(c => c.category === "secret");
     
-    // By rarity
-    const commonCards = available.filter(c => c.rarity === "common");
-    const rareCards = available.filter(c => c.rarity === "rare");
-    const legendaryCards = available.filter(c => c.rarity === "legendary");
+    // By rarity - use ALL cards for accurate totals
+    const allCommonCards = all.filter(c => c.rarity === "common");
+    const allRareCards = all.filter(c => c.rarity === "rare");
+    const allLegendaryCards = all.filter(c => c.rarity === "legendary");
 
     return {
       totalCards: available.length,
       seenCards: drawCount,
       remainingCards: Math.max(0, available.length - drawCount),
       
-      textCardCount: textCards.length,
-      voucherCardCount: voucherCards.length,
-      playlistCardCount: playlistCards.length,
+      textCardCount: allTextCards.length,
+      voucherCardCount: allVoucherCards.length,
+      playlistCardCount: allPlaylistCards.length,
       
-      sweetCount: sweetCards.length,
-      funnyCount: funnyCards.length,
-      supportiveCount: supportiveCards.length,
-      spicyCount: spicyCards.length,
-      secretCount: secretCards.length,
+      sweetCount: allSweetCards.length,
+      funnyCount: allFunnyCards.length,
+      supportiveCount: allSupportiveCards.length,
+      spicyCount: allSpicyCards.length,
+      secretCount: allSecretCards.length,
       
-      commonCount: commonCards.length,
-      rareCount: rareCards.length,
-      legendaryCount: legendaryCards.length,
+      commonCount: allCommonCards.length,
+      rareCount: allRareCards.length,
+      legendaryCount: allLegendaryCards.length,
       legendaryDrawn: 0, // TODO: track this
       
       favoritesCount: favorites.length,

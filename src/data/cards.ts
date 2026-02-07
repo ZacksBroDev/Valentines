@@ -1781,17 +1781,23 @@ const extraTexts: string[] = [
   "You're my favorite chapter.",
 ];
 
-const extraTextCards: TextCard[] = extraTexts.map((text, i) => ({
-  id: `extra-${String(i + 1).padStart(3, "0")}`,
-  type: "text" as const,
-  category: "sweet" as const,
-  openWhen: "lonely",
-  intensity: 1,
-  rarity: "common" as const,
-  emoji: "💝",
-  tags: ["lonely"],
-  text,
-}));
+// Distribute extra cards evenly across tags
+const EXTRA_TAGS = ["lonely", "stressed", "doubting", "laugh", "overstimulated"] as const;
+
+const extraTextCards: TextCard[] = extraTexts.map((text, i) => {
+  const tag = EXTRA_TAGS[i % EXTRA_TAGS.length];
+  return {
+    id: `extra-${String(i + 1).padStart(3, "0")}`,
+    type: "text" as const,
+    category: "sweet" as const,
+    openWhen: tag,
+    intensity: 1,
+    rarity: "common" as const,
+    emoji: "💝",
+    tags: [tag],
+    text,
+  };
+});
 
 // ===== CUSTOM CARDS FROM ADMIN =====
 const CUSTOM_CARDS_KEY = "valentine-deck-custom-cards";
