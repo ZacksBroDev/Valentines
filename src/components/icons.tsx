@@ -352,7 +352,7 @@ export const NavItem = ({
   <button
     onClick={onClick}
     className={`
-      relative flex flex-col items-center justify-center gap-0.5 py-2 px-3 min-w-[56px]
+      relative flex flex-col items-center justify-center gap-0.5 py-2 px-2 w-16
       transition-all duration-200 rounded-xl
       ${primary
         ? "bg-gradient-button text-white shadow-lg scale-105 -translate-y-1"

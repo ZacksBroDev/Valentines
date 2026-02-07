@@ -415,3 +415,55 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ============================================================
+   MOBILE UX ENHANCEMENTS
+   ============================================================ */
+
+/* Ensure minimum 44px tap targets */
+.min-tap {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Touch-friendly scrolling inside modals */
+.overscroll-contain {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Body lock class for when modals are open */
+.body-locked {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  touch-action: none !important;
+}
+
+/* Prevent text selection during interactions */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Smooth momentum scrolling on iOS */
+.momentum-scroll {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Pull-to-refresh prevention for modals */
+.no-pull-refresh {
+  overscroll-behavior-y: none;
+}

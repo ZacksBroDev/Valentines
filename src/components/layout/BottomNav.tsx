@@ -17,6 +17,11 @@ interface BottomNavProps {
   notesCount: number;
   unreadNotesCount?: number; // New notes from admin - shows red dot
   activeTab?: "openWhen" | "favorites" | "draw" | "notes" | "shuffle";
+  // Daily mode props
+  dailyMode?: boolean;
+  drawsRemaining?: number;
+  dailyLimit?: number;
+  timeUntilNextDraw?: { hours: number; minutes: number };
 }
 
 export const BottomNav = ({
@@ -30,71 +35,94 @@ export const BottomNav = ({
   // notesCount is available in props but not currently displayed
   unreadNotesCount = 0,
   activeTab,
+  dailyMode = false,
+  drawsRemaining = 3,
+  dailyLimit = 3,
+  timeUntilNextDraw,
 }: BottomNavProps) => {
+  const showCountdown = dailyMode && drawsRemaining <= 0 && timeUntilNextDraw;
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3, duration: 0.4 }}
-      className="flex items-center justify-around w-full max-w-md mx-auto"
+      className="flex flex-col items-center w-full max-w-md mx-auto gap-1"
     >
-      <NavItem
-        icon={Mail}
-        label="Open When"
-        onClick={onOpenWhen}
-        active={activeTab === "openWhen"}
-      />
+      {/* Daily mode indicator */}
+      {dailyMode && (
+        <div className="text-xs text-gray-500 mb-1">
+          {showCountdown ? (
+            <span className="text-accent-pink font-medium">
+              Next draw in: {timeUntilNextDraw.hours}h {timeUntilNextDraw.minutes}m
+            </span>
+          ) : (
+            <span>
+              Draws left today: <span className="font-semibold text-accent-pink">{drawsRemaining}/{dailyLimit}</span>
+            </span>
+          )}
+        </div>
+      )}
       
-      <NavItem
-        icon={Heart}
-        label="Favorites"
-        onClick={onFavorites}
-        active={activeTab === "favorites"}
-        badge={favoritesCount}
-      />
-      
-      {/* Primary Draw Button */}
-      <motion.button
-        onClick={onDraw}
-        disabled={!canDraw}
-        whileTap={canDraw ? { scale: 0.95 } : undefined}
-        whileHover={canDraw ? { scale: 1.02 } : undefined}
-        className={`
-          relative flex flex-col items-center justify-center
-          w-16 h-16 -mt-4
-          rounded-full shadow-lg
-          transition-all duration-200
-          ${canDraw
-            ? "bg-gradient-button text-white"
-            : "bg-gray-200 text-gray-400 cursor-not-allowed"
-          }
-        `}
-        aria-label="Draw a card"
-      >
-        <Sparkles size={28} strokeWidth={2} />
-        <span className="text-[10px] font-semibold mt-0.5">Draw</span>
+      <div className="flex items-center justify-around w-full">
+        <NavItem
+          icon={Mail}
+          label="Open when"
+          onClick={onOpenWhen}
+          active={activeTab === "openWhen"}
+        />
         
-        {/* Pulse animation when can draw */}
-        {canDraw && (
-          <span className="absolute inset-0 rounded-full bg-accent-pink animate-ping opacity-20" />
-        )}
-      </motion.button>
-      
-      <NavItem
-        icon={StickyNote}
-        label="Notes"
-        onClick={onNotes}
-        active={activeTab === "notes"}
-        badge={unreadNotesCount > 0 ? unreadNotesCount : undefined}
-        urgentBadge={unreadNotesCount > 0}
-      />
-      
-      <NavItem
-        icon={Shuffle}
-        label="Shuffle"
-        onClick={onShuffle}
-        active={activeTab === "shuffle"}
-      />
+        <NavItem
+          icon={Heart}
+          label="Favorites"
+          onClick={onFavorites}
+          active={activeTab === "favorites"}
+          badge={favoritesCount}
+        />
+        
+        {/* Primary Draw Button */}
+        <motion.button
+          onClick={onDraw}
+          disabled={!canDraw}
+          whileTap={canDraw ? { scale: 0.95 } : undefined}
+          whileHover={canDraw ? { scale: 1.02 } : undefined}
+          className={`
+            relative flex flex-col items-center justify-center
+            w-16 h-16 -mt-4
+            rounded-full shadow-lg
+            transition-all duration-200
+            ${canDraw
+              ? "bg-gradient-button text-white"
+              : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            }
+          `}
+          aria-label={canDraw ? "Draw a card" : "No draws remaining today"}
+        >
+          <Sparkles size={28} strokeWidth={2} />
+          <span className="text-[10px] font-semibold mt-0.5">Draw</span>
+          
+          {/* Pulse animation when can draw */}
+          {canDraw && (
+            <span className="absolute inset-0 rounded-full bg-accent-pink animate-ping opacity-20" />
+          )}
+        </motion.button>
+        
+        <NavItem
+          icon={StickyNote}
+          label="Notes"
+          onClick={onNotes}
+          active={activeTab === "notes"}
+          badge={unreadNotesCount > 0 ? unreadNotesCount : undefined}
+          urgentBadge={unreadNotesCount > 0}
+        />
+        
+        <NavItem
+          icon={Shuffle}
+          label="Shuffle"
+          onClick={onShuffle}
+          active={activeTab === "shuffle"}
+        />
+      </div>
     </motion.div>
   );
 };
