@@ -3,7 +3,7 @@
 // ============================================================
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, History } from "lucide-react";
 import { CATEGORY_ICONS, MOOD_ICONS } from "./icons";
 import { MoodKey, OpenWhenKey } from "../config";
 import { CardCategory } from "../types";
@@ -24,18 +24,22 @@ interface CardCounterProps {
   
   // Secret deck
   secretUnlocked?: boolean;
+  
+  // Seen cards
+  onViewSeenCards?: () => void;
 }
 
 export const CardCounter = ({
   currentIndex,
   totalCards,
-  // seenCount available in props for future use
+  seenCount = 0,
   currentMood,
   openWhenMode,
   currentCategory,
   noRepeatEnabled = false,
   onToggleNoRepeat,
   secretUnlocked,
+  onViewSeenCards,
 }: CardCounterProps) => {
   // Get the appropriate icon for current filter
   const FilterIcon = currentMood && currentMood !== "all" 
@@ -95,6 +99,20 @@ export const CardCounter = ({
           title={noRepeatEnabled ? "Repeats off" : "Enable no-repeat"}
         >
           {noRepeatEnabled ? <EyeOff size={10} /> : <Eye size={10} />}
+        </button>
+      )}
+      
+      {/* Seen cards button */}
+      {onViewSeenCards && seenCount > 0 && (
+        <button
+          onClick={onViewSeenCards}
+          className="flex items-center gap-1 px-2 py-1 rounded-full text-[10px] 
+            bg-gray-100 text-gray-600 hover:bg-blush-100 hover:text-blush-600 
+            transition-colors min-h-[28px]"
+          title="View seen cards"
+        >
+          <History size={10} />
+          <span>{seenCount} seen</span>
         </button>
       )}
     </div>

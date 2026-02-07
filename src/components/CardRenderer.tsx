@@ -5,6 +5,8 @@ import { RARITIES } from "../config";
 import { withPet } from "../data/cards";
 import { formatCategory, prefersReducedMotion } from "../utils/helpers";
 import { redeemVoucher, getRedeemedVouchers } from "../utils/storage";
+import { CATEGORY_ICONS } from "./icons";
+import { Heart, Mail, Circle, Diamond, Star } from "lucide-react";
 
 interface CardProps {
   card: Card | null;
@@ -106,7 +108,9 @@ export const ComplimentCard = ({
         animate={{ opacity: 1 }}
         className="w-full aspect-[3/4] max-h-[42vh] sm:max-h-[50vh] lg:max-h-[60vh] rounded-2xl bg-gradient-card shadow-card flex flex-col items-center justify-center p-4 sm:p-6 text-center"
       >
-        <div className="text-3xl sm:text-4xl lg:text-5xl mb-3">💌</div>
+        <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-blush-100 flex items-center justify-center mb-3">
+          <Mail size={28} className="text-accent-pink" />
+        </div>
         <p className="text-gray-500 text-xs sm:text-sm lg:text-base">
           Tap "Draw" to reveal a compliment just for you
         </p>
@@ -153,40 +157,52 @@ export const ComplimentCard = ({
 
         {/* Top row: Category + Rarity */}
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-          <motion.span
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${
-              card.category === "secret"
-                ? "bg-accent-lavender text-purple-700"
-                : isDark
-                  ? "bg-white/20 text-white"
-                  : "bg-blush-100 text-blush-700"
-            }`}
-          >
-            {formatCategory(card.category)}
-          </motion.span>
+          {(() => {
+            const CategoryIcon = CATEGORY_ICONS[card.category];
+            return (
+              <motion.span
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                  card.category === "secret"
+                    ? "bg-accent-lavender text-purple-700"
+                    : isDark
+                      ? "bg-white/20 text-white"
+                      : "bg-blush-100 text-blush-700"
+                }`}
+              >
+                <CategoryIcon size={10} strokeWidth={2.5} />
+                {formatCategory(card.category)}
+              </motion.span>
+            );
+          })()}
 
-          {/* Rarity icon */}
-          <motion.span
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
-            className={`text-sm ${
-              card.rarity === "legendary"
-                ? "text-yellow-500"
-                : card.rarity === "rare"
-                  ? "text-purple-400"
-                  : "text-gray-300"
-            }`}
-            title={rarity.label}
-          >
-            {rarity.icon}
-          </motion.span>
+          {/* Rarity label with icon */}
+          {(() => {
+            const RarityIcon = card.rarity === "legendary" ? Star : card.rarity === "rare" ? Diamond : Circle;
+            return (
+              <motion.span
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                  card.rarity === "legendary"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : card.rarity === "rare"
+                      ? "bg-purple-100 text-purple-600"
+                      : isDark ? "bg-white/10 text-gray-300" : "bg-gray-100 text-gray-500"
+                }`}
+                title={rarity.label}
+              >
+                <RarityIcon size={10} strokeWidth={2.5} fill={card.rarity !== "common" ? "currentColor" : "none"} />
+                {rarity.label}
+              </motion.span>
+            );
+          })()}
         </div>
 
-        {/* Favorite button - always visible, toggleable */}
+        {/* Favorite button - top-right with proper 44px hit area */}
         {onSave && (
           <motion.button
             onClick={(e) => {
@@ -195,23 +211,26 @@ export const ComplimentCard = ({
             }}
             whileTap={{ scale: 0.85 }}
             whileHover={{ scale: 1.1 }}
-            className={`absolute top-8 right-3 z-20 w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-all cursor-pointer ${
+            className={`absolute top-10 right-3 z-20 w-11 h-11 min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center shadow-md transition-all cursor-pointer ${
               isFavorite 
-                ? "bg-accent-pink/20" 
-                : isDark ? "bg-white/10 hover:bg-white/20" : "bg-white/80 hover:bg-white"
+                ? "bg-accent-pink text-white" 
+                : isDark ? "bg-white/10 hover:bg-white/20 text-gray-400" : "bg-white/90 hover:bg-white text-gray-400 hover:text-accent-pink"
             }`}
             aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
             type="button"
           >
-            <motion.span
+            <motion.div
               key={isFavorite ? "saved" : "unsaved"}
               initial={{ scale: 0.5 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 500 }}
-              className="text-xl"
             >
-              {isFavorite ? "💖" : "🤍"}
-            </motion.span>
+              <Heart 
+                size={20} 
+                strokeWidth={2} 
+                fill={isFavorite ? "currentColor" : "none"}
+              />
+            </motion.div>
           </motion.button>
         )}
 

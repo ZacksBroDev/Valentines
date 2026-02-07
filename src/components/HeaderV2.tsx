@@ -4,17 +4,20 @@
 // ============================================================
 
 import { motion } from "framer-motion";
-import { Settings, BarChart3, Ticket, Volume2, VolumeX } from "lucide-react";
+import { Settings, BarChart3, Ticket, Volume2, VolumeX, History } from "lucide-react";
 import { IconButton } from "./icons";
 
 interface HeaderV2Props {
   onOpenSettings: () => void;
   onOpenStats: () => void;
   onOpenVouchers: () => void;
+  onOpenSeenCards?: () => void;
   onToggleMute: () => void;
   onAdminLongPress?: () => void;
   isMuted: boolean;
   voucherCount?: number;
+  seenCount?: number;
+  totalCards?: number;
   isDark?: boolean;
 }
 
@@ -22,10 +25,13 @@ export const HeaderV2 = ({
   onOpenSettings,
   onOpenStats,
   onOpenVouchers,
+  onOpenSeenCards,
   onToggleMute,
   onAdminLongPress,
   isMuted,
   voucherCount = 0,
+  seenCount = 0,
+  totalCards = 0,
   isDark = false,
 }: HeaderV2Props) => {
   return (
@@ -56,7 +62,7 @@ export const HeaderV2 = ({
         />
       </div>
 
-      {/* Center: Logo */}
+      {/* Center: Logo + Card Count */}
       <div className="flex flex-col items-center">
         <h1
           className={`text-sm font-semibold tracking-tight ${
@@ -65,6 +71,19 @@ export const HeaderV2 = ({
         >
           Compliment Deck
         </h1>
+        {totalCards > 0 && (
+          <button
+            onClick={onOpenSeenCards}
+            className={`text-[10px] mt-0.5 px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors ${
+              isDark 
+                ? "text-white/70 hover:bg-white/10" 
+                : "text-gray-500 hover:bg-blush-50"
+            }`}
+          >
+            <History size={10} />
+            {seenCount} / {totalCards} cards
+          </button>
+        )}
       </div>
 
       {/* Right actions */}
@@ -79,7 +98,7 @@ export const HeaderV2 = ({
         />
         <IconButton
           icon={Ticket}
-          label="Redeemables"
+          label="Vouchers"
           onClick={onOpenVouchers}
           size="sm"
           variant="ghost"
