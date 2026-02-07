@@ -20,7 +20,7 @@ export const CONFIG = {
 
   // ----- DECK SETTINGS -----
   // Show end screen after this many draws OR when deck exhausted
-  // Set high to allow users to draw all cards - deck has 250+ cards
+  // Set high to allow users to draw all cards (deck size is dynamic)
   drawThreshold: 500,
   // Required taps to unlock secret deck
   secretTapCount: 5,
