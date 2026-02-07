@@ -128,7 +128,7 @@ export const OpenWhenModalV2 = ({
     <Modal 
       isOpen={isOpen} 
       onClose={onClose} 
-      title="Open When..." 
+      title="Open when I feel…" 
       icon={<Sparkles size={20} className="text-accent-pink" />}
     >
       <div className="space-y-3">
