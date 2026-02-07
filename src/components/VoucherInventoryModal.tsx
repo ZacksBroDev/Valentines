@@ -264,7 +264,6 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
   const { showUndoToast, showToast } = useToast();
 
   const [selectedInstance, setSelectedInstance] = useState<VoucherInstance | null>(null);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [cloudRequests, setCloudRequests] = useState<CloudVoucherRequest[]>([]);
   const [activeFilter, setActiveFilter] = useState<VoucherFilter>("available");
   
@@ -390,27 +389,8 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Vouchers" icon={<Ticket size={20} />}>
       <AnimatePresence mode="wait">
-        {/* Success state */}
-        {showSuccess && (
-          <motion.div
-            key="success"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="py-8 text-center"
-          >
-            <div className="w-16 h-16 mx-auto rounded-full bg-green-100 flex items-center justify-center mb-4">
-              <Check size={32} className="text-green-600" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-800">Voucher Requested!</h3>
-            <p className="text-sm text-gray-500 mt-1">
-              Your partner will see this redemption request
-            </p>
-          </motion.div>
-        )}
-
         {/* Redemption flow */}
-        {selectedInstance && selectedInstance.template && !showSuccess && (
+        {selectedInstance && selectedInstance.template && (
           <motion.div
             key="redeem"
             initial={{ opacity: 0, x: 20 }}
@@ -427,7 +407,7 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
         )}
 
         {/* Inventory list with filter chips */}
-        {!selectedInstance && !showSuccess && (
+        {!selectedInstance && (
           <motion.div
             key="list"
             initial={{ opacity: 0 }}
