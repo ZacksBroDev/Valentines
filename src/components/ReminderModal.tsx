@@ -14,11 +14,11 @@ interface ReminderModalProps {
 
 // Reassurance messages that rotate
 const REASSURANCE_MESSAGES = [
-  { text: "You are so loved.", emoji: "💗" },
-  { text: "I'm always here for you.", emoji: "🤗" },
-  { text: "You make everything better.", emoji: "✨" },
-  { text: "I believe in you.", emoji: "💪" },
-  { text: "You're doing amazing.", emoji: "🌟" },
+  "You are so loved.",
+  "I'm always here for you.",
+  "You make everything better.",
+  "I believe in you.",
+  "You're doing amazing.",
 ];
 
 // Video URL - can be configured
@@ -148,17 +148,8 @@ export const ReminderModal = ({ isOpen, onClose }: ReminderModalProps) => {
                   transition={{ delay: 0.2 }}
                   className="text-3xl font-bold text-gray-800 mb-2"
                 >
-                  {message.text}
+                  {message}
                 </motion.p>
-                
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                  className="text-4xl"
-                >
-                  {message.emoji}
-                </motion.span>
 
                 {/* Loading indicator */}
                 <motion.div

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, isTextCard, isVoucherCard, isPlaylistCard } from "../types";
 import { RARITIES } from "../config";
@@ -6,7 +6,10 @@ import { withPet } from "../data/cards";
 import { formatCategory, prefersReducedMotion } from "../utils/helpers";
 import { redeemVoucher, getRedeemedVouchers } from "../utils/storage";
 import { CATEGORY_ICONS } from "./icons";
-import { Heart, Mail, Circle, Diamond, Star } from "lucide-react";
+import { Heart, Mail, Circle, Diamond, Star, Ticket, Music, Clock } from "lucide-react";
+
+// Anniversary date constant
+const ANNIVERSARY_DATE = new Date("2024-04-13T00:00:00");
 
 interface CardProps {
   card: Card | null;
@@ -17,6 +20,84 @@ interface CardProps {
   isDark?: boolean;
   reduceMotion?: boolean;
 }
+
+// Anniversary counter component - updates every second when visible
+const AnniversaryCounter = ({ isDark }: { isDark?: boolean }) => {
+  const [now, setNow] = useState(new Date());
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  const getTimeDiff = useCallback(() => {
+    const diff = now.getTime() - ANNIVERSARY_DATE.getTime();
+    
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    
+    return {
+      days,
+      hours: hours % 24,
+      minutes: minutes % 60,
+      seconds: seconds % 60,
+    };
+  }, [now]);
+  
+  const time = getTimeDiff();
+  
+  return (
+    <div className="flex flex-col items-center gap-3">
+      {/* Days - prominent */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="text-center"
+      >
+        <span className={`text-4xl sm:text-5xl font-bold ${isDark ? "text-white" : "text-accent-pink"}`}>
+          {time.days.toLocaleString()}
+        </span>
+        <p className={`text-xs sm:text-sm ${isDark ? "text-gray-300" : "text-gray-500"}`}>days</p>
+      </motion.div>
+      
+      {/* Hours, Minutes, Seconds row */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="flex gap-3 sm:gap-4"
+      >
+        {[
+          { value: time.hours, label: "hrs" },
+          { value: time.minutes, label: "min" },
+          { value: time.seconds, label: "sec" },
+        ].map(({ value, label }) => (
+          <div key={label} className="text-center min-w-[40px]">
+            <span className={`text-lg sm:text-xl font-semibold tabular-nums ${isDark ? "text-white" : "text-gray-700"}`}>
+              {value.toString().padStart(2, "0")}
+            </span>
+            <p className={`text-[10px] ${isDark ? "text-gray-400" : "text-gray-400"}`}>{label}</p>
+          </div>
+        ))}
+      </motion.div>
+      
+      {/* Tagline */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4 }}
+        className={`text-xs sm:text-sm text-center mt-1 ${isDark ? "text-gray-300" : "text-gray-600"}`}
+      >
+        ...and I'm still obsessed with you
+      </motion.p>
+    </div>
+  );
+};
 
 // Typewriter text component
 const TypewriterText = ({
@@ -236,19 +317,35 @@ export const ComplimentCard = ({
 
         {/* Main content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 pt-10 sm:pt-12">
-          {/* Text Card */}
-          {isTextCard(card) && (
+          {/* Anniversary Counter Card - special handling */}
+          {isTextCard(card) && card.id === "anniversary-counter" && (
             <>
-              {card.emoji && (
-                <motion.span
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1, type: "spring" }}
-                  className="text-3xl sm:text-4xl lg:text-5xl mb-2 sm:mb-4"
-                >
-                  {card.emoji}
-                </motion.span>
-              )}
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1, type: "spring" }}
+                className="mb-2 sm:mb-4"
+              >
+                <Clock size={48} className="text-accent-pink" />
+              </motion.div>
+              <AnniversaryCounter isDark={isDark} />
+            </>
+          )}
+          
+          {/* Regular Text Card */}
+          {isTextCard(card) && card.id !== "anniversary-counter" && (
+            <>
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1, type: "spring" }}
+                className="mb-2 sm:mb-4"
+              >
+                {(() => {
+                  const CategoryIcon = CATEGORY_ICONS[card.category] || Heart;
+                  return <CategoryIcon size={48} className="text-accent-pink" />;
+                })()}
+              </motion.div>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -282,7 +379,7 @@ export const ComplimentCard = ({
           {/* Voucher Card */}
           {isVoucherCard(card) && (
             <>
-              <span className="text-3xl mb-2">{card.emoji || "🎫"}</span>
+              <Ticket size={32} className="text-accent-pink mb-2" />
               <h3
                 className={`text-base font-bold mb-2 text-center ${isDark ? "text-white" : "text-gray-800"}`}
               >
@@ -328,7 +425,7 @@ export const ComplimentCard = ({
           {/* Playlist Card */}
           {isPlaylistCard(card) && (
             <>
-              <span className="text-5xl mb-4">{card.emoji || "🎵"}</span>
+              <Music size={48} className="text-accent-pink mb-4" />
               <Equalizer />
               <h3
                 className={`text-xl font-bold mt-4 text-center ${isDark ? "text-white" : "text-gray-800"}`}

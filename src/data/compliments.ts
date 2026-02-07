@@ -143,11 +143,11 @@ export const compliments: Compliment[] = [
     text: "Since April 13, 2024, my world has been better on purpose.",
   },
   {
-    id: "sweet-017",
+    id: "anniversary-counter",
     category: "sweet",
-    intensity: 2,
-    emoji: "💯",
-    text: "662 days with you… and I'm still obsessed.",
+    intensity: 3,
+    emoji: "",
+    text: "ANNIVERSARY_COUNTER",
   },
   {
     id: "sweet-018",

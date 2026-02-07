@@ -1,7 +1,17 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { Heart, Smile, Shield, Flame, Lock } from "lucide-react";
 import { Compliment, withPet } from "../data/compliments";
 import { formatCategory } from "../utils/helpers";
 import { WaxSeal } from "./WaxSeal";
+
+// Category icons mapping
+const CATEGORY_ICONS = {
+  sweet: Heart,
+  funny: Smile,
+  supportive: Shield,
+  "spicy-lite": Flame,
+  secret: Lock,
+} as const;
 
 interface ComplimentCardProps {
   compliment: Compliment | null;
@@ -21,7 +31,9 @@ export const ComplimentCard = ({
         animate={{ opacity: 1 }}
         className="w-full max-w-sm mx-auto aspect-[3/4] rounded-3xl bg-gradient-card shadow-card flex flex-col items-center justify-center p-8 text-center"
       >
-        <div className="text-6xl mb-4">💌</div>
+        <div className="mb-4">
+          <Heart size={64} className="text-accent-pink" />
+        </div>
         <p className="text-gray-500 text-lg">
           Tap "Draw" to reveal a compliment just for you
         </p>
@@ -79,24 +91,25 @@ export const ComplimentCard = ({
               exit={{ opacity: 0, scale: 0 }}
               className="absolute top-4 right-4"
             >
-              <span className="text-2xl">💖</span>
+              <Heart size={24} className="text-accent-pink fill-accent-pink" />
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* Main content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center p-8 pt-16">
-          {/* Emoji */}
-          {compliment.emoji && (
-            <motion.span
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1, type: "spring" }}
-              className="text-5xl mb-6"
-            >
-              {compliment.emoji}
-            </motion.span>
-          )}
+          {/* Category Icon */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1, type: "spring" }}
+            className="mb-6"
+          >
+            {(() => {
+              const CategoryIcon = CATEGORY_ICONS[compliment.category] || Heart;
+              return <CategoryIcon size={48} className="text-accent-pink" />;
+            })()}
+          </motion.div>
 
           {/* Compliment text */}
           <motion.p

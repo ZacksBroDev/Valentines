@@ -1,9 +1,18 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart } from "lucide-react";
-import { Card, isTextCard, isVoucherCard, isPlaylistCard } from "../types";
+import { Heart, Smile, Shield, Flame, Lock, Ticket, Music, LucideIcon } from "lucide-react";
+import { Card, CardCategory, isTextCard, isVoucherCard, isPlaylistCard } from "../types";
 import { allCards, withPet } from "../data/cards";
 import { formatCategory } from "../utils/helpers";
 import { Modal } from "./Modal";
+
+// Category icons mapping
+const CATEGORY_ICONS: Record<CardCategory, LucideIcon> = {
+  sweet: Heart,
+  funny: Smile,
+  supportive: Shield,
+  "spicy-lite": Flame,
+  secret: Lock,
+};
 
 interface FavoritesModalProps {
   isOpen: boolean;
@@ -22,20 +31,21 @@ export const FavoritesModal = ({
     .map((id) => allCards.find((c) => c.id === id))
     .filter(Boolean) as Card[];
 
-  const getCardDisplay = (card: Card): { text: string; emoji: string } => {
+  const getCardDisplay = (card: Card): { text: string; icon: LucideIcon } => {
+    const CategoryIcon = CATEGORY_ICONS[card.category] || Heart;
     if (isTextCard(card)) {
-      return { text: withPet(card.text), emoji: card.emoji || "💕" };
+      return { text: withPet(card.text), icon: CategoryIcon };
     }
     if (isVoucherCard(card)) {
-      return { text: card.title, emoji: card.emoji || "🎟️" };
+      return { text: card.title, icon: Ticket };
     }
     if (isPlaylistCard(card)) {
       return {
         text: `${card.songTitle} by ${card.artist}`,
-        emoji: card.emoji || "🎵",
+        icon: Music,
       };
     }
-    return { text: "", emoji: "💕" };
+    return { text: "", icon: Heart };
   };
 
   return (
@@ -55,7 +65,7 @@ export const FavoritesModal = ({
       ) : (
         <AnimatePresence mode="popLayout">
           {favoriteCards.map((card) => {
-            const { text, emoji } = getCardDisplay(card);
+            const { text, icon: CardIcon } = getCardDisplay(card);
             return (
               <motion.div
                 key={card.id}
@@ -66,7 +76,9 @@ export const FavoritesModal = ({
                 className="bg-gradient-card rounded-2xl p-4 shadow-sm border border-blush-100 mb-3"
               >
                 <div className="flex items-start gap-3">
-                  <span className="text-2xl flex-shrink-0">{emoji}</span>
+                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-blush-50 flex items-center justify-center">
+                    <CardIcon size={20} className="text-accent-pink" />
+                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-gray-700 leading-relaxed">"{text}"</p>
                     <div className="flex items-center gap-2 mt-2">

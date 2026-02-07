@@ -28,16 +28,16 @@ export const getCardById = (id: string, cards: Card[]): Card | undefined => {
   return cards.find((c) => c.id === id);
 };
 
-// Get text representation of a card
+// Get text representation of a card (plain text, no emojis)
 export const getCardText = (card: Card): string => {
   if (isTextCard(card)) {
-    return `${card.emoji || "💕"} ${card.text}`;
+    return card.text;
   }
   if (isVoucherCard(card)) {
-    return `${card.emoji || "🎟️"} ${card.title}`;
+    return card.title;
   }
   if (isPlaylistCard(card)) {
-    return `${card.emoji || "🎵"} ${card.songTitle} by ${card.artist}`;
+    return `${card.songTitle} by ${card.artist}`;
   }
   return "";
 };

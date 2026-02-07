@@ -1,5 +1,7 @@
 // ============================================================
 // CARDS MANAGER - Admin CRUD for ALL deck cards
+// No emojis - uses category icons instead
+// Supports editing both built-in and custom cards
 // ============================================================
 
 import { useState, useEffect, useMemo } from "react";
@@ -24,9 +26,9 @@ import {
   X,
   Database,
   FolderPlus,
-  Copy,
   Eye,
   EyeOff,
+  RotateCcw,
 } from "lucide-react";
 import { Card, TextCard, CardCategory, VoucherCard, PlaylistCard } from "../../types";
 import { RarityKey } from "../../config";
@@ -38,18 +40,27 @@ import { textCards, voucherCards, playlistCards, extraTextCards } from "../../da
 
 const CUSTOM_CARDS_KEY = "valentine-deck-custom-cards";
 const HIDDEN_CARDS_KEY = "valentine-deck-hidden-cards";
+const CARD_OVERRIDES_KEY = "valentine-deck-card-overrides";
+
+// Overrides for built-in cards (only changed fields are stored)
+interface CardOverride {
+  category?: CardCategory;
+  rarity?: RarityKey;
+  intensity?: 1 | 2 | 3;
+  text?: string;
+  tags?: string[];
+}
 
 interface CardFormData {
   type: "text";
   category: CardCategory;
   rarity: RarityKey;
   intensity: 1 | 2 | 3;
-  emoji: string;
   text: string;
   tags: string[];
 }
 
-type CardSource = "all" | "built-in" | "custom";
+type CardSource = "all" | "built-in" | "custom" | "modified";
 type CardType = "all" | "text" | "voucher" | "playlist";
 
 const CATEGORY_OPTIONS: { value: CardCategory; label: string; icon: typeof Heart }[] = [
@@ -96,6 +107,21 @@ const saveHiddenCardIds = (ids: string[]) => {
   localStorage.setItem(HIDDEN_CARDS_KEY, JSON.stringify(ids));
 };
 
+// Get card overrides from localStorage
+const getCardOverrides = (): Record<string, CardOverride> => {
+  try {
+    const stored = localStorage.getItem(CARD_OVERRIDES_KEY);
+    return stored ? JSON.parse(stored) : {};
+  } catch {
+    return {};
+  }
+};
+
+// Save card overrides to localStorage
+const saveCardOverrides = (overrides: Record<string, CardOverride>) => {
+  localStorage.setItem(CARD_OVERRIDES_KEY, JSON.stringify(overrides));
+};
+
 // Generate unique ID
 const generateId = () => `custom-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -104,7 +130,6 @@ const defaultFormData: CardFormData = {
   category: "sweet",
   rarity: "common",
   intensity: 2,
-  emoji: "💕",
   text: "",
   tags: [],
 };
@@ -125,6 +150,9 @@ export const CardsManager = () => {
   // Hidden cards (built-in cards hidden from deck)
   const [hiddenCardIds, setHiddenCardIds] = useState<string[]>(getHiddenCardIds);
   
+  // Card overrides (edits to built-in cards)
+  const [cardOverrides, setCardOverrides] = useState<Record<string, CardOverride>>(getCardOverrides);
+  
   // UI state
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState<CardCategory | "all">("all");
@@ -133,13 +161,14 @@ export const CardsManager = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showHiddenOnly, setShowHiddenOnly] = useState(false);
   const [isEditing, setIsEditing] = useState<string | null>(null);
+  const [editingSource, setEditingSource] = useState<"built-in" | "custom" | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
   
   // Form state
   const [formData, setFormData] = useState<CardFormData>(defaultFormData);
 
-  // Save to localStorage whenever cards or hidden IDs change
+  // Save to localStorage whenever state changes
   useEffect(() => {
     saveCustomCards(customCards);
   }, [customCards]);
@@ -147,44 +176,70 @@ export const CardsManager = () => {
   useEffect(() => {
     saveHiddenCardIds(hiddenCardIds);
   }, [hiddenCardIds]);
+  
+  useEffect(() => {
+    saveCardOverrides(cardOverrides);
+  }, [cardOverrides]);
+
+  // Apply overrides to a card
+  const applyOverrides = (card: Card): Card => {
+    const override = cardOverrides[card.id];
+    if (!override) return card;
+    
+    if (card.type === "text") {
+      return {
+        ...card,
+        category: override.category ?? card.category,
+        rarity: override.rarity ?? card.rarity,
+        intensity: override.intensity ?? (card as TextCard).intensity,
+        text: override.text ?? (card as TextCard).text,
+        tags: override.tags ?? card.tags,
+      } as TextCard;
+    }
+    return card;
+  };
 
   // Combine all cards with source indicator
   const allCardsWithSource = useMemo(() => {
-    const cards: Array<{ card: Card; source: "built-in" | "custom"; cardType: "text" | "voucher" | "playlist" }> = [];
+    const cards: Array<{ card: Card; source: "built-in" | "custom"; cardType: "text" | "voucher" | "playlist"; isModified: boolean }> = [];
     
-    // Built-in text cards
+    // Built-in text cards (with overrides applied)
     builtInTextCards.forEach(card => {
-      cards.push({ card, source: "built-in", cardType: "text" });
+      const isModified = !!cardOverrides[card.id];
+      cards.push({ card: applyOverrides(card), source: "built-in", cardType: "text", isModified });
     });
     
     // Built-in voucher cards
     builtInVoucherCards.forEach(card => {
-      cards.push({ card, source: "built-in", cardType: "voucher" });
+      cards.push({ card, source: "built-in", cardType: "voucher", isModified: false });
     });
     
     // Built-in playlist cards
     builtInPlaylistCards.forEach(card => {
-      cards.push({ card, source: "built-in", cardType: "playlist" });
+      cards.push({ card, source: "built-in", cardType: "playlist", isModified: false });
     });
     
     // Custom cards
     customCards.forEach(card => {
-      cards.push({ card, source: "custom", cardType: "text" });
+      cards.push({ card, source: "custom", cardType: "text", isModified: false });
     });
     
     return cards;
-  }, [builtInTextCards, builtInVoucherCards, builtInPlaylistCards, customCards]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [builtInTextCards, builtInVoucherCards, builtInPlaylistCards, customCards, cardOverrides]);
 
   // Filter cards
   const filteredCards = useMemo(() => {
-    return allCardsWithSource.filter(({ card, source, cardType }) => {
+    return allCardsWithSource.filter(({ card, source, cardType, isModified }) => {
       // Hidden filter
       const isHidden = hiddenCardIds.includes(card.id);
       if (showHiddenOnly && !isHidden) return false;
       if (!showHiddenOnly && isHidden) return false;
       
       // Source filter
-      if (filterSource !== "all" && source !== filterSource) return false;
+      if (filterSource === "modified" && !isModified) return false;
+      if (filterSource === "built-in" && source !== "built-in") return false;
+      if (filterSource === "custom" && source !== "custom") return false;
       
       // Type filter
       if (filterType !== "all" && cardType !== filterType) return false;
@@ -198,8 +253,8 @@ export const CardsManager = () => {
         const textContent = card.type === "text" 
           ? (card as TextCard).text 
           : card.type === "voucher" 
-            ? (card as VoucherCard).title + " " + (card as VoucherCard).description
-            : (card as PlaylistCard).playlistName;
+            ? (card as VoucherCard).title
+            : (card as PlaylistCard).songTitle + " - " + (card as PlaylistCard).artist;
         const matchesText = textContent.toLowerCase().includes(query);
         const matchesId = card.id.toLowerCase().includes(query);
         const matchesTags = card.tags?.some(t => t.toLowerCase().includes(query));
@@ -216,10 +271,11 @@ export const CardsManager = () => {
     builtIn: allCardsWithSource.filter(c => c.source === "built-in").length,
     custom: customCards.length,
     hidden: hiddenCardIds.length,
+    modified: Object.keys(cardOverrides).length,
     text: allCardsWithSource.filter(c => c.cardType === "text").length,
     voucher: allCardsWithSource.filter(c => c.cardType === "voucher").length,
     playlist: allCardsWithSource.filter(c => c.cardType === "playlist").length,
-  }), [allCardsWithSource, customCards, hiddenCardIds]);
+  }), [allCardsWithSource, customCards, hiddenCardIds, cardOverrides]);
 
   // Handlers
   const handleAddCard = () => {
@@ -231,7 +287,7 @@ export const CardsManager = () => {
       category: formData.category,
       rarity: formData.rarity,
       intensity: formData.intensity,
-      emoji: formData.emoji,
+      emoji: "", // Deprecated, kept for compatibility
       text: formData.text,
       tags: formData.tags,
     };
@@ -242,23 +298,48 @@ export const CardsManager = () => {
   };
 
   const handleUpdateCard = (id: string) => {
-    setCustomCards(prev => 
-      prev.map(card => 
-        card.id === id 
-          ? { 
-              ...card, 
-              category: formData.category,
-              rarity: formData.rarity,
-              intensity: formData.intensity,
-              emoji: formData.emoji,
-              text: formData.text,
-              tags: formData.tags,
-            }
-          : card
-      )
-    );
+    if (editingSource === "custom") {
+      // Update custom card directly
+      setCustomCards(prev => 
+        prev.map(card => 
+          card.id === id 
+            ? { 
+                ...card, 
+                category: formData.category,
+                rarity: formData.rarity,
+                intensity: formData.intensity,
+                text: formData.text,
+                tags: formData.tags,
+              }
+            : card
+        )
+      );
+    } else {
+      // Store override for built-in card
+      setCardOverrides(prev => ({
+        ...prev,
+        [id]: {
+          category: formData.category,
+          rarity: formData.rarity,
+          intensity: formData.intensity,
+          text: formData.text,
+          tags: formData.tags,
+        },
+      }));
+    }
     setIsEditing(null);
+    setEditingSource(null);
     resetForm();
+  };
+
+  const handleResetToOriginal = (id: string) => {
+    if (confirm("Reset this card to its original state? Your changes will be lost.")) {
+      setCardOverrides(prev => {
+        const updated = { ...prev };
+        delete updated[id];
+        return updated;
+      });
+    }
   };
 
   const handleDeleteCard = (id: string) => {
@@ -275,22 +356,14 @@ export const CardsManager = () => {
     }
   };
 
-  const handleDuplicateAsCustom = (card: TextCard) => {
-    const newCard: TextCard = {
-      ...card,
-      id: generateId(),
-    };
-    setCustomCards(prev => [...prev, newCard]);
-  };
-
-  const startEditing = (card: TextCard) => {
+  const startEditing = (card: TextCard, source: "built-in" | "custom") => {
     setIsEditing(card.id);
+    setEditingSource(source);
     setFormData({
       type: "text",
       category: card.category,
       rarity: card.rarity,
       intensity: card.intensity,
-      emoji: card.emoji || "💕",
       text: card.text,
       tags: card.tags || [],
     });
@@ -302,6 +375,7 @@ export const CardsManager = () => {
 
   const cancelEdit = () => {
     setIsEditing(null);
+    setEditingSource(null);
     setShowAddForm(false);
     resetForm();
   };
@@ -314,15 +388,14 @@ export const CardsManager = () => {
   const getCardDisplayText = (card: Card): string => {
     if (card.type === "text") return (card as TextCard).text;
     if (card.type === "voucher") return (card as VoucherCard).title;
-    if (card.type === "playlist") return (card as PlaylistCard).playlistName;
+    if (card.type === "playlist") return `${(card as PlaylistCard).songTitle} - ${(card as PlaylistCard).artist}`;
     return "";
   };
 
-  const getCardEmoji = (card: Card): string => {
-    if (card.type === "text") return (card as TextCard).emoji || "💬";
-    if (card.type === "voucher") return "🎟️";
-    if (card.type === "playlist") return "🎵";
-    return "📝";
+  const getCardIcon = (card: Card, category: CardCategory) => {
+    if (card.type === "voucher") return Ticket;
+    if (card.type === "playlist") return Music;
+    return getCategoryIcon(category);
   };
 
   return (
@@ -340,6 +413,11 @@ export const CardsManager = () => {
             <span className="px-2 py-0.5 bg-green-50 text-green-600 rounded-full flex items-center gap-1">
               <FolderPlus size={10} />{stats.custom} custom
             </span>
+            {stats.modified > 0 && (
+              <span className="px-2 py-0.5 bg-orange-50 text-orange-600 rounded-full flex items-center gap-1">
+                <Edit3 size={10} />{stats.modified} modified
+              </span>
+            )}
             {stats.hidden > 0 && (
               <span className="px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full flex items-center gap-1">
                 <EyeOff size={10} />{stats.hidden} hidden
@@ -400,6 +478,7 @@ export const CardsManager = () => {
                     { value: "all" as CardSource, label: "All", count: stats.total },
                     { value: "built-in" as CardSource, label: "Built-in", count: stats.builtIn },
                     { value: "custom" as CardSource, label: "Custom", count: stats.custom },
+                    { value: "modified" as CardSource, label: "Modified", count: stats.modified },
                   ].map(({ value, label, count }) => (
                     <button
                       key={value}
@@ -501,12 +580,22 @@ export const CardsManager = () => {
           >
             <div className="flex items-center justify-between">
               <h4 className="font-medium text-gray-800">
-                {isEditing ? "Edit Card" : "Add New Card"}
+                {isEditing 
+                  ? editingSource === "built-in" 
+                    ? "Edit Built-in Card" 
+                    : "Edit Custom Card" 
+                  : "Add New Card"}
               </h4>
               <button onClick={cancelEdit} className="text-gray-400 hover:text-gray-600">
                 <X size={18} />
               </button>
             </div>
+
+            {editingSource === "built-in" && (
+              <p className="text-xs text-orange-600 bg-orange-50 px-3 py-2 rounded-lg">
+                Editing a built-in card creates an override. You can reset to original anytime.
+              </p>
+            )}
 
             {/* Category & Rarity Row */}
             <div className="grid grid-cols-2 gap-4">
@@ -536,30 +625,17 @@ export const CardsManager = () => {
               </div>
             </div>
 
-            {/* Emoji & Intensity */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs text-gray-500 mb-1 block">Emoji</label>
-                <input
-                  type="text"
-                  value={formData.emoji}
-                  onChange={(e) => setFormData({ ...formData, emoji: e.target.value })}
-                  placeholder="💕"
-                  className="w-full px-3 py-2 border rounded-lg text-sm text-center text-xl"
-                  maxLength={4}
-                />
-              </div>
-              <div>
-                <label className="text-xs text-gray-500 mb-1 block">Intensity (1-3)</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="3"
-                  value={formData.intensity}
-                  onChange={(e) => setFormData({ ...formData, intensity: Math.min(3, Math.max(1, parseInt(e.target.value) || 2)) as 1 | 2 | 3 })}
-                  className="w-full px-3 py-2 border rounded-lg text-sm text-center"
-                />
-              </div>
+            {/* Intensity */}
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">Intensity (1-3)</label>
+              <input
+                type="number"
+                min="1"
+                max="3"
+                value={formData.intensity}
+                onChange={(e) => setFormData({ ...formData, intensity: Math.min(3, Math.max(1, parseInt(e.target.value) || 2)) as 1 | 2 | 3 })}
+                className="w-24 px-3 py-2 border rounded-lg text-sm text-center"
+              />
             </div>
 
             {/* Card Text */}
@@ -606,7 +682,7 @@ export const CardsManager = () => {
                 className="flex-1 px-4 py-2 bg-accent-pink text-white rounded-lg text-sm font-medium flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 <Save size={14} />
-                {isEditing ? "Update" : "Add Card"}
+                {isEditing ? "Save Changes" : "Add Card"}
               </button>
             </div>
           </motion.div>
@@ -628,8 +704,8 @@ export const CardsManager = () => {
             </p>
           </div>
         ) : (
-          filteredCards.map(({ card, source, cardType }) => {
-            const CategoryIcon = getCategoryIcon(card.category);
+          filteredCards.map(({ card, source, cardType, isModified }) => {
+            const CategoryIcon = getCardIcon(card, card.category);
             const rarityOption = RARITY_OPTIONS.find(r => r.value === card.rarity);
             const isExpanded = expandedCard === card.id;
             const isHidden = hiddenCardIds.includes(card.id);
@@ -643,7 +719,7 @@ export const CardsManager = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className={`bg-white rounded-xl border overflow-hidden ${
-                  isHidden ? "border-gray-300 opacity-60" : "border-gray-100"
+                  isHidden ? "border-gray-300 opacity-60" : isModified ? "border-orange-200" : "border-gray-100"
                 }`}
               >
                 {/* Card Header */}
@@ -651,7 +727,9 @@ export const CardsManager = () => {
                   className="p-3 flex items-center gap-3 cursor-pointer hover:bg-gray-50"
                   onClick={() => setExpandedCard(isExpanded ? null : card.id)}
                 >
-                  <span className="text-2xl">{getCardEmoji(card)}</span>
+                  <div className="w-10 h-10 rounded-lg bg-blush-50 flex items-center justify-center flex-shrink-0">
+                    <CategoryIcon size={20} className="text-accent-pink" />
+                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-gray-800 truncate">{getCardDisplayText(card)}</p>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
@@ -661,13 +739,19 @@ export const CardsManager = () => {
                       }`}>
                         {isCustom ? "custom" : "built-in"}
                       </span>
+                      {/* Modified badge */}
+                      {isModified && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-orange-100 text-orange-600">
+                          modified
+                        </span>
+                      )}
                       {/* Type badge */}
                       <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-100 text-purple-600">
                         {cardType}
                       </span>
                       {/* Category */}
                       <span className="flex items-center gap-1 text-xs text-gray-500">
-                        <CategoryIcon size={10} /> {card.category}
+                        {card.category}
                       </span>
                       {/* Rarity */}
                       <span className={`text-xs px-1.5 py-0.5 rounded ${rarityOption?.color}`}>
@@ -728,29 +812,29 @@ export const CardsManager = () => {
                             {isHidden ? "Show" : "Hide"}
                           </button>
                           
-                          {/* Duplicate to custom (for built-in only) */}
-                          {!isCustom && isTextCard && (
+                          {/* Edit (all text cards) */}
+                          {isTextCard && (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleDuplicateAsCustom(card as TextCard);
-                              }}
-                              className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-medium flex items-center gap-1 hover:bg-blue-100"
-                            >
-                              <Copy size={12} /> Duplicate
-                            </button>
-                          )}
-                          
-                          {/* Edit (custom only) */}
-                          {isCustom && isTextCard && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                startEditing(card as TextCard);
+                                startEditing(card as TextCard, source);
                               }}
                               className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-medium flex items-center gap-1 hover:bg-gray-200"
                             >
                               <Edit3 size={12} /> Edit
+                            </button>
+                          )}
+                          
+                          {/* Reset to original (modified built-in only) */}
+                          {isModified && !isCustom && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleResetToOriginal(card.id);
+                              }}
+                              className="px-3 py-1.5 bg-orange-50 text-orange-600 rounded-lg text-xs font-medium flex items-center gap-1 hover:bg-orange-100"
+                            >
+                              <RotateCcw size={12} /> Reset
                             </button>
                           )}
                           
