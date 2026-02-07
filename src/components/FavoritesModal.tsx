@@ -85,23 +85,6 @@ export const FavoritesModal = ({
                       <span className="text-xs text-blush-500">
                         {formatCategory(card.category)}
                       </span>
-                      {isTextCard(card) && (
-                        <>
-                          <span className="text-blush-300">•</span>
-                          <div className="flex gap-0.5">
-                            {[1, 2, 3].map((level) => (
-                              <span
-                                key={level}
-                                className={`w-1.5 h-1.5 rounded-full ${
-                                  level <= card.intensity
-                                    ? "bg-accent-pink"
-                                    : "bg-blush-200"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        </>
-                      )}
                     </div>
                   </div>
                   <button

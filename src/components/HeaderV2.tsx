@@ -81,7 +81,7 @@ export const HeaderV2 = ({
             }`}
           >
             <History size={10} />
-            {seenCount} / {totalCards} cards
+            {Math.min(seenCount, totalCards)} / {totalCards} cards
           </button>
         )}
       </div>

@@ -356,23 +356,6 @@ export const ComplimentCard = ({
               >
                 "<TypewriterText text={withPet(card.text)} delay={200} forceReduceMotion={reduceMotion} />"
               </motion.p>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="flex gap-1 sm:gap-1.5 mt-2 sm:mt-4"
-              >
-                {[1, 2, 3].map((level) => (
-                  <span
-                    key={level}
-                    className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-colors ${
-                      level <= card.intensity
-                        ? "bg-accent-pink"
-                        : "bg-blush-200"
-                    }`}
-                  />
-                ))}
-              </motion.div>
             </>
           )}
 

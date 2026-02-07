@@ -120,25 +120,6 @@ export const ComplimentCard = ({
           >
             "{withPet(compliment.text)}"
           </motion.p>
-
-          {/* Intensity dots */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="flex gap-1.5 mt-6"
-          >
-            {[1, 2, 3].map((level) => (
-              <span
-                key={level}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  level <= compliment.intensity
-                    ? "bg-accent-pink"
-                    : "bg-blush-200"
-                }`}
-              />
-            ))}
-          </motion.div>
         </div>
 
         {/* Wax seal stamp */}
