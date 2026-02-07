@@ -3,31 +3,47 @@
 // Uses AppShell for 100dvh fixed layout
 // ============================================================
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback, lazy, Suspense, startTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppShell, HeaderSection, MainSection, BottomNavSection, CardContainer } from "./layout";
 import { BottomNav } from "./layout/BottomNav";
 import { HeaderV2 } from "./HeaderV2";
 import { ComplimentCard } from "./CardRenderer";
-import { StatsDrawer } from "./StatsDrawer";
-import { VoucherInventoryModal } from "./VoucherInventoryModal";
-import { FavoritesModal } from "./FavoritesModal";
-import { SettingsModal } from "./SettingsModal";
-import { NotesModal } from "./NotesModal";
-import { OpenWhenModalV2 } from "./OpenWhenModalV2";
 import { EndScreen } from "./EndScreen";
 import { SkipLink } from "./SkipLink";
 import { Mascots } from "./mascots/Mascots";
 import { MoodPickerV2 } from "./MoodPickerV2";
-import { AdminAuth, AdminDashboard, isAdminSessionValid } from "./admin";
-import { Cloud } from "lucide-react";
+import { AdminAuth, isAdminSessionValid } from "./admin";
+import { Cloud, Heart, Loader2 } from "lucide-react";
 
 import { MoodKey } from "../config";
 import { AppStateReturn } from "../hooks/useAppState";
+import { Card } from "../types";
 import { useVoucherInventory } from "../api/hooks";
 import { allCards, getAvailableCards } from "../data/cards";
 import { getNotes } from "../utils/storage";
 import { fetchUnreadNotesCount } from "../utils/cloudStorage";
+
+// Lazy-loaded heavy modals for performance
+const StatsDrawer = lazy(() => import("./StatsDrawer").then(m => ({ default: m.StatsDrawer })));
+const VoucherInventoryModal = lazy(() => import("./VoucherInventoryModal").then(m => ({ default: m.VoucherInventoryModal })));
+const FavoritesModal = lazy(() => import("./FavoritesModal").then(m => ({ default: m.FavoritesModal })));
+const SettingsModal = lazy(() => import("./SettingsModal").then(m => ({ default: m.SettingsModal })));
+const NotesModal = lazy(() => import("./NotesModal").then(m => ({ default: m.NotesModal })));
+const OpenWhenModalV2 = lazy(() => import("./OpenWhenModalV2").then(m => ({ default: m.OpenWhenModalV2 })));
+const SeenCardsModal = lazy(() => import("./SeenCardsModal").then(m => ({ default: m.SeenCardsModal })));
+const ReminderModal = lazy(() => import("./ReminderModal").then(m => ({ default: m.ReminderModal })));
+const AdminDashboard = lazy(() => import("./admin").then(m => ({ default: m.AdminDashboard })));
+
+// Loading fallback for lazy-loaded modals
+const ModalLoadingFallback = () => (
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div className="bg-white rounded-xl p-6 flex items-center gap-3">
+      <Loader2 className="w-5 h-5 animate-spin text-accent-pink" />
+      <span className="text-sm text-gray-600">Loading...</span>
+    </div>
+  </div>
+);
 
 interface MainContentV2Props {
   state: AppStateReturn;
@@ -102,9 +118,12 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
     currentCard,
     drawCount,
     secretUnlocked,
+    secretProgressDraws,
+    secretUnlockThreshold,
     dailyMode,
     dailyCardDrawn,
     currentMood,
+    openWhenMode,
     cardKey,
     // selectedSticker available but not currently used
 
@@ -156,16 +175,35 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
   // New modal states
   const [isStatsOpen, setIsStatsOpen] = useState(false);
   const [isVouchersOpen, setIsVouchersOpen] = useState(false);
+  const [isReminderOpen, setIsReminderOpen] = useState(false);
+  const [isSeenCardsOpen, setIsSeenCardsOpen] = useState(false);
+  const [viewingCard, setViewingCard] = useState<Card | null>(null);
   
   // Admin states
   const [showAdminAuth, setShowAdminAuth] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
 
+  // Wrapped state setters for lazy-loaded modals to avoid Suspense issues
+  const openStats = useCallback(() => startTransition(() => setIsStatsOpen(true)), []);
+  const closeStats = useCallback(() => setIsStatsOpen(false), []);
+  const openVouchers = useCallback(() => startTransition(() => setIsVouchersOpen(true)), []);
+  const closeVouchers = useCallback(() => setIsVouchersOpen(false), []);
+  const openSeenCards = useCallback(() => startTransition(() => setIsSeenCardsOpen(true)), []);
+  const closeSeenCards = useCallback(() => setIsSeenCardsOpen(false), []);
+  const openAdminDashboard = useCallback(() => startTransition(() => setShowAdminDashboard(true)), []);
+  const closeAdminDashboard = useCallback(() => setShowAdminDashboard(false), []);
+  
+  // Handler for viewing a specific card from seen history
+  const handleViewSeenCard = useCallback((card: Card) => {
+    setViewingCard(card);
+    setIsSeenCardsOpen(false); // Close modal to show the card
+  }, []);
+
   // Handle admin long-press on settings
   const handleAdminLongPress = () => {
     if (isAdminSessionValid()) {
       // Already authenticated, go straight to dashboard
-      setShowAdminDashboard(true);
+      openAdminDashboard();
     } else {
       // Need to authenticate first
       setShowAdminAuth(true);
@@ -174,15 +212,15 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
 
   const handleAdminAuthSuccess = () => {
     setShowAdminAuth(false);
-    setShowAdminDashboard(true);
+    openAdminDashboard();
   };
 
   // Voucher inventory
   const { inventory } = useVoucherInventory();
   const voucherCount = inventory?.totalAvailable || 0;
 
-  // Calculate card counts
-  const availableCards = useMemo(() => getAvailableCards(secretUnlocked), [secretUnlocked]);
+  // Calculate card counts - include openWhenMode filter for accurate count
+  const availableCards = useMemo(() => getAvailableCards(secretUnlocked, undefined, openWhenMode || undefined), [secretUnlocked, openWhenMode]);
   const notesCount = getNotes().length;
   
   // Fetch unread notes count from cloud (async)
@@ -245,7 +283,14 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
       reasonsLogged,
       
       secretUnlocked,
-      secretsSeenCount: 0, // TODO: track this
+      secretsSeenCount: secretUnlocked 
+        ? (state.seenIds || []).filter(id => {
+            const card = allCards.find(c => c.id === id);
+            return card?.category === "secret";
+          }).length 
+        : 0,
+      secretProgressDraws: secretProgressDraws || 0,
+      secretUnlockThreshold: secretUnlockThreshold || 25,
       
       currentDrawStreak: 0, // TODO: from API
       longestDrawStreak: 0,
@@ -253,10 +298,10 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
       longestLoveStreak: 0,
       
       unlockedThemes: unlockedThemes as string[],
-      loveMeterValue: 0, // TODO: from state
+      loveMeterValue: state.loveMeterValue,
       loveMeterMax: 100,
     };
-  }, [availableCards, drawCount, favorites.length, notesCount, reasonsLogged, secretUnlocked, unlockedThemes]);
+  }, [availableCards, drawCount, favorites.length, notesCount, reasonsLogged, secretUnlocked, secretProgressDraws, secretUnlockThreshold, state.seenIds, state.loveMeterValue, unlockedThemes]);
 
   // Determine if dark theme
   const isDark = currentTheme === "night";
@@ -269,12 +314,15 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
       <HeaderSection>
         <HeaderV2
           onOpenSettings={() => setIsSettingsOpen(true)}
-          onOpenStats={() => setIsStatsOpen(true)}
-          onOpenVouchers={() => setIsVouchersOpen(true)}
+          onOpenStats={openStats}
+          onOpenVouchers={openVouchers}
+          onOpenSeenCards={openSeenCards}
           onToggleMute={toggleMute}
           onAdminLongPress={handleAdminLongPress}
           isMuted={isMuted}
           voucherCount={voucherCount}
+          seenCount={state.seenIds?.length || 0}
+          totalCards={availableCards.length}
           isDark={isDark}
         />
       </HeaderSection>
@@ -293,17 +341,57 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
           />
         </div>
 
-        {/* Card */}
+        {/* Card - show viewingCard from seen history if selected, otherwise currentCard */}
         <CardContainer>
           <ComplimentCard
-            card={currentCard}
-            isFavorite={isCurrentFavorite}
-            cardKey={cardKey}
-            onSave={currentCard ? _onSave : undefined}
+            card={viewingCard || currentCard}
+            isFavorite={viewingCard ? favorites.includes(viewingCard.id) : isCurrentFavorite}
+            cardKey={viewingCard ? Date.now() : cardKey}
+            onSave={viewingCard ? undefined : (currentCard ? _onSave : undefined)}
             isDark={isDark}
             reduceMotion={reduceMotionEnabled}
           />
+          {viewingCard && (
+            <motion.button
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              onClick={() => setViewingCard(null)}
+              className={`
+                mt-3 px-4 py-2 rounded-full text-xs font-medium
+                flex items-center gap-1.5 min-h-[44px] mx-auto
+                transition-all hover:scale-105
+                ${isDark 
+                  ? "bg-white/10 text-white/80 hover:bg-white/20" 
+                  : "bg-blush-100 text-blush-700 hover:bg-blush-200"
+                }
+              `}
+            >
+              Back to current card
+            </motion.button>
+          )}
         </CardContainer>
+
+        {/* Need a reminder button */}
+        {!viewingCard && (
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            onClick={() => setIsReminderOpen(true)}
+            className={`
+              -mt-6 px-4 py-2 rounded-full text-xs font-medium
+              flex items-center gap-1.5 min-h-[44px] mx-auto
+              transition-all hover:scale-105
+              ${isDark 
+                ? "bg-white/10 text-white/80 hover:bg-white/20" 
+                : "bg-blush-100 text-blush-700 hover:bg-blush-200"
+              }
+            `}
+          >
+            <Heart size={14} fill="currentColor" />
+            Need a reminder?
+          </motion.button>
+        )}
       </MainSection>
 
       {/* Bottom Navigation */}
@@ -318,6 +406,10 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
           favoritesCount={favorites.length}
           notesCount={notesCount}
           unreadNotesCount={unreadNotesFromAdmin}
+          dailyMode={dailyMode}
+          drawsRemaining={state.drawsRemaining}
+          dailyLimit={state.dailyLimit}
+          timeUntilNextDraw={state.timeUntilNextDraw}
         />
       </BottomNavSection>
 
@@ -325,59 +417,91 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
       {/* MODALS & DRAWERS */}
       {/* ============================================================ */}
 
-      {/* Stats Drawer */}
-      <StatsDrawer
-        isOpen={isStatsOpen}
-        onClose={() => setIsStatsOpen(false)}
-        stats={stats}
+      {/* Reminder Modal */}
+      <ReminderModal
+        isOpen={isReminderOpen}
+        onClose={() => setIsReminderOpen(false)}
       />
 
-      {/* Voucher Inventory */}
-      <VoucherInventoryModal
-        isOpen={isVouchersOpen}
-        onClose={() => setIsVouchersOpen(false)}
-      />
+      {/* Lazy-loaded modals wrapped in Suspense */}
+      <Suspense fallback={<ModalLoadingFallback />}>
+        {/* Stats Drawer */}
+        {isStatsOpen && (
+          <StatsDrawer
+            isOpen={isStatsOpen}
+            onClose={closeStats}
+            stats={stats}
+          />
+        )}
 
-      {/* Favorites */}
-      <FavoritesModal
-        isOpen={isFavoritesOpen}
-        onClose={() => setIsFavoritesOpen(false)}
-        favoriteIds={favorites}
-        onRemove={onRemoveFavorite}
-      />
+        {/* Voucher Inventory */}
+        {isVouchersOpen && (
+          <VoucherInventoryModal
+            isOpen={isVouchersOpen}
+            onClose={closeVouchers}
+          />
+        )}
 
-      {/* Settings */}
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        currentTheme={currentTheme}
-        onThemeChange={setTheme}
-        unlockedThemes={unlockedThemes}
-        dailyModeEnabled={dailyMode}
-        onDailyModeToggle={toggleDailyMode}
-        heartTrailEnabled={heartTrailEnabled}
-        onHeartTrailToggle={() => setHeartTrailEnabled(!heartTrailEnabled)}
-        reduceMotionEnabled={reduceMotionEnabled}
-        onReduceMotionToggle={toggleReduceMotion}
-        noRepeatEnabled={noRepeatEnabled}
-        onNoRepeatToggle={toggleNoRepeat}
-        reasonsLogged={reasonsLogged}
-      />
+        {/* Favorites */}
+        {isFavoritesOpen && (
+          <FavoritesModal
+            isOpen={isFavoritesOpen}
+            onClose={() => setIsFavoritesOpen(false)}
+            favoriteIds={favorites}
+            onRemove={onRemoveFavorite}
+          />
+        )}
 
-      {/* Notes */}
-      <NotesModal
-        isOpen={isNotesOpen}
-        onClose={() => setIsNotesOpen(false)}
-      />
+        {/* Settings */}
+        {isSettingsOpen && (
+          <SettingsModal
+            isOpen={isSettingsOpen}
+            onClose={() => setIsSettingsOpen(false)}
+            currentTheme={currentTheme}
+            onThemeChange={setTheme}
+            unlockedThemes={unlockedThemes}
+            dailyModeEnabled={dailyMode}
+            onDailyModeToggle={toggleDailyMode}
+            heartTrailEnabled={heartTrailEnabled}
+            onHeartTrailToggle={() => setHeartTrailEnabled(!heartTrailEnabled)}
+            reduceMotionEnabled={reduceMotionEnabled}
+            onReduceMotionToggle={toggleReduceMotion}
+            noRepeatEnabled={noRepeatEnabled}
+            onNoRepeatToggle={toggleNoRepeat}
+            reasonsLogged={reasonsLogged}
+          />
+        )}
 
-      {/* Open When */}
-      <OpenWhenModalV2
-        isOpen={isOpenWhenOpen}
-        onClose={() => setIsOpenWhenOpen(false)}
-        currentMode={null}
-        onSelectMode={(mode) => mode && onOpenWhenSelect(mode)}
-        secretUnlocked={secretUnlocked}
-      />
+        {/* Notes */}
+        {isNotesOpen && (
+          <NotesModal
+            isOpen={isNotesOpen}
+            onClose={() => setIsNotesOpen(false)}
+          />
+        )}
+
+        {/* Open When */}
+        {isOpenWhenOpen && (
+          <OpenWhenModalV2
+            isOpen={isOpenWhenOpen}
+            onClose={() => setIsOpenWhenOpen(false)}
+            currentMode={null}
+            onSelectMode={(mode) => mode && onOpenWhenSelect(mode)}
+            secretUnlocked={secretUnlocked}
+          />
+        )}
+        
+        {/* Seen Cards History */}
+        {isSeenCardsOpen && (
+          <SeenCardsModal
+            isOpen={isSeenCardsOpen}
+            onClose={closeSeenCards}
+            seenIds={state.seenIds || []}
+            onViewCard={handleViewSeenCard}
+            favorites={favorites as string[]}
+          />
+        )}
+      </Suspense>
 
       {/* Mood Picker */}
       <AnimatePresence>
@@ -407,11 +531,15 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
         onSuccess={handleAdminAuthSuccess}
       />
 
-      {/* Admin Dashboard */}
-      <AdminDashboard
-        isOpen={showAdminDashboard}
-        onClose={() => setShowAdminDashboard(false)}
-      />
+      {/* Admin Dashboard (lazy loaded) */}
+      <Suspense fallback={<ModalLoadingFallback />}>
+        {showAdminDashboard && (
+          <AdminDashboard
+            isOpen={showAdminDashboard}
+            onClose={closeAdminDashboard}
+          />
+        )}
+      </Suspense>
     </AppShell>
   );
 };

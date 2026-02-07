@@ -30,6 +30,7 @@ export const useAppState = ({
   const { isMuted, toggleMute, playPop, playChime } = useSound();
   const {
     reasonsLogged,
+    loveMeterValue,
     unlockedThemes,
     logReason,
     addLovePoints,
@@ -47,9 +48,17 @@ export const useAppState = ({
     isLoading,
     isDeckExhausted,
     secretUnlocked,
+    secretProgressDraws,
+    secretUnlockThreshold,
     dailyMode,
     dailyCardDrawn,
+    dailyDrawsToday,
+    drawsRemaining,
+    timeUntilNextDraw,
+    dailyLimit,
     currentMood,
+    openWhenMode,
+    seenIds,
     drawCard,
     resetDeck,
     unlockSecretDeck,
@@ -304,17 +313,26 @@ export const useAppState = ({
 
     // Progress
     reasonsLogged,
+    loveMeterValue,
 
     // Deck state
     currentCard,
     drawCount,
     isLoading,
     secretUnlocked,
+    secretProgressDraws,
+    secretUnlockThreshold,
     dailyMode,
     dailyCardDrawn,
+    dailyDrawsToday,
+    drawsRemaining,
+    timeUntilNextDraw,
+    dailyLimit,
     currentMood,
+    openWhenMode,
     cardKey,
     selectedSticker,
+    seenIds,
 
     // Favorites
     favorites,
