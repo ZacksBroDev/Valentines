@@ -41,7 +41,7 @@ describe("ToastContext", () => {
     fireEvent.click(screen.getByText("Show Toast"));
 
     expect(screen.getByText("Test message")).toBeInTheDocument();
-    expect(screen.getByText("🎉")).toBeInTheDocument();
+    // Icons are now Lucide SVGs, not emoji text
   });
 
   it("should show toast without emoji", () => {

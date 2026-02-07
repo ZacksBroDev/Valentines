@@ -39,23 +39,23 @@ describe("helpers", () => {
 
   describe("formatCategory", () => {
     it("should format sweet category", () => {
-      expect(formatCategory("sweet")).toBe("💗 Sweet");
+      expect(formatCategory("sweet")).toBe("Sweet");
     });
 
     it("should format funny category", () => {
-      expect(formatCategory("funny")).toBe("😄 Funny");
+      expect(formatCategory("funny")).toBe("Funny");
     });
 
     it("should format supportive category", () => {
-      expect(formatCategory("supportive")).toBe("💪 Supportive");
+      expect(formatCategory("supportive")).toBe("Supportive");
     });
 
     it("should format spicy-lite category with special handling", () => {
-      expect(formatCategory("spicy-lite")).toBe("🔥 Spicy");
+      expect(formatCategory("spicy-lite")).toBe("Spicy");
     });
 
     it("should format secret category", () => {
-      expect(formatCategory("secret")).toBe("🔐 Secret");
+      expect(formatCategory("secret")).toBe("Secret");
     });
   });
 
