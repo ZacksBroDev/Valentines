@@ -95,14 +95,14 @@ export const shareCard = async (card: Card): Promise<boolean> => {
   return shareCompliment(text);
 };
 
-// Format category for display
+// Format category for display (without emojis - use CATEGORY_ICONS for icons)
 export const formatCategory = (category: CardCategory): string => {
   const labels: Record<CardCategory, string> = {
-    sweet: "💗 Sweet",
-    funny: "😄 Funny",
-    supportive: "💪 Supportive",
-    "spicy-lite": "🔥 Spicy",
-    secret: "🔐 Secret",
+    sweet: "Sweet",
+    funny: "Funny",
+    supportive: "Supportive",
+    "spicy-lite": "Spicy",
+    secret: "Secret",
   };
   return labels[category] || category;
 };
