@@ -28,14 +28,18 @@ import {
 } from "lucide-react";
 import { Modal } from "./Modal";
 import { useVoucherInventory } from "../api/hooks";
-import { VoucherInventoryItem, VoucherInstance, VoucherTemplate } from "../api/types";
+import {
+  VoucherInventoryItem,
+  VoucherInstance,
+  VoucherTemplate,
+} from "../api/types";
 import { useToast } from "../context/ToastContext";
-import { 
-  submitVoucherRequest, 
-  fetchVoucherRequests, 
+import {
+  submitVoucherRequest,
+  fetchVoucherRequests,
   updateVoucherRequestStatus,
   removeVoucherRequest,
-  CloudVoucherRequest 
+  CloudVoucherRequest,
 } from "../utils/cloudStorage";
 
 interface VoucherInventoryModalProps {
@@ -76,7 +80,9 @@ interface VoucherCardProps {
 
 const VoucherCard = ({ item, onRedeem }: VoucherCardProps) => {
   const Icon = getVoucherIcon(item.template);
-  const availableInstance = item.instances.find((i) => i.status === "AVAILABLE");
+  const availableInstance = item.instances.find(
+    (i) => i.status === "AVAILABLE",
+  );
   const isLegendary = item.template.rarity === "legendary";
   const isRare = item.template.rarity === "rare";
 
@@ -86,9 +92,10 @@ const VoucherCard = ({ item, onRedeem }: VoucherCardProps) => {
       animate={{ opacity: 1, y: 0 }}
       className={`
         relative p-4 rounded-2xl border-2 transition-all
-        ${item.available > 0
-          ? "bg-white border-blush-200 hover:border-accent-pink cursor-pointer"
-          : "bg-gray-50 border-gray-200 opacity-60"
+        ${
+          item.available > 0
+            ? "bg-white border-blush-200 hover:border-accent-pink cursor-pointer"
+            : "bg-gray-50 border-gray-200 opacity-60"
         }
         ${isLegendary ? "ring-2 ring-yellow-200" : ""}
         ${isRare ? "ring-2 ring-purple-200" : ""}
@@ -109,10 +116,12 @@ const VoucherCard = ({ item, onRedeem }: VoucherCardProps) => {
 
       <div className="flex items-start gap-3">
         {/* Icon */}
-        <div className={`
+        <div
+          className={`
           w-12 h-12 rounded-xl flex items-center justify-center
           ${item.available > 0 ? "bg-blush-100 text-accent-pink" : "bg-gray-100 text-gray-400"}
-        `}>
+        `}
+        >
           <Icon size={24} />
         </div>
 
@@ -127,9 +136,13 @@ const VoucherCard = ({ item, onRedeem }: VoucherCardProps) => {
 
           {/* Status counts */}
           <div className="flex items-center gap-2 mt-2">
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
-              item.available > 0 ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"
-            }`}>
+            <span
+              className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                item.available > 0
+                  ? "bg-green-100 text-green-700"
+                  : "bg-gray-100 text-gray-500"
+              }`}
+            >
               {item.available} available
             </span>
             {item.pending > 0 && (
@@ -162,7 +175,12 @@ interface RedemptionFlowProps {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const RedemptionFlow = ({ instance: _instance, template, onConfirm, onCancel }: RedemptionFlowProps) => {
+const RedemptionFlow = ({
+  instance: _instance,
+  template,
+  onConfirm,
+  onCancel,
+}: RedemptionFlowProps) => {
   // _instance reserved for future use (e.g., showing remaining uses)
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -201,20 +219,24 @@ const RedemptionFlow = ({ instance: _instance, template, onConfirm, onCancel }: 
             onClick={() => setSelectedOption(option)}
             className={`
               w-full p-3 rounded-xl text-left transition-all
-              ${selectedOption === option
-                ? "bg-accent-pink text-white"
-                : "bg-gray-50 hover:bg-blush-50 text-gray-700"
+              ${
+                selectedOption === option
+                  ? "bg-accent-pink text-white"
+                  : "bg-gray-50 hover:bg-blush-50 text-gray-700"
               }
             `}
           >
             <div className="flex items-center gap-3">
-              <div className={`
+              <div
+                className={`
                 w-5 h-5 rounded-full border-2 flex items-center justify-center
-                ${selectedOption === option
-                  ? "border-white bg-white"
-                  : "border-gray-300"
+                ${
+                  selectedOption === option
+                    ? "border-white bg-white"
+                    : "border-gray-300"
                 }
-              `}>
+              `}
+              >
                 {selectedOption === option && (
                   <Check size={12} className="text-accent-pink" />
                 )}
@@ -238,9 +260,10 @@ const RedemptionFlow = ({ instance: _instance, template, onConfirm, onCancel }: 
           disabled={!selectedOption || isSubmitting}
           className={`
             flex-1 py-3 rounded-xl font-medium transition-all
-            ${selectedOption && !isSubmitting
-              ? "bg-gradient-button text-white"
-              : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            ${
+              selectedOption && !isSubmitting
+                ? "bg-gradient-button text-white"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
             }
           `}
         >
@@ -251,7 +274,10 @@ const RedemptionFlow = ({ instance: _instance, template, onConfirm, onCancel }: 
   );
 };
 
-export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModalProps) => {
+export const VoucherInventoryModal = ({
+  isOpen,
+  onClose,
+}: VoucherInventoryModalProps) => {
   const {
     inventory,
     isLoading,
@@ -260,13 +286,14 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
     requestRedemption,
     refreshInventory,
   } = useVoucherInventory();
-  
+
   const { showUndoToast, showToast } = useToast();
 
-  const [selectedInstance, setSelectedInstance] = useState<VoucherInstance | null>(null);
+  const [selectedInstance, setSelectedInstance] =
+    useState<VoucherInstance | null>(null);
   const [cloudRequests, setCloudRequests] = useState<CloudVoucherRequest[]>([]);
   const [activeFilter, setActiveFilter] = useState<VoucherFilter>("available");
-  
+
   // Fetch cloud requests to show counter-proposals and approved requests
   useEffect(() => {
     if (isOpen) {
@@ -278,54 +305,86 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
       return () => clearInterval(interval);
     }
   }, [isOpen]);
-  
+
   // Categorize requests by status
-  const categorizedRequests = useMemo(() => ({
-    pending: cloudRequests.filter(r => r.status === "pending"),
-    approved: cloudRequests.filter(r => r.status === "approved"),
-    countered: cloudRequests.filter(r => r.status === "counter-proposed"),
-    redeemed: cloudRequests.filter(r => r.status === "redeemed" || r.status === "archived"),
-  }), [cloudRequests]);
-  
+  const categorizedRequests = useMemo(
+    () => ({
+      pending: cloudRequests.filter((r) => r.status === "pending"),
+      approved: cloudRequests.filter((r) => r.status === "approved"),
+      countered: cloudRequests.filter((r) => r.status === "counter-proposed"),
+      redeemed: cloudRequests.filter(
+        (r) => r.status === "redeemed" || r.status === "archived",
+      ),
+    }),
+    [cloudRequests],
+  );
+
   // Filter counts for chips
-  const filterCounts = useMemo(() => ({
-    available: inventory?.totalAvailable || 0,
-    pending: categorizedRequests.pending.length + categorizedRequests.countered.length,
-    approved: categorizedRequests.approved.length,
-    completed: categorizedRequests.redeemed.length,
-  }), [inventory, categorizedRequests]);
-  
+  const filterCounts = useMemo(
+    () => ({
+      available: inventory?.totalAvailable || 0,
+      pending:
+        categorizedRequests.pending.length +
+        categorizedRequests.countered.length,
+      approved: categorizedRequests.approved.length,
+      completed: categorizedRequests.redeemed.length,
+    }),
+    [inventory, categorizedRequests],
+  );
+
   // Action handlers for request responses with undo support
   const handleAcceptCounter = async (requestId: string) => {
-    const previousStatus = cloudRequests.find(r => r.id === requestId)?.status;
+    const previousStatus = cloudRequests.find(
+      (r) => r.id === requestId,
+    )?.status;
     await updateVoucherRequestStatus(requestId, "approved");
     fetchVoucherRequests().then(setCloudRequests);
-    
+
     showUndoToast("Counter accepted!", async () => {
       if (previousStatus) {
-        await updateVoucherRequestStatus(requestId, previousStatus as "pending" | "approved" | "denied" | "counter-proposed" | "redeemed" | "archived");
+        await updateVoucherRequestStatus(
+          requestId,
+          previousStatus as
+            | "pending"
+            | "approved"
+            | "denied"
+            | "counter-proposed"
+            | "redeemed"
+            | "archived",
+        );
         fetchVoucherRequests().then(setCloudRequests);
         showToast("Reverted to previous status", "info");
       }
     });
   };
-  
+
   const handleMarkRedeemed = async (requestId: string) => {
-    const previousStatus = cloudRequests.find(r => r.id === requestId)?.status;
+    const previousStatus = cloudRequests.find(
+      (r) => r.id === requestId,
+    )?.status;
     await updateVoucherRequestStatus(requestId, "redeemed");
     fetchVoucherRequests().then(setCloudRequests);
     refreshInventory();
-    
+
     showUndoToast("Marked as redeemed!", async () => {
       if (previousStatus) {
-        await updateVoucherRequestStatus(requestId, previousStatus as "pending" | "approved" | "denied" | "counter-proposed" | "redeemed" | "archived");
+        await updateVoucherRequestStatus(
+          requestId,
+          previousStatus as
+            | "pending"
+            | "approved"
+            | "denied"
+            | "counter-proposed"
+            | "redeemed"
+            | "archived",
+        );
         fetchVoucherRequests().then(setCloudRequests);
         refreshInventory();
         showToast("Reverted to previous status", "info");
       }
     });
   };
-  
+
   // Legacy filter compatibility
   const counterProposals = categorizedRequests.countered;
   const approvedRequests = categorizedRequests.approved;
@@ -337,15 +396,16 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
 
   const handleConfirmRedeem = async (option: string) => {
     if (!selectedInstance) return;
-    
+
     let cloudRequestId: string | null = null;
-    
+
     // ALWAYS sync to cloud for admin to see, regardless of local success
     console.log("📤 Syncing voucher request to cloud...");
     try {
       const cloudResult = await submitVoucherRequest({
         voucherType: selectedInstance.templateType,
-        voucherTitle: selectedInstance.template?.title || selectedInstance.templateType,
+        voucherTitle:
+          selectedInstance.template?.title || selectedInstance.templateType,
         requestedDate: null,
       });
       console.log("✅ Voucher request synced to cloud:", cloudResult);
@@ -353,7 +413,7 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
     } catch (err) {
       console.error("❌ Failed to sync to cloud:", err);
     }
-    
+
     // Try local update (may fail but that's ok)
     try {
       await requestRedemption({
@@ -361,16 +421,19 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
         selectedOption: option,
       });
     } catch (err) {
-      console.warn("Local redemption failed (ok, cloud sync already done):", err);
+      console.warn(
+        "Local redemption failed (ok, cloud sync already done):",
+        err,
+      );
       // Force refresh inventory to update counts anyway
       refreshInventory();
     }
-    
+
     setSelectedInstance(null);
-    
+
     // Refresh cloud requests to show the new pending request
     fetchVoucherRequests().then(setCloudRequests);
-    
+
     // Show undo toast instead of success modal
     showUndoToast("Voucher requested!", async () => {
       if (cloudRequestId) {
@@ -387,7 +450,12 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Vouchers" icon={<Ticket size={20} />}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Vouchers"
+      icon={<Ticket size={20} />}
+    >
       <AnimatePresence mode="wait">
         {/* Redemption flow */}
         {selectedInstance && selectedInstance.template && (
@@ -417,31 +485,36 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
           >
             {/* Filter Chips */}
             <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
-              {([
-                { key: "available", label: "Available", icon: Gift },
-                { key: "pending", label: "Pending", icon: Clock },
-                { key: "approved", label: "Ready", icon: CheckCircle },
-                { key: "completed", label: "History", icon: Check },
-              ] as const).map(({ key, label, icon: Icon }) => (
+              {(
+                [
+                  { key: "available", label: "Available", icon: Gift },
+                  { key: "pending", label: "Pending", icon: Clock },
+                  { key: "approved", label: "Ready", icon: CheckCircle },
+                  { key: "completed", label: "History", icon: Check },
+                ] as const
+              ).map(({ key, label, icon: Icon }) => (
                 <button
                   key={key}
                   onClick={() => setActiveFilter(key)}
                   className={`
                     flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium 
                     whitespace-nowrap transition-all min-h-[36px]
-                    ${activeFilter === key
-                      ? "bg-accent-pink text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ${
+                      activeFilter === key
+                        ? "bg-accent-pink text-white"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }
                   `}
                 >
                   <Icon size={14} />
                   {label}
                   {filterCounts[key] > 0 && (
-                    <span className={`
+                    <span
+                      className={`
                       ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold
                       ${activeFilter === key ? "bg-white/20" : "bg-gray-200"}
-                    `}>
+                    `}
+                    >
                       {filterCounts[key]}
                     </span>
                   )}
@@ -456,7 +529,10 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
                 {inventory && (
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-500">
-                      {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                      {new Date().toLocaleDateString("en-US", {
+                        month: "long",
+                        year: "numeric",
+                      })}
                     </span>
                     <span className="font-medium text-accent-pink">
                       {inventory.totalAvailable} available
@@ -481,7 +557,9 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
                 {inventory && inventory.items.length === 0 && (
                   <div className="py-8 text-center">
                     <Gift size={48} className="mx-auto text-gray-300 mb-3" />
-                    <p className="text-gray-500">No vouchers available this month</p>
+                    <p className="text-gray-500">
+                      No vouchers available this month
+                    </p>
                   </div>
                 )}
               </>
@@ -497,20 +575,30 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
                       <ArrowRight size={12} />
                       Needs Your Response
                     </h4>
-                    {counterProposals.map(request => (
-                      <div key={request.id} className="bg-amber-50 rounded-xl p-4 border-2 border-amber-300">
+                    {counterProposals.map((request) => (
+                      <div
+                        key={request.id}
+                        className="bg-amber-50 rounded-xl p-4 border-2 border-amber-300"
+                      >
                         <div className="flex items-center gap-2 text-amber-700 mb-2">
                           <Calendar size={16} />
-                          <span className="text-sm font-bold">Counter-Proposal</span>
+                          <span className="text-sm font-bold">
+                            Counter-Proposal
+                          </span>
                         </div>
-                        <p className="font-medium text-gray-800">{request.voucherTitle}</p>
+                        <p className="font-medium text-gray-800">
+                          {request.voucherTitle}
+                        </p>
                         {request.counterDate && (
                           <p className="text-sm text-amber-600 mt-1">
-                            Suggested: {new Date(request.counterDate).toLocaleDateString()}
+                            Suggested:{" "}
+                            {new Date(request.counterDate).toLocaleDateString()}
                           </p>
                         )}
                         {request.adminNote && (
-                          <p className="text-sm text-gray-600 mt-1 italic">"{request.adminNote}"</p>
+                          <p className="text-sm text-gray-600 mt-1 italic">
+                            "{request.adminNote}"
+                          </p>
                         )}
                         {/* Action buttons */}
                         <div className="flex gap-2 mt-3">
@@ -522,7 +610,9 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
                             Accept Date
                           </button>
                           <button
-                            onClick={() => {/* TODO: propose new date */}}
+                            onClick={() => {
+                              /* TODO: propose new date */
+                            }}
                             className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors min-h-[44px]"
                           >
                             <Calendar size={16} />
@@ -540,15 +630,21 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
                     <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                       Awaiting Response
                     </h4>
-                    {cloudPending.map(request => (
-                      <div key={request.id} className="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
+                    {cloudPending.map((request) => (
+                      <div
+                        key={request.id}
+                        className="bg-yellow-50 rounded-xl p-4 border border-yellow-200"
+                      >
                         <div className="flex items-center gap-2 text-yellow-700">
                           <Clock size={16} />
                           <span className="text-sm font-medium">Pending</span>
                         </div>
-                        <p className="font-medium text-gray-800 mt-1">{request.voucherTitle}</p>
+                        <p className="font-medium text-gray-800 mt-1">
+                          {request.voucherTitle}
+                        </p>
                         <p className="text-xs text-gray-500 mt-1">
-                          Requested {new Date(request.createdAt).toLocaleDateString()}
+                          Requested{" "}
+                          {new Date(request.createdAt).toLocaleDateString()}
                         </p>
                       </div>
                     ))}
@@ -574,16 +670,22 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
                       <CheckCircle size={12} />
                       Ready to Redeem
                     </h4>
-                    {approvedRequests.map(request => (
-                      <div key={request.id} className="bg-green-50 rounded-xl p-4 border-2 border-green-300">
+                    {approvedRequests.map((request) => (
+                      <div
+                        key={request.id}
+                        className="bg-green-50 rounded-xl p-4 border-2 border-green-300"
+                      >
                         <div className="flex items-center gap-2 text-green-700 mb-2">
                           <Check size={16} />
                           <span className="text-sm font-bold">Approved!</span>
                         </div>
-                        <p className="font-medium text-gray-800">{request.voucherTitle}</p>
+                        <p className="font-medium text-gray-800">
+                          {request.voucherTitle}
+                        </p>
                         {request.counterDate && (
                           <p className="text-sm text-green-600 mt-1">
-                            Scheduled: {new Date(request.counterDate).toLocaleDateString()}
+                            Scheduled:{" "}
+                            {new Date(request.counterDate).toLocaleDateString()}
                           </p>
                         )}
                         {/* Mark as redeemed button */}
@@ -599,9 +701,14 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
                   </>
                 ) : (
                   <div className="py-8 text-center">
-                    <CheckCircle size={48} className="mx-auto text-gray-300 mb-3" />
+                    <CheckCircle
+                      size={48}
+                      className="mx-auto text-gray-300 mb-3"
+                    />
                     <p className="text-gray-500">No approved vouchers yet</p>
-                    <p className="text-xs text-gray-400 mt-1">Request a voucher to get started</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Request a voucher to get started
+                    </p>
                   </div>
                 )}
               </div>
@@ -615,10 +722,15 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
                     <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                       Redemption History
                     </h4>
-                    {categorizedRequests.redeemed.map(request => (
-                      <div key={request.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                    {categorizedRequests.redeemed.map((request) => (
+                      <div
+                        key={request.id}
+                        className="bg-gray-50 rounded-xl p-4 border border-gray-200"
+                      >
                         <div className="flex items-center justify-between">
-                          <p className="font-medium text-gray-800">{request.voucherTitle}</p>
+                          <p className="font-medium text-gray-800">
+                            {request.voucherTitle}
+                          </p>
                           <span className="text-xs text-gray-500">
                             {new Date(request.updatedAt).toLocaleDateString()}
                           </span>
@@ -629,7 +741,9 @@ export const VoucherInventoryModal = ({ isOpen, onClose }: VoucherInventoryModal
                 ) : (
                   <div className="py-8 text-center">
                     <Check size={48} className="mx-auto text-gray-300 mb-3" />
-                    <p className="text-gray-500">No completed redemptions yet</p>
+                    <p className="text-gray-500">
+                      No completed redemptions yet
+                    </p>
                   </div>
                 )}
               </div>
