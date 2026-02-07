@@ -175,12 +175,13 @@ export const ComplimentCard = ({
   reduceMotion,
 }: CardProps) => {
   const [selectedVoucher, setSelectedVoucher] = useState<string | null>(null);
+  const [justRedeemed, setJustRedeemed] = useState(false);
 
   // Check if voucher already redeemed
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const redeemedVouchers = useMemo(() => getRedeemedVouchers(), [card?.id]);
   const isVoucherRedeemed =
-    card && isVoucherCard(card) && redeemedVouchers[card.id];
+    justRedeemed || (card && isVoucherCard(card) && redeemedVouchers[card.id]);
 
   if (!card) {
     return (
@@ -283,8 +284,8 @@ export const ComplimentCard = ({
           })()}
         </div>
 
-        {/* Favorite button - top-right with proper 44px hit area */}
-        {onSave && (
+        {/* Favorite button - top-right with proper 44px hit area (hidden for vouchers) */}
+        {onSave && !isVoucherCard(card) && (
           <motion.button
             onClick={(e) => {
               e.stopPropagation();
@@ -409,6 +410,7 @@ export const ComplimentCard = ({
                         exit={{ opacity: 0, y: 10 }}
                         onClick={() => {
                           redeemVoucher(card.id, selectedVoucher, card.title);
+                          setJustRedeemed(true);
                           onVoucherRedeem?.(selectedVoucher);
                         }}
                         className="w-full mt-3 p-3 rounded-xl bg-green-500 hover:bg-green-600 text-white font-medium text-sm transition-colors flex items-center justify-center gap-2"
