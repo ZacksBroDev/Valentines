@@ -6,7 +6,7 @@ import { withPet } from "../data/cards";
 import { formatCategory, prefersReducedMotion } from "../utils/helpers";
 import { redeemVoucher, getRedeemedVouchers } from "../utils/storage";
 import { CATEGORY_ICONS } from "./icons";
-import { Heart, Mail, Circle, Diamond, Star, Ticket, Music, Clock } from "lucide-react";
+import { Heart, Mail, Circle, Diamond, Star, Ticket, Music, Clock, Check } from "lucide-react";
 
 // Anniversary date constant
 const ANNIVERSARY_DATE = new Date("2024-04-13T00:00:00");
@@ -371,7 +371,7 @@ export const ComplimentCard = ({
               {isVoucherRedeemed ? (
                 <div className="text-center">
                   <p className="text-accent-pink font-medium mb-2">
-                    ✓ Redeemed!
+                    ✓ Added to your stockpile!
                   </p>
                   <p
                     className={`text-sm ${isDark ? "text-gray-300" : "text-gray-500"}`}
@@ -381,14 +381,13 @@ export const ComplimentCard = ({
                 </div>
               ) : (
                 <div className="space-y-2 w-full">
+                  <p className={`text-xs text-center mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                    Pick an option:
+                  </p>
                   {card.options.map((option, i) => (
                     <button
                       key={i}
-                      onClick={() => {
-                        setSelectedVoucher(option);
-                        redeemVoucher(card.id, option, card.title);
-                        onVoucherRedeem?.(option);
-                      }}
+                      onClick={() => setSelectedVoucher(option)}
                       className={`w-full p-3 rounded-xl text-sm transition-all ${
                         selectedVoucher === option
                           ? "bg-accent-pink text-white"
@@ -400,6 +399,25 @@ export const ComplimentCard = ({
                       {option}
                     </button>
                   ))}
+                  
+                  {/* Redeem button - only shows after selection */}
+                  <AnimatePresence>
+                    {selectedVoucher && (
+                      <motion.button
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        onClick={() => {
+                          redeemVoucher(card.id, selectedVoucher, card.title);
+                          onVoucherRedeem?.(selectedVoucher);
+                        }}
+                        className="w-full mt-3 p-3 rounded-xl bg-green-500 hover:bg-green-600 text-white font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                      >
+                        <Check size={16} />
+                        Redeem This Voucher
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
                 </div>
               )}
             </>
