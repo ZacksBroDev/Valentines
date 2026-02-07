@@ -40,6 +40,7 @@ export const STORAGE_KEYS = {
 
   // Vouchers
   REDEEMED_VOUCHERS: `${PREFIX}redeemed-vouchers`,
+  VOUCHER_REDEMPTION_MONTH: `${PREFIX}voucher-redemption-month`,
 
   // Notes
   NOTES: `${PREFIX}notes`,
@@ -176,8 +177,42 @@ export const setCardSticker = (cardId: string, sticker: StickerKey) => {
 };
 
 // ----- VOUCHERS -----
-export const getRedeemedVouchers = (): Record<string, string> =>
-  get(STORAGE_KEYS.REDEEMED_VOUCHERS, {});
+// Get the current month key (e.g., "2026-02")
+const getCurrentMonthKey = (): string => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+};
+
+// Check if vouchers need to be reset (new month)
+const checkVoucherMonthlyReset = (): void => {
+  const currentMonth = getCurrentMonthKey();
+  const storedMonth = get(STORAGE_KEYS.VOUCHER_REDEMPTION_MONTH, '');
+  
+  if (storedMonth !== currentMonth) {
+    // New month! Reset redeemed vouchers
+    console.log('🔄 New month detected, resetting vouchers. Old:', storedMonth, 'New:', currentMonth);
+    set(STORAGE_KEYS.REDEEMED_VOUCHERS, {});
+    set(STORAGE_KEYS.VOUCHER_REDEMPTION_MONTH, currentMonth);
+  }
+};
+
+export const getRedeemedVouchers = (): Record<string, string> => {
+  // Check for monthly reset first
+  checkVoucherMonthlyReset();
+  return get(STORAGE_KEYS.REDEEMED_VOUCHERS, {});
+};
+
+// Get list of redeemed voucher card IDs (for filtering from deck)
+export const getRedeemedVoucherCardIds = (): string[] => {
+  const vouchers = getRedeemedVouchers();
+  return Object.keys(vouchers);
+};
+
+// Get count of redeemed vouchers this month
+export const getRedeemedVoucherCount = (): number => {
+  return Object.keys(getRedeemedVouchers()).length;
+};
+
 export const redeemVoucher = (cardId: string, option: string, voucherTitle?: string) => {
   // Save locally
   const vouchers = getRedeemedVouchers();

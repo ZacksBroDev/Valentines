@@ -4,6 +4,7 @@
 
 import { Card, TextCard, VoucherCard, PlaylistCard } from "../types";
 import { OPEN_WHEN_CATEGORIES, OpenWhenKey } from "../config";
+import { getRedeemedVoucherCardIds } from "../utils/storage";
 
 // ===== PET NAME SYSTEM =====
 // Weighted pet name selection for variety
@@ -1832,9 +1833,15 @@ export function getAvailableCards(
   openWhenMode?: string,
 ): Card[] {
   const allCardsNow = getAllCards();
+  const redeemedVoucherIds = getRedeemedVoucherCardIds();
+  
   let cards = allCardsNow.filter((card) => {
     // Filter out secret cards unless unlocked
     if (card.category === "secret" && !includeSecret) {
+      return false;
+    }
+    // Filter out redeemed voucher cards (they reset monthly)
+    if (card.type === "voucher" && redeemedVoucherIds.includes(card.id)) {
       return false;
     }
     return true;

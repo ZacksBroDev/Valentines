@@ -21,7 +21,7 @@ import { AppStateReturn } from "../hooks/useAppState";
 import { Card } from "../types";
 import { useVoucherInventory } from "../api/hooks";
 import { allCards, getAvailableCards } from "../data/cards";
-import { getNotes } from "../utils/storage";
+import { getNotes, getRedeemedVoucherCount } from "../utils/storage";
 import { fetchUnreadNotesCount } from "../utils/cloudStorage";
 
 // Lazy-loaded heavy modals for performance
@@ -215,12 +215,22 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
     openAdminDashboard();
   };
 
-  // Voucher inventory
+  // Voucher inventory (API-based) + local deck vouchers
   const { inventory } = useVoucherInventory();
-  const voucherCount = inventory?.totalAvailable || 0;
+  const [localVoucherCount, setLocalVoucherCount] = useState(getRedeemedVoucherCount);
+  const voucherCount = (inventory?.totalAvailable || 0) + localVoucherCount;
+  
+  // Handler for when a voucher is redeemed from the deck
+  const handleVoucherRedeemed = useCallback(() => {
+    // Update local voucher count
+    setLocalVoucherCount(getRedeemedVoucherCount());
+    // Note: The deck will automatically exclude the redeemed voucher on next draw
+    // since getAvailableCards filters out redeemed voucher IDs
+  }, []);
 
   // Calculate card counts - include openWhenMode filter for accurate count
-  const availableCards = useMemo(() => getAvailableCards(secretUnlocked, undefined, openWhenMode || undefined), [secretUnlocked, openWhenMode]);
+  // Also re-calculate when local voucher count changes (voucher redeemed = removed from deck)
+  const availableCards = useMemo(() => getAvailableCards(secretUnlocked, undefined, openWhenMode || undefined), [secretUnlocked, openWhenMode, localVoucherCount]);
   const notesCount = getNotes().length;
   
   // Fetch unread notes count from cloud (async)
@@ -348,6 +358,7 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
             isFavorite={viewingCard ? favorites.includes(viewingCard.id) : isCurrentFavorite}
             cardKey={viewingCard ? Date.now() : cardKey}
             onSave={viewingCard ? undefined : (currentCard ? _onSave : undefined)}
+            onVoucherRedeem={handleVoucherRedeemed}
             isDark={isDark}
             reduceMotion={reduceMotionEnabled}
           />
