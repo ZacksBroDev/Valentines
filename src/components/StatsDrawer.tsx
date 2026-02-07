@@ -20,6 +20,7 @@ import {
   Flame,
 } from "lucide-react";
 import { CATEGORY_ICONS, MOOD_ICONS } from "./icons";
+import { SecretProgressIndicator } from "./SecretProgressIndicator";
 
 interface StatsDrawerProps {
   isOpen: boolean;
@@ -56,6 +57,8 @@ interface StatsDrawerProps {
     // Secrets
     secretUnlocked: boolean;
     secretsSeenCount: number;
+    secretProgressDraws: number;
+    secretUnlockThreshold: number;
     
     // Streaks
     currentDrawStreak: number;
@@ -296,24 +299,39 @@ export const StatsDrawer = ({ isOpen, onClose, stats }: StatsDrawerProps) => {
                   {stats.secretUnlocked ? <Unlock size={16} /> : <Lock size={16} />}
                   Secret Deck
                 </h3>
-                <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4">
+                <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 space-y-4">
                   {stats.secretUnlocked ? (
                     <>
-                      <p className="text-sm text-gray-600 mb-2 flex items-center gap-2">
-                        <Unlock size={14} /> Secret deck unlocked!
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        You've seen {stats.secretsSeenCount} secret cards
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-gray-600 flex items-center gap-2">
+                          <Unlock size={14} className="text-purple-500" /> Secret deck unlocked!
+                        </p>
+                        <span className="text-sm font-semibold text-purple-600">
+                          {stats.secretsSeenCount} / {stats.secretCount}
+                        </span>
+                      </div>
+                      <ProgressBar 
+                        value={stats.secretsSeenCount} 
+                        max={stats.secretCount} 
+                        color="bg-purple-500" 
+                      />
+                      <p className="text-xs text-gray-400 text-center">
+                        {stats.secretCount - stats.secretsSeenCount} secret cards remaining
                       </p>
                     </>
                   ) : (
                     <>
-                      <p className="text-sm text-gray-600 mb-2 flex items-center gap-2">
-                        <Lock size={14} /> Secret deck locked
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        Tap the heart mascot 5 times quickly to unlock!
-                      </p>
+                      <SecretProgressIndicator
+                        currentDraws={stats.secretProgressDraws}
+                        maxDraws={stats.secretUnlockThreshold}
+                        isUnlocked={false}
+                        size="md"
+                      />
+                      <div className="pt-2 border-t border-gray-100">
+                        <p className="text-xs text-gray-400 text-center">
+                          💡 Or tap the heart mascot 5 times quickly to unlock instantly!
+                        </p>
+                      </div>
                     </>
                   )}
                 </div>
