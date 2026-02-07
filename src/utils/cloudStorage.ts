@@ -33,16 +33,27 @@ const getClient = () => {
 
 // ============================================================
 // TYPES (match the GraphQL schema)
+// Voucher State Machine: AVAILABLE → REQUESTED → APPROVED/COUNTERED/DECLINED → REDEEMED → ARCHIVED
 // ============================================================
+
+// Cloud voucher request status types
+export type CloudVoucherStatus = 
+  | "pending"          // REQUESTED - awaiting admin action
+  | "approved"         // APPROVED - ready for use
+  | "denied"           // DECLINED - admin rejected
+  | "counter-proposed" // COUNTERED - admin suggested alternative
+  | "redeemed"         // REDEEMED - successfully used
+  | "archived";        // ARCHIVED - historical record
 
 export interface CloudVoucherRequest {
   id: string;
   voucherType: string;
   voucherTitle: string;
   requestedDate: string | null;
-  status: "pending" | "approved" | "denied" | "counter-proposed";
+  status: CloudVoucherStatus;
   counterDate?: string | null;
   adminNote?: string | null;
+  redeemedAt?: string | null;
   createdAt: string;
   updatedAt: string;
   owner?: string | null;
@@ -119,7 +130,7 @@ export const submitVoucherRequest = async (request: {
  */
 export const updateVoucherRequestStatus = async (
   id: string,
-  status: "pending" | "approved" | "denied" | "counter-proposed",
+  status: "pending" | "approved" | "denied" | "counter-proposed" | "redeemed" | "archived",
   counterDate?: string,
   adminNote?: string
 ): Promise<CloudVoucherRequest | null> => {
