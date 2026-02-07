@@ -34,6 +34,7 @@ import {
 } from "./types";
 
 import { submitVoucherRequest, fetchVoucherTemplates, CloudVoucherTemplate, getRarityFromLimit } from "../utils/cloudStorage";
+import { setServerTimeOffset } from "../utils/storage";
 
 // ============================================================
 // PLACEHOLDER - Replace with actual Amplify calls
@@ -51,6 +52,48 @@ export const getCurrentMonthKey = (): string => {
 // Helper to get today's date key
 export const getTodayKey = (): string => {
   return new Date().toISOString().split("T")[0];
+};
+
+// ============================================================
+// SERVER TIME SYNC
+// Fetches server time and calculates offset for timezone hardening
+// ============================================================
+
+export const syncServerTime = async (): Promise<void> => {
+  if (MOCK_MODE) {
+    // In mock mode, use local time (offset = 0)
+    setServerTimeOffset(0);
+    return;
+  }
+  
+  try {
+    // When Amplify is configured, call a lightweight API endpoint
+    // that returns the server timestamp
+    // const response = await API.graphql(graphqlOperation(getServerTime));
+    // const serverTime = response.data.getServerTime.timestamp;
+    // const clientTime = Date.now();
+    // const offset = serverTime - clientTime;
+    // setServerTimeOffset(offset);
+    
+    // Fallback: Use a public time API or AWS time sync
+    const response = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC', {
+      method: 'GET',
+      cache: 'no-cache',
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      const serverTime = new Date(data.datetime).getTime();
+      const clientTime = Date.now();
+      const offset = serverTime - clientTime;
+      setServerTimeOffset(offset);
+      console.log(`[TimeSync] Server time offset: ${offset}ms`);
+    }
+  } catch (error) {
+    console.warn('[TimeSync] Failed to sync server time, using local time', error);
+    // Use local time as fallback
+    setServerTimeOffset(0);
+  }
 };
 
 // ============================================================
@@ -493,8 +536,8 @@ export const voucherApi = {
           template,
           instances: typeInstances,
           available: typeInstances.filter((i) => i.status === "AVAILABLE").length,
-          pending: typeInstances.filter((i) => i.status === "PENDING").length,
-          used: typeInstances.filter((i) => i.status === "USED").length,
+          pending: typeInstances.filter((i) => i.status === "REQUESTED" || i.status === "APPROVED" || i.status === "COUNTERED").length,
+          used: typeInstances.filter((i) => i.status === "REDEEMED" || i.status === "ARCHIVED").length,
           total: typeInstances.length,
         };
       });
@@ -524,7 +567,7 @@ export const voucherApi = {
       if (instance.status !== "AVAILABLE") throw new Error("Voucher not available");
       
       // Update instance status (simulates conditional update)
-      instance.status = "PENDING";
+      instance.status = "REQUESTED";
       instance.version += 1;
       instance.updatedAt = new Date().toISOString();
       
@@ -540,7 +583,7 @@ export const voucherApi = {
         selectedOption: input.selectedOption,
         requestedForDate: input.requestedForDate || null,
         message: input.message || null,
-        status: "PENDING",
+        status: "REQUESTED",
         createdAt: new Date().toISOString(),
         completedAt: null,
         completedByUserId: null,
@@ -577,7 +620,7 @@ export const voucherApi = {
       const redemption = redemptions.find((r) => r.id === input.redemptionId);
       
       if (!redemption) throw new Error("Redemption not found");
-      if (redemption.status !== "PENDING") throw new Error("Redemption not pending");
+      if (redemption.status !== "REQUESTED" && redemption.status !== "APPROVED") throw new Error("Redemption not in requestable state");
       
       redemption.status = "COMPLETED";
       redemption.completedAt = new Date().toISOString();
@@ -590,7 +633,7 @@ export const voucherApi = {
       const instances: VoucherInstance[] = JSON.parse(localStorage.getItem(storageKey) || "[]");
       const instance = instances.find((i) => i.id === redemption.voucherInstanceId);
       if (instance) {
-        instance.status = "USED";
+        instance.status = "REDEEMED";
         instance.version += 1;
         instance.updatedAt = new Date().toISOString();
         localStorage.setItem(storageKey, JSON.stringify(instances));

@@ -3,9 +3,37 @@
 // These mirror the GraphQL schema
 // ============================================================
 
-// Enums
-export type VoucherStatus = "AVAILABLE" | "PENDING" | "USED" | "EXPIRED";
-export type RedemptionStatus = "PENDING" | "APPROVED" | "COMPLETED" | "CANCELLED";
+// Voucher Status State Machine:
+// AVAILABLE → REQUESTED → (APPROVED | COUNTERED | DECLINED) → REDEEMED → ARCHIVED
+// 
+// State transitions:
+// - AVAILABLE: Fresh voucher, ready to be requested
+// - REQUESTED: User has requested to redeem (pending admin action)
+// - APPROVED: Admin approved the request (ready for use)
+// - COUNTERED: Admin proposed a different date/time
+// - DECLINED: Admin declined (returns to AVAILABLE or ARCHIVED)
+// - REDEEMED: Successfully used
+// - ARCHIVED: Historical record (used or expired)
+// - EXPIRED: Monthly voucher that expired without use
+
+// Enums - Enhanced voucher state machine
+export type VoucherStatus = 
+  | "AVAILABLE"   // Ready to request
+  | "REQUESTED"   // Pending admin approval
+  | "APPROVED"    // Admin approved, ready to use
+  | "COUNTERED"   // Admin proposed alternative
+  | "DECLINED"    // Admin declined
+  | "REDEEMED"    // Successfully used
+  | "ARCHIVED"    // Historical record
+  | "EXPIRED";    // Unused and expired
+
+// Redemption status - tracks a specific redemption request/fulfillment
+export type RedemptionStatus = 
+  | "REQUESTED"   // User requested redemption
+  | "APPROVED"    // Admin approved the request
+  | "COMPLETED"   // Redemption was fulfilled
+  | "CANCELLED"   // User or admin cancelled
+  | "PENDING";    // Legacy: awaiting action
 
 // User Profile
 export interface UserProfile {
