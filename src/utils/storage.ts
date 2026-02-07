@@ -354,3 +354,22 @@ export const getTimeUntilNextDraw = (): { hours: number; minutes: number } => {
   
   return { hours, minutes };
 };
+
+// ----- RESET ALL STATS -----
+// Clears all localStorage data for a fresh start
+export const resetAllStats = (): void => {
+  // Remove all keys with our prefix
+  Object.values(STORAGE_KEYS).forEach((key) => {
+    localStorage.removeItem(key);
+  });
+  
+  // Also clear any other app-related keys
+  const keysToRemove: string[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith("valentine-deck-")) {
+      keysToRemove.push(key);
+    }
+  }
+  keysToRemove.forEach((key) => localStorage.removeItem(key));
+};

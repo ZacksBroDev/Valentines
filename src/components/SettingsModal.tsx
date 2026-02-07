@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
-import { Lock } from "lucide-react";
+import { Lock, RotateCcw } from "lucide-react";
 import { Modal } from "./Modal";
 import { THEMES, ThemeKey, CONFIG } from "../config";
+import { resetAllStats } from "../utils/storage";
+import { useState } from "react";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -151,7 +153,44 @@ export const SettingsModal = ({
             <Toggle enabled={heartTrailEnabled} onToggle={onHeartTrailToggle} />
           </div>
         )}
+
+        {/* Reset All Stats */}
+        <ResetButton />
       </div>
     </Modal>
+  );
+};
+
+// Separate component for reset button with confirmation
+const ResetButton = () => {
+  const [confirmReset, setConfirmReset] = useState(false);
+
+  const handleReset = () => {
+    if (confirmReset) {
+      resetAllStats();
+      window.location.reload();
+    } else {
+      setConfirmReset(true);
+      setTimeout(() => setConfirmReset(false), 3000); // Reset after 3s
+    }
+  };
+
+  return (
+    <div className="pt-2 border-t border-gray-100">
+      <button
+        onClick={handleReset}
+        className={`w-full py-2 px-3 rounded-lg text-xs font-medium flex items-center justify-center gap-2 transition-colors ${
+          confirmReset
+            ? "bg-red-500 text-white"
+            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+        }`}
+      >
+        <RotateCcw size={14} />
+        {confirmReset ? "Tap again to confirm" : "Reset All Progress"}
+      </button>
+      <p className="text-[10px] text-gray-400 text-center mt-1">
+        Clears all stats, favorites, and seen cards
+      </p>
+    </div>
   );
 };
