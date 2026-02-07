@@ -3,6 +3,7 @@
 // ============================================================
 
 import { Card, TextCard, VoucherCard, PlaylistCard } from "../types";
+import { OPEN_WHEN_CATEGORIES, OpenWhenKey } from "../config";
 
 // ===== PET NAME SYSTEM =====
 // Weighted pet name selection for variety
@@ -1791,17 +1792,38 @@ const extraTextCards: TextCard[] = extraTexts.map((text, i) => ({
   text,
 }));
 
+// ===== CUSTOM CARDS FROM ADMIN =====
+const CUSTOM_CARDS_KEY = "valentine-deck-custom-cards";
+
+function getCustomCards(): Card[] {
+  try {
+    const stored = localStorage.getItem(CUSTOM_CARDS_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
 // ===== COMBINE ALL CARDS =====
-export const allCards: Card[] = [
+const builtInCards: Card[] = [
   ...textCards,
   ...voucherCards,
   ...playlistCards,
   ...extraTextCards,
 ];
 
+// allCards now includes custom cards from admin panel
+export const allCards: Card[] = [...builtInCards, ...getCustomCards()];
+
+// Function to get fresh cards list (includes any newly added custom cards)
+export function getAllCards(): Card[] {
+  return [...builtInCards, ...getCustomCards()];
+}
+
 // ===== HELPER FUNCTIONS =====
 export function getCardById(id: string): Card | undefined {
-  return allCards.find((card) => card.id === id);
+  const allCardsNow = getAllCards();
+  return allCardsNow.find((card) => card.id === id);
 }
 
 export function getAvailableCards(
@@ -1809,7 +1831,8 @@ export function getAvailableCards(
   _mood?: string,
   openWhenMode?: string,
 ): Card[] {
-  let cards = allCards.filter((card) => {
+  const allCardsNow = getAllCards();
+  let cards = allCardsNow.filter((card) => {
     // Filter out secret cards unless unlocked
     if (card.category === "secret" && !includeSecret) {
       return false;
@@ -1817,9 +1840,20 @@ export function getAvailableCards(
     return true;
   });
 
-  // Filter by open when mode
+  // Filter by open when mode - include cards with matching tag OR matching category
   if (openWhenMode && openWhenMode !== "all") {
-    cards = cards.filter((card) => card.tags?.includes(openWhenMode));
+    const config = OPEN_WHEN_CATEGORIES[openWhenMode as OpenWhenKey];
+    if (config) {
+      const allowedCategories = config.categories as readonly string[];
+      cards = cards.filter((card) => {
+        const hasTag = card.tags?.includes(openWhenMode);
+        const hasCategory = allowedCategories.includes(card.category);
+        return hasTag || hasCategory;
+      });
+    } else {
+      // Fallback: just filter by tag if no config found
+      cards = cards.filter((card) => card.tags?.includes(openWhenMode));
+    }
   }
 
   return cards;

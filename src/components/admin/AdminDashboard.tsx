@@ -24,6 +24,7 @@ import {
   Edit3,
 } from "lucide-react";
 import { clearAdminSession } from "./AdminAuth";
+import { CardsManager } from "./CardsManager";
 // Use cloud storage for cross-device sync
 import {
   CloudVoucherRequest,
@@ -57,7 +58,7 @@ import {
 } from "lucide-react";
 
 // ============================================================
-// REDEEMABLES MANAGER COMPONENT
+// VOUCHERS MANAGER COMPONENT
 // Manage voucher templates (add, edit, delete) - CLOUD SYNCED
 // ============================================================
 
@@ -80,7 +81,7 @@ const getIconComponent = (iconName: string): LucideIcon => {
   return found?.icon || Gift;
 };
 
-const RedeemablesManager = () => {
+const VouchersManager = () => {
   const [templates, setTemplates] = useState<CloudVoucherTemplate[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -144,7 +145,7 @@ const RedeemablesManager = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Delete this redeemable?")) {
+    if (confirm("Delete this voucher template?")) {
       setIsLoading(true);
       await deleteCloudVoucherTemplate(id);
       await loadTemplates();
@@ -350,7 +351,7 @@ const RedeemablesManager = () => {
         <div className="text-center py-8 text-gray-400">
           <Ticket size={48} className="mx-auto mb-2 opacity-50" />
           <p>No voucher templates yet</p>
-          <p className="text-sm mt-1">Add your first redeemable voucher above</p>
+          <p className="text-sm mt-1">Add your first voucher template above</p>
         </div>
       )}
     </div>
@@ -362,7 +363,7 @@ interface AdminDashboardProps {
   onClose: () => void;
 }
 
-type Tab = "requests" | "notes" | "redeemables" | "cards" | "settings";
+type Tab = "requests" | "notes" | "vouchers" | "cards" | "settings";
 
 export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
   const [activeTab, setActiveTab] = useState<Tab>("requests");
@@ -464,7 +465,7 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
   const tabs = [
     { key: "requests" as Tab, label: "Requests", icon: Clock, badge: pendingCount },
     { key: "notes" as Tab, label: "Notes", icon: StickyNote, badge: unreadNotesCount },
-    { key: "redeemables" as Tab, label: "Vouchers", icon: Ticket },
+    { key: "vouchers" as Tab, label: "Vouchers", icon: Ticket },
     { key: "cards" as Tab, label: "Cards", icon: CreditCard },
     { key: "settings" as Tab, label: "Settings", icon: Settings },
   ];
@@ -520,13 +521,14 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
           <div className="shrink-0 px-4 py-2 border-b border-gray-100 flex gap-1.5 overflow-x-auto">
             {tabs.map(tab => {
               const Icon = tab.icon;
+              const showBadge = tab.badge !== undefined && tab.badge > 0;
               return (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
                   className={`
                     flex-1 flex items-center justify-center gap-1 py-2 px-2 rounded-lg
-                    text-xs font-medium transition-all relative whitespace-nowrap
+                    text-xs font-medium transition-all relative whitespace-nowrap min-h-[44px]
                     ${activeTab === tab.key
                       ? "bg-accent-pink text-white"
                       : "bg-gray-50 text-gray-600 hover:bg-gray-100"
@@ -534,11 +536,15 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
                   `}
                 >
                   <Icon size={14} />
-                  {tab.label}
-                  {tab.badge && tab.badge > 0 && (
+                  <span>{tab.label}</span>
+                  {/* Show count in parentheses if > 0 */}
+                  {showBadge && (
                     <span className={`
-                      absolute -top-1 -right-1 w-5 h-5 text-[10px] rounded-full flex items-center justify-center
-                      ${activeTab === tab.key ? "bg-white text-accent-pink" : "bg-red-500 text-white"}
+                      ml-0.5 px-1.5 py-0.5 text-[10px] rounded-full font-semibold
+                      ${activeTab === tab.key 
+                        ? "bg-white/20 text-white" 
+                        : "bg-red-100 text-red-600"
+                      }
                     `}>
                       {tab.badge}
                     </span>
@@ -807,27 +813,12 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
               </div>
             )}
 
-            {activeTab === "redeemables" && (
-              <RedeemablesManager />
+            {activeTab === "vouchers" && (
+              <VouchersManager />
             )}
 
             {activeTab === "cards" && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                    Card Management
-                  </h3>
-                  <button className="px-3 py-1.5 bg-accent-pink text-white rounded-lg text-sm font-medium">
-                    + Add Card
-                  </button>
-                </div>
-                
-                <div className="text-center py-8 text-gray-400">
-                  <CreditCard size={48} className="mx-auto mb-2 opacity-50" />
-                  <p>Card management coming soon!</p>
-                  <p className="text-sm mt-1">You'll be able to add, edit, and delete custom cards here.</p>
-                </div>
-              </div>
+              <CardsManager />
             )}
 
             {activeTab === "settings" && (
