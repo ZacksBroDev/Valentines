@@ -1,6 +1,18 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useFavorites } from "../useFavorites";
+
+// Mock the cards module to provide predictable card IDs
+vi.mock("../../data/cards", () => ({
+  allCards: [
+    { id: "card-1" },
+    { id: "card-2" },
+    { id: "card-3" },
+    { id: "card-4" },
+    { id: "persisted-card" },
+    { id: "external-card" },
+  ],
+}));
 
 describe("useFavorites", () => {
   beforeEach(() => {
