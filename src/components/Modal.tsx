@@ -38,7 +38,7 @@ export const Modal = ({
       const originalPosition = document.body.style.position;
       const originalWidth = document.body.style.width;
       const originalTop = document.body.style.top;
-      const scrollY = window.scrollY;
+      const { scrollY } = window;
 
       // Lock body scroll
       document.body.style.overflow = "hidden";

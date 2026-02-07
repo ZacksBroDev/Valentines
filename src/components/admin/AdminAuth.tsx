@@ -22,7 +22,7 @@ const hashPin = (pin: string): string => {
   for (let i = 0; i < pin.length; i++) {
     const char = pin.charCodeAt(i);
     hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
+    hash |= 0; // Convert to 32-bit integer
   }
   return hash.toString(36);
 };
@@ -64,15 +64,14 @@ export const AdminAuth = ({ isOpen, onClose, onSuccess }: AdminAuthProps) => {
       localStorage.setItem(ADMIN_PIN_KEY, hashPin(pin));
       localStorage.setItem(ADMIN_SESSION_KEY, Date.now().toString());
       onSuccess();
+    } else if (hashPin(pin) === storedPinHash) {
+      // Verifying existing PIN - correct
+      localStorage.setItem(ADMIN_SESSION_KEY, Date.now().toString());
+      onSuccess();
     } else {
-      // Verifying existing PIN
-      if (hashPin(pin) === storedPinHash) {
-        localStorage.setItem(ADMIN_SESSION_KEY, Date.now().toString());
-        onSuccess();
-      } else {
-        setError("Incorrect PIN");
-        setPin("");
-      }
+      // Verifying existing PIN - incorrect
+      setError("Incorrect PIN");
+      setPin("");
     }
   };
 

@@ -368,7 +368,7 @@ export const NavItem = ({
       <IconComponent
         size={primary ? 24 : 20}
         strokeWidth={active || primary ? 2.5 : 2}
-        fill={active && !primary ? "currentColor" : "none"}
+        fill={primary || !active ? "none" : "currentColor"}
       />
       {badge !== undefined && badge > 0 && (
         <>
