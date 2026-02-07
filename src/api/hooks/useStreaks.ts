@@ -34,7 +34,7 @@ export const useStreaks = (): UseStreaksReturn => {
       const info = await streaksApi.getStreakInfo();
       setStreaks(info);
     } catch (err) {
-      console.error("Failed to load streaks:", err);
+      if (import.meta.env.DEV) console.error("Failed to load streaks:", err);
     } finally {
       setIsLoading(false);
     }
@@ -53,7 +53,7 @@ export const useStreaks = (): UseStreaksReturn => {
       const updated = await streaksApi.logDraw(cardId);
       setStreaks(updated);
     } catch (err) {
-      console.error("Failed to log draw:", err);
+      if (import.meta.env.DEV) console.error("Failed to log draw:", err);
     }
   }, []);
 
@@ -62,7 +62,7 @@ export const useStreaks = (): UseStreaksReturn => {
       const updated = await streaksApi.logLove(message);
       setStreaks(updated);
     } catch (err) {
-      console.error("Failed to log love:", err);
+      if (import.meta.env.DEV) console.error("Failed to log love:", err);
     }
   }, []);
 

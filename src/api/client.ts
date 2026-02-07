@@ -87,10 +87,9 @@ export const syncServerTime = async (): Promise<void> => {
       const clientTime = Date.now();
       const offset = serverTime - clientTime;
       setServerTimeOffset(offset);
-      console.log(`[TimeSync] Server time offset: ${offset}ms`);
     }
   } catch (error) {
-    console.warn('[TimeSync] Failed to sync server time, using local time', error);
+    if (import.meta.env.DEV) console.warn('[TimeSync] Failed to sync server time', error);
     // Use local time as fallback
     setServerTimeOffset(0);
   }
@@ -438,10 +437,10 @@ export const voucherApi = {
       }
       
       // Fallback to defaults if cloud is empty
-      console.log("No cloud templates found, using defaults");
+      if (import.meta.env.DEV) console.log("No cloud templates found, using defaults");
       return DEFAULT_TEMPLATES;
     } catch (error) {
-      console.error("Failed to fetch cloud templates, using defaults:", error);
+      if (import.meta.env.DEV) console.error("Failed to fetch cloud templates:", error);
       return DEFAULT_TEMPLATES;
     }
   },
@@ -487,7 +486,7 @@ export const voucherApi = {
         for (const template of templates) {
           if (!existingTypes.has(template.id)) {
             // New template - mint instances for it
-            console.log(`Minting new template: ${template.type}`);
+            if (import.meta.env.DEV) console.log(`Minting new template: ${template.type}`);
             for (let i = 0; i < template.monthlyLimit; i++) {
               instances.push({
                 id: crypto.randomUUID(),
@@ -599,14 +598,13 @@ export const voucherApi = {
       localStorage.setItem(redemptionsKey, JSON.stringify(redemptions));
       
       // Sync to cloud for admin to see
-      console.log("📤 Syncing redemption to cloud for admin...");
       submitVoucherRequest({
         voucherType: instance.templateType,
         voucherTitle: instance.template?.title || instance.templateType,
         requestedDate: input.requestedForDate || null,
-      })
-        .then(result => console.log("✅ Redemption synced to cloud:", result))
-        .catch(err => console.error("❌ Failed to sync redemption:", err));
+      }).catch(err => {
+        if (import.meta.env.DEV) console.error("Failed to sync redemption:", err);
+      });
       
       return redemption;
     }

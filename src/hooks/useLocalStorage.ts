@@ -22,7 +22,7 @@ export function useLocalStorage<T>(
       const item = window.localStorage.getItem(key);
       return item ? (JSON.parse(item) as T) : initialValue;
     } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error);
+      if (import.meta.env.DEV) console.warn(`Error reading localStorage key "${key}":`, error);
       return initialValue;
     }
   }, [initialValue, key]);
@@ -33,7 +33,7 @@ export function useLocalStorage<T>(
   const setValue: SetValue<T> = useCallback(
     (value) => {
       if (typeof window === "undefined") {
-        console.warn(
+        if (import.meta.env.DEV) console.warn(
           `Tried setting localStorage key "${key}" even though environment is not a client`,
         );
       }
@@ -48,7 +48,7 @@ export function useLocalStorage<T>(
         // Save state
         setStoredValue(newValue);
       } catch (error) {
-        console.warn(`Error setting localStorage key "${key}":`, error);
+        if (import.meta.env.DEV) console.warn(`Error setting localStorage key "${key}":`, error);
       }
     },
     [key, storedValue],

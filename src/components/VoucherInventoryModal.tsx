@@ -398,8 +398,7 @@ export const VoucherInventoryModal = ({
 
     let cloudRequestId: string | null = null;
 
-    // ALWAYS sync to cloud for admin to see, regardless of local success
-    console.log("📤 Syncing voucher request to cloud...");
+    // Sync to cloud for admin to see
     try {
       const cloudResult = await submitVoucherRequest({
         voucherType: selectedInstance.templateType,
@@ -407,10 +406,9 @@ export const VoucherInventoryModal = ({
           selectedInstance.template?.title || selectedInstance.templateType,
         requestedDate: null,
       });
-      console.log("✅ Voucher request synced to cloud:", cloudResult);
       cloudRequestId = cloudResult?.id || null;
     } catch (err) {
-      console.error("❌ Failed to sync to cloud:", err);
+      if (import.meta.env.DEV) console.error("Failed to sync to cloud:", err);
     }
 
     // Try local update (may fail but that's ok)
@@ -420,10 +418,7 @@ export const VoucherInventoryModal = ({
         selectedOption: option,
       });
     } catch (err) {
-      console.warn(
-        "Local redemption failed (ok, cloud sync already done):",
-        err,
-      );
+      if (import.meta.env.DEV) console.warn("Local redemption failed:", err);
       // Force refresh inventory to update counts anyway
       refreshInventory();
     }
