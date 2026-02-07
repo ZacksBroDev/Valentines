@@ -87,7 +87,7 @@ export const fetchVoucherRequests = async (): Promise<CloudVoucherRequest[]> => 
     const items = data?.data?.listVoucherRequests?.items || [];
     return items.filter((item): item is CloudVoucherRequest => item !== null);
   } catch (error) {
-    console.error("Error fetching voucher requests:", error);
+    if (import.meta.env.DEV) console.error("Error fetching voucher requests:", error);
     return [];
   }
 };
@@ -100,7 +100,6 @@ export const submitVoucherRequest = async (request: {
   voucherTitle: string;
   requestedDate?: string | null;
 }): Promise<CloudVoucherRequest | null> => {
-  console.log("🚀 submitVoucherRequest called with:", request);
   try {
     const input = {
       voucherType: request.voucherType,
@@ -108,7 +107,6 @@ export const submitVoucherRequest = async (request: {
       requestedDate: request.requestedDate || null,
       status: "pending",
     };
-    console.log("📤 Sending to GraphQL:", input);
     
     const response = await getClient().graphql({
       query: createVoucherRequest,
@@ -116,11 +114,10 @@ export const submitVoucherRequest = async (request: {
       authMode: "apiKey",
     });
     
-    console.log("✅ GraphQL response:", response);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (response as any)?.data?.createVoucherRequest as CloudVoucherRequest;
   } catch (error) {
-    console.error("❌ Error creating voucher request:", error);
+    if (import.meta.env.DEV) if (import.meta.env.DEV) console.error("Error creating voucher request:", error);
     return null;
   }
 };
@@ -151,7 +148,7 @@ export const updateVoucherRequestStatus = async (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (response as any)?.data?.updateVoucherRequest as CloudVoucherRequest;
   } catch (error) {
-    console.error("Error updating voucher request:", error);
+    if (import.meta.env.DEV) console.error("Error updating voucher request:", error);
     return null;
   }
 };
@@ -170,7 +167,7 @@ export const removeVoucherRequest = async (id: string): Promise<boolean> => {
     });
     return true;
   } catch (error) {
-    console.error("Error deleting voucher request:", error);
+    if (import.meta.env.DEV) console.error("Error deleting voucher request:", error);
     return false;
   }
 };
@@ -202,7 +199,7 @@ export const fetchSharedNotes = async (): Promise<CloudSharedNote[]> => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return items.filter((item: any) => item !== null) as CloudSharedNote[];
   } catch (error) {
-    console.error("Error fetching shared notes:", error);
+    if (import.meta.env.DEV) console.error("Error fetching shared notes:", error);
     return [];
   }
 };
@@ -221,7 +218,7 @@ export const submitSharedNote = async (
         input: {
           content,
           from,
-          read: from === "admin", // Admin's notes are pre-read from admin's perspective
+          read: false, // New notes are always unread for the recipient
         },
       },
       authMode: "apiKey",
@@ -230,7 +227,7 @@ export const submitSharedNote = async (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (response as any)?.data?.createSharedNote as CloudSharedNote;
   } catch (error) {
-    console.error("Error creating shared note:", error);
+    if (import.meta.env.DEV) console.error("Error creating shared note:", error);
     return null;
   }
 };
@@ -252,7 +249,7 @@ export const markCloudNoteAsRead = async (id: string): Promise<boolean> => {
     });
     return true;
   } catch (error) {
-    console.error("Error marking note as read:", error);
+    if (import.meta.env.DEV) console.error("Error marking note as read:", error);
     return false;
   }
 };
@@ -271,7 +268,7 @@ export const removeSharedNote = async (id: string): Promise<boolean> => {
     });
     return true;
   } catch (error) {
-    console.error("Error deleting shared note:", error);
+    if (import.meta.env.DEV) console.error("Error deleting shared note:", error);
     return false;
   }
 };
@@ -321,7 +318,7 @@ export const fetchVoucherTemplates = async (): Promise<CloudVoucherTemplate[]> =
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return items.filter((item: any) => item !== null) as CloudVoucherTemplate[];
   } catch (error) {
-    console.error("Error fetching voucher templates:", error);
+    if (import.meta.env.DEV) console.error("Error fetching voucher templates:", error);
     return [];
   }
 };
@@ -347,7 +344,7 @@ export const createCloudVoucherTemplate = async (template: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (response as any)?.data?.createVoucherTemplate as CloudVoucherTemplate;
   } catch (error) {
-    console.error("Error creating voucher template:", error);
+    if (import.meta.env.DEV) console.error("Error creating voucher template:", error);
     return null;
   }
 };
@@ -376,7 +373,7 @@ export const updateCloudVoucherTemplate = async (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (response as any)?.data?.updateVoucherTemplate as CloudVoucherTemplate;
   } catch (error) {
-    console.error("Error updating voucher template:", error);
+    if (import.meta.env.DEV) console.error("Error updating voucher template:", error);
     return null;
   }
 };
@@ -393,7 +390,7 @@ export const deleteCloudVoucherTemplate = async (id: string): Promise<boolean> =
     });
     return true;
   } catch (error) {
-    console.error("Error deleting voucher template:", error);
+    if (import.meta.env.DEV) console.error("Error deleting voucher template:", error);
     return false;
   }
 };

@@ -15,9 +15,10 @@ import { Heart, Send } from "lucide-react";
 interface NotesModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onNotesRead?: () => void; // Called when unread notes are marked as read
 }
 
-export const NotesModal = ({ isOpen, onClose }: NotesModalProps) => {
+export const NotesModal = ({ isOpen, onClose, onNotesRead }: NotesModalProps) => {
   const [notes, setNotes] = useState<Note[]>(getNotes);
   const [sharedNotes, setSharedNotes] = useState<CloudSharedNote[]>([]);
   const [newNote, setNewNote] = useState("");
@@ -33,7 +34,7 @@ export const NotesModal = ({ isOpen, onClose }: NotesModalProps) => {
       const cloudNotes = await fetchSharedNotes();
       setSharedNotes(cloudNotes);
     } catch (error) {
-      console.error("Error fetching shared notes:", error);
+      if (import.meta.env.DEV) console.error("Error fetching shared notes:", error);
     } finally {
       setIsLoading(false);
     }
@@ -52,6 +53,20 @@ export const NotesModal = ({ isOpen, onClose }: NotesModalProps) => {
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   const unreadFromAdmin = notesFromAdmin.filter(n => !n.read).length;
+
+  // Auto-mark admin notes as read when viewing the "From Him" tab
+  useEffect(() => {
+    if (activeTab === "shared" && unreadFromAdmin > 0) {
+      const markAllAsRead = async () => {
+        const unreadNotes = notesFromAdmin.filter(n => !n.read);
+        await Promise.all(unreadNotes.map(n => markCloudNoteAsRead(n.id)));
+        refreshNotes();
+        // Notify parent that notes were read so badge can update
+        onNotesRead?.();
+      };
+      markAllAsRead();
+    }
+  }, [activeTab, unreadFromAdmin, notesFromAdmin, refreshNotes, onNotesRead]);
 
   const handleSave = useCallback(async () => {
     if (!newNote.trim()) return;

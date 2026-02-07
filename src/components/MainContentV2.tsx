@@ -22,7 +22,7 @@ import { Card } from "../types";
 import { useVoucherInventory } from "../api/hooks";
 import { allCards, getAvailableCards } from "../data/cards";
 import { getNotes, getRedeemedVoucherCount } from "../utils/storage";
-import { fetchUnreadNotesCount } from "../utils/cloudStorage";
+import { fetchUnreadNotesCount, fetchSharedNotes } from "../utils/cloudStorage";
 
 // Lazy-loaded heavy modals for performance
 const StatsDrawer = lazy(() => import("./StatsDrawer").then(m => ({ default: m.StatsDrawer })));
@@ -231,20 +231,30 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
   // Calculate card counts - include openWhenMode filter for accurate count
   // Also re-calculate when local voucher count changes (voucher redeemed = removed from deck)
   const availableCards = useMemo(() => getAvailableCards(secretUnlocked, undefined, openWhenMode || undefined), [secretUnlocked, openWhenMode, localVoucherCount]);
-  const notesCount = getNotes().length;
+  const localNotesCount = getNotes().length;
   
-  // Fetch unread notes count from cloud (async)
+  // Fetch shared notes count from cloud (async)
+  const [sharedNotesCount, setSharedNotesCount] = useState(0);
   const [unreadNotesFromAdmin, setUnreadNotesFromAdmin] = useState(0);
+  
   useEffect(() => {
-    const fetchUnread = async () => {
-      const count = await fetchUnreadNotesCount(false);
-      setUnreadNotesFromAdmin(count);
+    const fetchNotesData = async () => {
+      const [unreadCount, sharedNotes] = await Promise.all([
+        fetchUnreadNotesCount(false),
+        fetchSharedNotes()
+      ]);
+      setUnreadNotesFromAdmin(unreadCount);
+      // Count notes from admin ("From Him" tab)
+      setSharedNotesCount(sharedNotes.filter(n => n.from === "admin").length);
     };
-    fetchUnread();
+    fetchNotesData();
     // Poll every 30 seconds for new notes
-    const interval = setInterval(fetchUnread, 30000);
+    const interval = setInterval(fetchNotesData, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  // Total notes = local personal notes + shared notes from him
+  const notesCount = localNotesCount + sharedNotesCount;
 
   // Calculate stats for drawer
   const stats = useMemo(() => {
@@ -487,7 +497,25 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
         {isNotesOpen && (
           <NotesModal
             isOpen={isNotesOpen}
-            onClose={() => setIsNotesOpen(false)}
+            onClose={async () => {
+              setIsNotesOpen(false);
+              // Refresh notes counts when modal closes
+              const [unreadCount, sharedNotes] = await Promise.all([
+                fetchUnreadNotesCount(false),
+                fetchSharedNotes()
+              ]);
+              setUnreadNotesFromAdmin(unreadCount);
+              setSharedNotesCount(sharedNotes.filter(n => n.from === "admin").length);
+            }}
+            onNotesRead={async () => {
+              // Refresh counts after notes are marked as read
+              const [unreadCount, sharedNotes] = await Promise.all([
+                fetchUnreadNotesCount(false),
+                fetchSharedNotes()
+              ]);
+              setUnreadNotesFromAdmin(unreadCount);
+              setSharedNotesCount(sharedNotes.filter(n => n.from === "admin").length);
+            }}
           />
         )}
 
