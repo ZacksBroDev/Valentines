@@ -36,7 +36,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "💕",
     tags: ["lonely"],
-    text: "{pet}, you're my favorite part of every day.",
+    text: "{pet}, the way you text me goodnight makes the distance feel smaller.",
   },
   {
     id: "sweet-002",
@@ -46,7 +46,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🥹",
     tags: ["lonely"],
-    text: "I still can't believe I get to love you.",
+    text: "I like that we can be quiet together without it being weird.",
   },
   {
     id: "sweet-003",
@@ -56,7 +56,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "✨",
     tags: ["lonely"],
-    text: "You're beautiful, kind, smart, funny, and somehow all of that at once.",
+    text: "The way you scrunch your nose when you laugh. That's mine now.",
   },
   {
     id: "sweet-004",
@@ -66,7 +66,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "💪",
     tags: ["lonely"],
-    text: "You're not 'out of my league.' You're my person. That's it.",
+    text: "You chose me back. That still hits different.",
   },
   {
     id: "sweet-005",
@@ -76,7 +76,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🪞",
     tags: ["lonely"],
-    text: "I love who I am when I'm with you.",
+    text: "You make me want to be the guy who remembers the little things.",
   },
   {
     id: "sweet-006",
@@ -86,7 +86,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "😊",
     tags: ["lonely"],
-    text: "Your smile fixes my mood faster than anything.",
+    text: "When you get excited talking about PT stuff, your whole face changes. I could watch that for hours.",
   },
   {
     id: "sweet-007",
@@ -96,7 +96,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🌟",
     tags: ["lonely"],
-    text: "You make normal days feel like the best days.",
+    text: "Grocery runs with you feel like dates. That's how I know.",
   },
   {
     id: "sweet-008",
@@ -106,7 +106,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🔄",
     tags: ["lonely"],
-    text: "I'd pick you again. Every time. No hesitation.",
+    text: "You're the person I want to tell first when something happens.",
   },
   {
     id: "sweet-009",
@@ -116,7 +116,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🏠",
     tags: ["lonely"],
-    text: "You feel like home to me.",
+    text: "Falling asleep next to you is the most peaceful I ever feel.",
   },
   {
     id: "sweet-010",
@@ -126,7 +126,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "👑",
     tags: ["lonely"],
-    text: "You're my favorite human.",
+    text: "I still get a little nervous before I see you. In the good way.",
   },
   {
     id: "sweet-011",
@@ -136,7 +136,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🎵",
     tags: ["lonely"],
-    text: "I love your laugh. It's my favorite sound.",
+    text: "The way you hum while you're doing stuff. I don't think you notice, but I do.",
   },
   {
     id: "sweet-012",
@@ -146,7 +146,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🙏",
     tags: ["lonely"],
-    text: "I'm grateful for you in the everyday, real-life way.",
+    text: "You remembered that thing I mentioned once, weeks ago. That's love.",
   },
   {
     id: "sweet-013",
@@ -156,7 +156,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🧸",
     tags: ["lonely"],
-    text: "You make my life softer in the best way.",
+    text: "You let me see the soft parts of you. I don't take that lightly.",
   },
   {
     id: "sweet-014",
@@ -166,7 +166,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "✨",
     tags: ["lonely"],
-    text: "I love the way you light up when you're happy.",
+    text: "The little forehead kiss you give me when you think I'm asleep. I'm not always asleep.",
   },
   {
     id: "sweet-015",
@@ -176,7 +176,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "💗",
     tags: ["lonely"],
-    text: "I love being yours.",
+    text: "I like that we have our own language now. The looks, the inside jokes.",
   },
   {
     id: "sweet-016",
@@ -186,7 +186,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "📅",
     tags: ["lonely"],
-    text: "Since April 13, 2024, my world has been better on purpose.",
+    text: "April 13, 2024. I didn't know that was the day everything would start making more sense.",
   },
   {
     id: "anniversary-counter",
@@ -206,7 +206,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🏡",
     tags: ["lonely"],
-    text: "I want a life with you. The real kind.",
+    text: "I think about what our morning routine will look like someday. Coffee, you half-asleep, me trying not to be annoying.",
   },
   {
     id: "sweet-019",
@@ -216,7 +216,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "💝",
     tags: ["lonely"],
-    text: "I love you more than I know how to explain.",
+    text: "You don't have to perform for me. The real you is who I signed up for.",
   },
   {
     id: "sweet-020",
@@ -226,7 +226,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🛡️",
     tags: ["lonely"],
-    text: "You're my safest place.",
+    text: "When you fall asleep on my chest, I hold my breath so I don't wake you.",
   },
 
   // ---------------- SPECIFIC MEMORIES ----------------
@@ -238,7 +238,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "🏒",
     tags: ["lonely"],
-    text: "Our first date at the Avalanche game is still one of my favorite memories.",
+    text: "Ball Arena. First date. You wore that outfit and I forgot how to act normal.",
   },
   {
     id: "mem-002",
@@ -248,7 +248,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "😍",
     tags: ["lonely"],
-    text: "Seeing you all dolled up at the Avs game made my heart melt. I couldn't stop staring.",
+    text: "I kept glancing at you more than the game. The Avs won but honestly I wasn't paying attention.",
   },
   {
     id: "mem-003",
@@ -258,7 +258,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "📣",
     tags: ["lonely"],
-    text: "You cheering with that big smile, your whole face glowing... was unreal.",
+    text: "When you got loud cheering at the game I thought, 'okay yeah, this one's different.'",
   },
   {
     id: "mem-004",
@@ -268,7 +268,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "🏕️",
     tags: ["lonely"],
-    text: "May 6, 2024: hiking with you, finding that teepee made of sticks… core memory.",
+    text: "That stick teepee we found on May 6th. We sat inside it like idiots and I wanted to stay forever.",
   },
   {
     id: "mem-005",
@@ -278,7 +278,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "🧗",
     tags: ["lonely"],
-    text: "That moment you were on the little cliff, strong, fearless, beautiful... yeah. I remember.",
+    text: "You on that rock ledge, totally unbothered. I was trying not to look panicked while being very into it.",
   },
   {
     id: "mem-006",
@@ -288,7 +288,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🥾",
     tags: ["lonely"],
-    text: "I love remembering how fun that hike felt with you. Just us and the outdoors.",
+    text: "I like how you get competitive on hikes. You speed up and think I don't notice.",
   },
   {
     id: "mem-007",
@@ -298,7 +298,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "🤗",
     tags: ["lonely"],
-    text: "The way you greet me when I come over, arms wide, huge smile... hits me every time.",
+    text: "That full-speed run you do when you come greet me. Arms out, biggest smile. Wrecks me every time.",
   },
   {
     id: "mem-008",
@@ -308,7 +308,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "❄️",
     tags: ["lonely"],
-    text: "You come outside to hug and kiss me even when it's freezing. That's love, Caitlyn.",
+    text: "It's 20 degrees and you come outside in socks to kiss me anyway. Caitlyn.",
   },
   {
     id: "mem-009",
@@ -318,7 +318,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "😴",
     tags: ["lonely"],
-    text: "When you sleep with your legs crossed and upright… it's the cutest thing I've ever seen.",
+    text: "You fall asleep sitting up with your legs crossed like a little meditation goblin. Obsessed.",
   },
   {
     id: "mem-010",
@@ -328,7 +328,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🏒",
     tags: ["lonely"],
-    text: "When we play hockey together and we're both goofy... yeah, that's us. Perfect.",
+    text: "Driveway hockey with you. You cheating. Me pretending I didn't see. Perfect.",
   },
 
   // ---------------- SUPPORTIVE (PhD / clinic / life goals) ----------------
@@ -340,7 +340,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🎓",
     tags: ["stressed"],
-    text: "Your PhD is hard. You're harder.",
+    text: "Shoulders down. Jaw unclenched. You're doing a PhD, not defusing a bomb.",
   },
   {
     id: "sup-002",
@@ -350,7 +350,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🌬️",
     tags: ["stressed"],
-    text: "You don't need to earn rest. You're allowed to breathe.",
+    text: "Close the laptop. Drink water. The work will still be there in 10 minutes.",
   },
   {
     id: "sup-003",
@@ -360,7 +360,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🏗️",
     tags: ["doubting"],
-    text: "You're not behind. You're building.",
+    text: "You're not behind. You're just in the middle of the hard part.",
   },
   {
     id: "sup-004",
@@ -370,7 +370,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "👏",
     tags: ["stressed"],
-    text: "I'm proud of you for how you keep showing up.",
+    text: "You showed up today. That counts. Full stop.",
   },
   {
     id: "sup-005",
@@ -380,7 +380,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🧠",
     tags: ["doubting"],
-    text: "You're ridiculously smart. Watching you learn medicine stuff is honestly attractive.",
+    text: "You casually drop muscle origins and insertions in conversation. That's not normal smart. That's you.",
   },
   {
     id: "sup-006",
@@ -390,7 +390,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🦴",
     tags: ["stressed"],
-    text: "I don't need to understand all the bones and nerves to know you're brilliant.",
+    text: "I have no idea what the brachial plexus is but I know you're going to crush that exam.",
   },
   {
     id: "sup-007",
@@ -400,7 +400,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🏥",
     tags: ["doubting"],
-    text: "Your future PT clinic is going to be real. I can already see your name on the door.",
+    text: "Your name on a clinic door. That's not if, it's when.",
   },
   {
     id: "sup-008",
@@ -410,7 +410,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🩺",
     tags: ["stressed"],
-    text: "Your future patients are going to feel so safe with you.",
+    text: "Someone is going to be in pain someday and you're going to help them heal. You're training for that right now.",
   },
   {
     id: "sup-009",
@@ -420,7 +420,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "💪",
     tags: ["doubting"],
-    text: "You're the kind of person who makes hard things look doable.",
+    text: "You've done hard things before. This is another one. Same you.",
   },
   {
     id: "sup-010",
@@ -430,7 +430,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "💧",
     tags: ["stressed"],
-    text: "Drink water. Unclench your jaw. I love you.",
+    text: "Water. Snack. Five deep breaths. Then back at it if you want.",
   },
   {
     id: "sup-011",
@@ -440,7 +440,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🏃",
     tags: ["stressed"],
-    text: "{pet}, you're doing a PhD. That's not just 'hard', that's a marathon. And you're still running.",
+    text: "{pet}, a PhD is years of showing up when you don't feel like it. You're still here.",
   },
   {
     id: "sup-012",
@@ -450,7 +450,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🦴",
     tags: ["doubting"],
-    text: "Caitlyn, you can name bones, muscles, nerves, and vessels like it's casual. That's insane.",
+    text: "You rattled off nerve pathways the other day like it was nothing. Caitlyn. That's not normal.",
   },
   {
     id: "sup-013",
@@ -460,7 +460,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "📋",
     tags: ["doubting"],
-    text: "{pet}, your future clinic isn't a dream. It's a plan. And you're executing.",
+    text: "{pet}, you're not wishing for a clinic. You're studying for one. That's different.",
   },
   {
     id: "sup-014",
@@ -470,7 +470,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🎭",
     tags: ["doubting"],
-    text: "When impostor syndrome shows up, remember: you're the one doing the work. That's the proof.",
+    text: "Impostor syndrome means you're doing something hard enough to scare yourself. Keep going.",
   },
   {
     id: "sup-015",
@@ -480,7 +480,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🛡️",
     tags: ["stressed"],
-    text: "{pet}, your patients are going to feel safe with you. That's your superpower.",
+    text: "{pet}, the way you explain things to people—patient and clear—that's already who you are.",
   },
   {
     id: "sup-016",
@@ -490,7 +490,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "✨",
     tags: ["doubting"],
-    text: "You don't have to be perfect to be brilliant. You already are brilliant.",
+    text: "You don't have to feel confident to be capable. You're both right now.",
   },
   {
     id: "sup-017",
@@ -500,7 +500,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🏗️",
     tags: ["stressed"],
-    text: "Even when you feel behind, you're building something most people never even attempt.",
+    text: "Feeling behind doesn't mean you are. Look how far you've come.",
   },
   {
     id: "sup-018",
@@ -510,7 +510,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "😴",
     tags: ["stressed"],
-    text: "{pet}, rest isn't a reward. It's part of the process. You're allowed.",
+    text: "{pet}, taking a break isn't quitting. It's part of the work.",
   },
   {
     id: "sup-019",
@@ -520,7 +520,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🌅",
     tags: ["doubting"],
-    text: "I'm proud of how you show up for your future self, even on the hard days.",
+    text: "Hard days don't cancel progress. You're still moving forward.",
   },
   {
     id: "sup-020",
@@ -530,7 +530,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🏥",
     tags: ["doubting"],
-    text: "Your clinic is going to change people's lives. I believe that like it's a fact.",
+    text: "I can already picture you walking patients through their recovery plan. It's going to happen.",
   },
 
   // ---------------- BODY IMAGE ----------------
@@ -542,7 +542,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "💗",
     tags: ["doubting"],
-    text: "I hate that you feel bad about your body sometimes. I love you exactly as you are.",
+    text: "When your brain gets loud about your body, I'm here to be louder about how much I love it.",
   },
   {
     id: "bi-002",
@@ -552,7 +552,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🏃",
     tags: ["doubting"],
-    text: "Your body is strong. It hikes, climbs, skates, snowboards, and carries you through everything.",
+    text: "Your body hikes mountains, plays hockey, snowboards, and handles grad school. That's powerful.",
   },
   {
     id: "bi-003",
@@ -562,7 +562,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🌸",
     tags: ["doubting"],
-    text: "When your brain is mean to you, I'm going to be extra gentle with you.",
+    text: "On the days your brain is unkind, I'll double down on being gentle with you.",
   },
   {
     id: "bi-004",
@@ -572,7 +572,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "👀",
     tags: ["doubting"],
-    text: "You don't see what I see. I see beautiful. I see powerful. I see Caitlyn.",
+    text: "I see the whole picture. You're stuck looking at pixels. Trust my view.",
   },
   {
     id: "bi-005",
@@ -582,7 +582,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🤍",
     tags: ["doubting"],
-    text: "You deserve kindness from everyone. Including you.",
+    text: "Talk to yourself like I talk to you. That's the assignment.",
   },
 
   // ---------------- OVERTHINKING / OVERSTIMULATION ----------------
@@ -594,7 +594,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🔇",
     tags: ["overstimulated"],
-    text: "If you're overstimulated, I'll lower the volume and stay close. No questions.",
+    text: "Noise off. Lights low. I'll match your quiet until you're ready.",
   },
   {
     id: "calm-002",
@@ -604,7 +604,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🤝",
     tags: ["overstimulated"],
-    text: "You don't have to explain perfectly. I'm not going anywhere.",
+    text: "You don't have to find the right words. I'll wait.",
   },
   {
     id: "calm-003",
@@ -614,7 +614,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🧘",
     tags: ["overstimulated"],
-    text: "If your brain is racing, I'll be your calm. We can just exist together.",
+    text: "Racing thoughts? Okay. We can just sit here until they slow down.",
   },
   {
     id: "calm-004",
@@ -624,7 +624,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🌀",
     tags: ["stressed"],
-    text: "Overthinking is just your brain trying to protect you. I've got you.",
+    text: "Overthinking is your brain in protection mode. Let's turn it off for a bit.",
   },
   {
     id: "calm-005",
@@ -634,7 +634,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "⚔️",
     tags: ["doubting"],
-    text: "You don't have to carry everything alone. I'm on your side.",
+    text: "Whatever's weighing on you—you don't have to solve it alone. We can figure it out.",
   },
 
   // ---------------- FUNNY / PLAYFUL ----------------
@@ -646,7 +646,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🔥",
     tags: ["laugh"],
-    text: "You're hot AND smart. It's honestly unfair.",
+    text: "Pretty, smart, and a little unhinged. The whole package.",
   },
   {
     id: "fun-002",
@@ -656,7 +656,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🔬",
     tags: ["laugh"],
-    text: "I support women in STEM. Especially when the woman is you.",
+    text: "Women in STEM > everyone. Especially when it's you.",
   },
   {
     id: "fun-003",
@@ -666,7 +666,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🦴",
     tags: ["laugh"],
-    text: "You know bones and blood vessels. I barely know what day it is. I'm still proud of us.",
+    text: "You: naming every muscle in the leg. Me: 'that's the knee bone, right?'",
   },
   {
     id: "fun-004",
@@ -676,7 +676,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🧩",
     tags: ["laugh"],
-    text: "You overthink. I underthink. Together we make one functional adult.",
+    text: "Between your overthinking and my underthinking, we're one very mediocre brain.",
   },
   {
     id: "fun-005",
@@ -686,7 +686,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🐛",
     tags: ["laugh"],
-    text: "If loving you is a bug, I'm not fixing it.",
+    text: "Loving you? Feature, not a bug.",
   },
   {
     id: "fun-006",
@@ -696,7 +696,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "📱",
     tags: ["laugh"],
-    text: "You're my favorite notification.",
+    text: "Your text notification is the only one I don't ignore.",
   },
   {
     id: "fun-007",
@@ -706,7 +706,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🍟",
     tags: ["laugh"],
-    text: "I'd share my fries with you. That's real love.",
+    text: "I'd let you steal fries off my plate. That's peak trust.",
   },
   {
     id: "fun-008",
@@ -716,7 +716,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "😤",
     tags: ["laugh"],
-    text: "You're the cutest overreactor I've ever met. Respectfully.",
+    text: "Your dramatic reactions are part of your charm. I said what I said.",
   },
   {
     id: "fun-009",
@@ -726,7 +726,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "😈",
     tags: ["laugh"],
-    text: "I rage-bait you because your reactions are elite… but I stop when you say stop.",
+    text: "I only poke fun because your reactions are elite. But I stop when you mean it.",
   },
   {
     id: "fun-010",
@@ -736,7 +736,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🏒",
     tags: ["laugh"],
-    text: "When we play hockey and you look goofy? Good. Because I'm goofy too. We match.",
+    text: "Your hockey form is questionable but your trash talk is elite.",
   },
   {
     id: "fun-011",
@@ -746,7 +746,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "👯",
     tags: ["laugh"],
-    text: "We're goofy together. That's basically marriage.",
+    text: "We're both weirdos. That's why it works.",
   },
   {
     id: "fun-012",
@@ -756,7 +756,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "📄",
     tags: ["laugh"],
-    text: "If you were a research paper, I'd actually read the whole thing.",
+    text: "If you were a research paper, I'd actually read past the abstract.",
   },
 
   // ---------------- FLIRTY-LITE ----------------
@@ -768,7 +768,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "⚠️",
     tags: ["lonely"],
-    text: "You're dangerously pretty.",
+    text: "That look you give me when you're being flirty. Yeah, I noticed.",
   },
   {
     id: "flirt-002",
@@ -778,7 +778,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🤗",
     tags: ["lonely"],
-    text: "Come here. I need a hug from you specifically.",
+    text: "Need you closer. Specifically right now.",
   },
   {
     id: "flirt-003",
@@ -788,7 +788,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🎮",
     tags: ["lonely"],
-    text: "Your smile is basically a cheat code.",
+    text: "When you bite your lip like that I lose track of what I was saying.",
   },
   {
     id: "flirt-004",
@@ -798,7 +798,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🚨",
     tags: ["lonely"],
-    text: "I'm very into you. This is not a drill.",
+    text: "You in that hoodie of mine is doing something to me.",
   },
   {
     id: "flirt-005",
@@ -808,7 +808,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "💯",
     tags: ["lonely"],
-    text: "I love your body. I love your mind. I love you. Simple.",
+    text: "All of you. That's what I'm into. Every part.",
   },
 
   // ---------------- OUTDOORS / ADVENTURE ----------------
@@ -820,7 +820,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🥾",
     tags: ["lonely"],
-    text: "I love that you love hiking. You make life feel bigger.",
+    text: "Watching you power up a switchback like it's personal. I love that energy.",
   },
   {
     id: "out-002",
@@ -830,7 +830,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🧗",
     tags: ["lonely"],
-    text: "Climbing with you feels like being with a superhero.",
+    text: "You on the climbing wall, focused, slightly sweaty. Yeah. Good view.",
   },
   {
     id: "out-003",
@@ -840,7 +840,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🏕️",
     tags: ["lonely"],
-    text: "Camping with you feels like a core memory every time.",
+    text: "Campfire, your head on my shoulder, no cell service. Perfect.",
   },
   {
     id: "out-004",
@@ -850,7 +850,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🏔️",
     tags: ["lonely"],
-    text: "I love exploring Colorado with you. Every trail feels like ours.",
+    text: "Every trailhead feels like ours now. Colorado with you hits different.",
   },
   {
     id: "out-005",
@@ -860,7 +860,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🌲",
     tags: ["stressed"],
-    text: "When life is heavy, let's go outside. You always breathe life back into me.",
+    text: "When things feel heavy, let's go outside. Trees help.",
   },
   {
     id: "out-006",
@@ -870,7 +870,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🗺️",
     tags: ["lonely"],
-    text: "I want to keep doing adventures with you for a long time.",
+    text: "I've got a mental list of places I want to take you. It keeps growing.",
   },
 
   // ---------------- FLOWERS / LITTLE LOVE ----------------
@@ -882,7 +882,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "💐",
     tags: ["lonely"],
-    text: "You deserve flowers way more often than I get them. I'm fixing that.",
+    text: "You light up when you get flowers. I'm taking notes.",
   },
   {
     id: "flw-002",
@@ -892,7 +892,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🌷",
     tags: ["lonely"],
-    text: "I love how happy flowers make you. It's adorable.",
+    text: "The way you take a picture of every bouquet. Pure Caitlyn behavior.",
   },
   {
     id: "flw-003",
@@ -902,7 +902,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🌻",
     tags: ["laugh"],
-    text: "If you want flowers, just say the word. I'm trainable.",
+    text: "Just say the word and I'm at Trader Joe's grabbing flowers. I know my role.",
   },
 
   // ---------------- FUTURE / MARRIAGE / MOVING OUT ----------------
@@ -914,7 +914,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "🏡",
     tags: ["lonely"],
-    text: "I want to move out with you and build our little life together.",
+    text: "Our own place. Coffee in the morning. Falling asleep together every night. That's the plan.",
   },
   {
     id: "fut-002",
@@ -924,7 +924,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "♾️",
     tags: ["lonely"],
-    text: "When I imagine 'forever,' your face shows up first.",
+    text: "I think about growing old with you. Genuinely. Not poetically.",
   },
   {
     id: "fut-003",
@@ -934,7 +934,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "✅",
     tags: ["doubting"],
-    text: "Clinic dream. Home dream. Marriage dream. I'm in.",
+    text: "Your PT clinic. Our home. Us building something. I'm locked in.",
   },
   {
     id: "fut-004",
@@ -944,7 +944,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "💑",
     tags: ["lonely"],
-    text: "I don't want a life *near* you. I want a life *with* you.",
+    text: "Not near each other. Together. Same house, same life. That's what I want.",
   },
 
   // ---------------- SECRET (earned, personal) ----------------
@@ -956,7 +956,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "🎬",
     tags: ["lonely"],
-    text: "The Avs game first date still plays in my head like a movie.",
+    text: "Avs game. You in that outfit. I was nervous the whole time and I didn't want it to end.",
   },
   {
     id: "secret-002",
@@ -966,7 +966,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "🏔️",
     tags: ["lonely"],
-    text: "That May 6th cliff moment... yeah. That's when I thought: 'she's incredible.'",
+    text: "That cliff on May 6th. You weren't scared at all. That's when I knew you were different.",
   },
   {
     id: "secret-003",
@@ -976,7 +976,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "🤗",
     tags: ["lonely"],
-    text: "Your cold-weather greeting hug is one of my favorite things in the world.",
+    text: "You coming outside in the cold just to hug me before I leave. That's my whole heart.",
   },
   {
     id: "secret-004",
@@ -986,7 +986,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "😴",
     tags: ["lonely"],
-    text: "When you sleep with your legs crossed and upright I want to protect you from the universe.",
+    text: "Watching you sleep, curled up weird, legs crossed—I want to protect that forever.",
   },
   {
     id: "secret-005",
@@ -996,7 +996,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "💍",
     tags: ["lonely"],
-    text: "I want to marry you. Not as an idea. Like, actually you.",
+    text: "I think about marrying you. Not vaguely—specifically. You. A real ring. A real life.",
   },
   {
     id: "secret-006",
@@ -1006,7 +1006,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "💖",
     tags: ["lonely"],
-    text: "Caitlyn Hoffman, you're it for me.",
+    text: "Caitlyn Hoffman. You're the one. That's it. That's the card.",
   },
 
   // ---------------- OPEN WHEN… (curated) ----------------
@@ -1018,7 +1018,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "😮‍💨",
     tags: ["stressed"],
-    text: "Open when you're stressed: You don't have to do it all today.",
+    text: "Open when stressed: Close your eyes. Three slow breaths. The to-do list can wait 60 seconds.",
   },
   {
     id: "ow-002",
@@ -1028,7 +1028,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🏆",
     tags: ["stressed"],
-    text: "Open when you're stressed: I'm proud of you for still trying.",
+    text: "Open when stressed: You woke up. You tried. That's already enough for today.",
   },
   {
     id: "ow-003",
@@ -1038,7 +1038,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "📈",
     tags: ["doubting"],
-    text: "Open when you're doubting yourself: your track record is proof.",
+    text: "Open when doubting: Remember the last hard thing you got through? Same brain. Same you.",
   },
   {
     id: "ow-004",
@@ -1048,7 +1048,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🧠",
     tags: ["doubting"],
-    text: "Open when you're doubting yourself: you're brilliant and capable. No debate.",
+    text: "Open when doubting: You're not faking it. You studied for this. You know your stuff.",
   },
   {
     id: "ow-005",
@@ -1058,7 +1058,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "😜",
     tags: ["laugh"],
-    text: "Open when you need a laugh: you're the cutest menace I know.",
+    text: "Open when you need a laugh: Imagine me doing a silly little dance right now. You're welcome.",
   },
   {
     id: "ow-006",
@@ -1068,7 +1068,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🦷",
     tags: ["laugh"],
-    text: "Open when you need a laugh: I'd still choose you even if you tried to bite me.",
+    text: "Open when you need a laugh: I let you bite me once. Once. I'm still recovering emotionally.",
   },
   {
     id: "ow-007",
@@ -1078,7 +1078,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🤫",
     tags: ["overstimulated"],
-    text: "Open when you're overstimulated: no talking required, I'm here.",
+    text: "Open when overstimulated: No words needed. I'm here. Just breathe.",
   },
   {
     id: "ow-008",
@@ -1088,7 +1088,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🤍",
     tags: ["overstimulated"],
-    text: "Open when you're overstimulated: we can do quiet together.",
+    text: "Open when overstimulated: Soft blanket. Low lights. I'll handle the noise.",
   },
   {
     id: "ow-009",
@@ -1098,7 +1098,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "💭",
     tags: ["lonely"],
-    text: "Open when you feel lonely: I'm thinking about you right now.",
+    text: "Open when lonely: I just thought about you. Probably smiling. Definitely missing you.",
   },
   {
     id: "ow-010",
@@ -1108,7 +1108,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "💗",
     tags: ["lonely"],
-    text: "Open when you feel lonely: you're loved more than you know.",
+    text: "Open when lonely: You're not alone in this. I'm with you, even from here.",
   },
 
   // ---------------- EXTRA PET NAME CARDS ----------------
@@ -1120,7 +1120,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "🎬",
     tags: ["lonely"],
-    text: "{pet}, our first date at the Avalanche game still plays in my head like a movie.",
+    text: "{pet}, that first Avs game date—I replay it in my head more than you know.",
   },
   {
     id: "pet-002",
@@ -1130,7 +1130,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "😍",
     tags: ["lonely"],
-    text: "Seeing you all dolled up at the Avs game made my heart melt, {pet}.",
+    text: "You walked into that arena looking unreal, {pet}. I couldn't focus on the game.",
   },
   {
     id: "pet-003",
@@ -1140,7 +1140,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "📣",
     tags: ["lonely"],
-    text: "That smile you had cheering at the Avs game? I was done for, {pet}.",
+    text: "When you screamed at that goal, {pet}—yeah. I was already falling.",
   },
   {
     id: "pet-004",
@@ -1150,7 +1150,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "🏕️",
     tags: ["lonely"],
-    text: "May 6, 2024. Hiking with you and finding that little teepee. Core memory, {pet}.",
+    text: "{pet}, that teepee we found on May 6th. I keep thinking about how you looked right then.",
   },
   {
     id: "pet-005",
@@ -1160,7 +1160,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🤗",
     tags: ["lonely"],
-    text: "Your 'arms wide + giant smile' greeting is my favorite welcome in the world, {pet}.",
+    text: "The full-speed run you do when I get there, {pet}. Arms open. It fixes everything.",
   },
   {
     id: "pet-006",
@@ -1170,7 +1170,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🎓",
     tags: ["stressed"],
-    text: "{pet}, you're doing a PhD. That's not just 'hard', that's insane. And you're doing it.",
+    text: "{pet}, you're in a doctoral program. That's not casual. Be easy on yourself.",
   },
   {
     id: "pet-007",
@@ -1180,7 +1180,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🧠",
     tags: ["stressed"],
-    text: "I don't need to understand your medical studies to know you're brilliant, {pet}.",
+    text: "I don't get half the words you're studying, {pet}, but I see how hard you work.",
   },
   {
     id: "pet-008",
@@ -1190,7 +1190,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🏥",
     tags: ["doubting"],
-    text: "You're going to change people's lives with your clinic, {pet}. That's not hype. That's fact.",
+    text: "{pet}, that clinic is going to exist. People are going to heal because of you.",
   },
   {
     id: "pet-009",
@@ -1200,7 +1200,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🌬️",
     tags: ["stressed"],
-    text: "You're allowed to rest without 'earning' it, {pet}.",
+    text: "You're allowed to stop and do nothing for a minute, {pet}. Rest is part of it.",
   },
   {
     id: "pet-010",
@@ -1210,7 +1210,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "💗",
     tags: ["doubting"],
-    text: "{pet}, I'm sorry your brain is mean to you sometimes. I love you exactly as you are.",
+    text: "{pet}, when your brain's being harsh, text me. I'll remind you what's real.",
   },
   {
     id: "pet-011",
@@ -1220,7 +1220,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🔇",
     tags: ["overstimulated"],
-    text: "{pet}, if you're overstimulated, I'll stop joking and start protecting your peace.",
+    text: "{pet}, if it's too much right now, I'll go quiet. Just say the word.",
   },
   {
     id: "pet-012",
@@ -1230,7 +1230,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "⚔️",
     tags: ["doubting"],
-    text: "I'm on your side, {pet}. Not 'versus you.' Always on your side.",
+    text: "Whatever it is, I'm on your side first, {pet}. Always.",
   },
   {
     id: "pet-013",
@@ -1240,7 +1240,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🌊",
     tags: ["stressed"],
-    text: "It's okay to feel a lot. I can handle you, {pet}.",
+    text: "Big feelings are fine, {pet}. I can sit with all of it.",
   },
   {
     id: "pet-014",
@@ -1250,7 +1250,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🥾",
     tags: ["lonely"],
-    text: "I love that you love the outdoors, {pet}. You make life feel bigger.",
+    text: "You're always down for a trail, {pet}. That's one of my favorite things about you.",
   },
   {
     id: "pet-015",
@@ -1260,7 +1260,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🗺️",
     tags: ["lonely"],
-    text: "You're my favorite adventure partner, {pet}.",
+    text: "Every adventure is better because it's with you, {pet}.",
   },
   {
     id: "pet-016",
@@ -1270,7 +1270,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "💐",
     tags: ["lonely"],
-    text: "{pet}, you deserve flowers more often than I get them. I'm fixing that.",
+    text: "{pet}, I love how your face lights up when I bring you flowers.",
   },
   {
     id: "pet-017",
@@ -1280,7 +1280,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "💪",
     tags: ["lonely"],
-    text: "I want to be consistent for you, {pet}.",
+    text: "I want to be the one you can count on, {pet}. Steady. There.",
   },
   {
     id: "pet-018",
@@ -1290,7 +1290,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "🏡",
     tags: ["lonely"],
-    text: "I want to move out together and build our little world, {pet}.",
+    text: "{pet}, I think about us having our own place. Mornings together. Dogs eventually. All of it.",
   },
   {
     id: "pet-019",
@@ -1300,7 +1300,7 @@ const textCards: TextCard[] = [
     intensity: 3,
     emoji: "♾️",
     tags: ["lonely"],
-    text: "I want forever with you, {pet}. The real kind.",
+    text: "Long-term with you, {pet}. That's what I'm building toward.",
   },
   {
     id: "pet-020",
@@ -1310,7 +1310,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🧘",
     tags: ["lonely"],
-    text: "I want to be the calm in your life, {pet}.",
+    text: "I want to be peace in your life, {pet}. Not more noise.",
   },
   {
     id: "pet-021",
@@ -1320,7 +1320,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "😈",
     tags: ["laugh"],
-    text: "{pet}, I rage-bait you because your reactions are elite… but I stop when you say stop.",
+    text: "{pet}, I poke fun because your reactions are tier-one content. But I know when to stop.",
   },
   {
     id: "pet-022",
@@ -1330,7 +1330,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🔥",
     tags: ["laugh"],
-    text: "You're hot and smart. That's an illegal combo, {pet}.",
+    text: "Hot and smart, {pet}. Some people have it all. You're those people.",
   },
   {
     id: "pet-023",
@@ -1340,7 +1340,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "👯",
     tags: ["laugh"],
-    text: "We're goofy together, {pet}. That's basically soulmates.",
+    text: "We're both weird in compatible ways, {pet}. That's the magic.",
   },
   {
     id: "pet-024",
@@ -1350,7 +1350,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "⚠️",
     tags: ["lonely"],
-    text: "{pet}, you're dangerously pretty.",
+    text: "{pet}, that look you give me sometimes. Devastating. In the best way.",
   },
   {
     id: "pet-025",
@@ -1360,7 +1360,7 @@ const textCards: TextCard[] = [
     intensity: 2,
     emoji: "🎮",
     tags: ["lonely"],
-    text: "Your smile is a cheat code, {pet}.",
+    text: "When you smile at me like that, {pet}, I forget what I was gonna say.",
   },
 
   // ---------------- SHORT "INFINITE FEEL" MINIS ----------------
@@ -1372,7 +1372,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "💗",
     tags: ["lonely"],
-    text: "You're my favorite.",
+    text: "Still my favorite.",
   },
   {
     id: "mini-002",
@@ -1382,7 +1382,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "❤️",
     tags: ["lonely"],
-    text: "I love you.",
+    text: "Love you.",
   },
   {
     id: "mini-003",
@@ -1392,7 +1392,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🏆",
     tags: ["stressed"],
-    text: "I'm proud of you.",
+    text: "Proud of you. Always.",
   },
   {
     id: "mini-004",
@@ -1402,7 +1402,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "👣",
     tags: ["stressed"],
-    text: "One step at a time. I'm with you.",
+    text: "One thing at a time.",
   },
   {
     id: "mini-005",
@@ -1412,7 +1412,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "💪",
     tags: ["doubting"],
-    text: "You've got this.",
+    text: "You got this.",
   },
   {
     id: "mini-006",
@@ -1422,7 +1422,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🏅",
     tags: ["laugh"],
-    text: "Certified cutie moment. It's you.",
+    text: "Certified cute. That's you.",
   },
   {
     id: "mini-007",
@@ -1432,7 +1432,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🥺",
     tags: ["lonely"],
-    text: "I miss you.",
+    text: "Thinking about you.",
   },
   {
     id: "mini-008",
@@ -1442,7 +1442,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🥇",
     tags: ["lonely"],
-    text: "You're the best.",
+    text: "Top tier human. You.",
   },
   {
     id: "mini-009",
@@ -1452,7 +1452,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🤫",
     tags: ["overstimulated"],
-    text: "Quiet time. Close to me.",
+    text: "Quiet together.",
   },
   {
     id: "mini-010",
@@ -1462,7 +1462,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🍀",
     tags: ["lonely"],
-    text: "I'm lucky it's you.",
+    text: "Lucky it's you.",
   },
   {
     id: "mini-012",
@@ -1472,7 +1472,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "💭",
     tags: ["lonely"],
-    text: "I miss you, {pet}.",
+    text: "Miss you, {pet}.",
   },
   {
     id: "mini-013",
@@ -1482,7 +1482,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🏆",
     tags: ["stressed"],
-    text: "Proud of you, {pet}.",
+    text: "So proud, {pet}.",
   },
   {
     id: "mini-014",
@@ -1492,7 +1492,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🛡️",
     tags: ["stressed"],
-    text: "You're safe with me.",
+    text: "Safe here.",
   },
   {
     id: "mini-015",
@@ -1502,7 +1502,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "💝",
     tags: ["lonely"],
-    text: "You're loved. Period.",
+    text: "You're loved.",
   },
   {
     id: "mini-016",
@@ -1512,7 +1512,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🌬️",
     tags: ["overstimulated"],
-    text: "Breathe. I've got you.",
+    text: "Breathe. I'm here.",
   },
   {
     id: "mini-017",
@@ -1522,7 +1522,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "⚔️",
     tags: ["doubting"],
-    text: "I'm on your team, {pet}.",
+    text: "Your team, {pet}.",
   },
   {
     id: "mini-018",
@@ -1532,7 +1532,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "⭐",
     tags: ["lonely"],
-    text: "I love you, {pet}.",
+    text: "Love you, {pet}.",
   },
   {
     id: "mini-019",
@@ -1542,7 +1542,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "✨",
     tags: ["stressed"],
-    text: "You're doing great.",
+    text: "Doing great.",
   },
   {
     id: "mini-020",
@@ -1552,7 +1552,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "💯",
     tags: ["doubting"],
-    text: "You're enough.",
+    text: "Enough. Just as you are.",
   },
   {
     id: "mini-021",
@@ -1562,7 +1562,7 @@ const textCards: TextCard[] = [
     intensity: 1,
     emoji: "🌟",
     tags: ["lonely"],
-    text: "You're amazing, {pet}.",
+    text: "Amazing, {pet}.",
   },
 ];
 
