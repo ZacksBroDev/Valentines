@@ -1,5 +1,5 @@
 // ============================================================
-// CARDS MANAGER - Admin CRUD for deck cards
+// CARDS MANAGER - Admin CRUD for ALL deck cards
 // ============================================================
 
 import { useState, useEffect, useMemo } from "react";
@@ -22,13 +22,22 @@ import {
   ChevronUp,
   Save,
   X,
+  Database,
+  FolderPlus,
+  Copy,
+  Eye,
+  EyeOff,
 } from "lucide-react";
-import { TextCard, CardCategory } from "../../types";
+import { Card, TextCard, CardCategory, VoucherCard, PlaylistCard } from "../../types";
 import { RarityKey } from "../../config";
+import { textCards, voucherCards, playlistCards, extraTextCards } from "../../data/cards";
 
-// For demo, we'll work with localStorage for custom cards
-// In production, this would sync to the cloud
+// ============================================================
+// STORAGE KEYS & HELPERS
+// ============================================================
+
 const CUSTOM_CARDS_KEY = "valentine-deck-custom-cards";
+const HIDDEN_CARDS_KEY = "valentine-deck-hidden-cards";
 
 interface CardFormData {
   type: "text";
@@ -39,6 +48,9 @@ interface CardFormData {
   text: string;
   tags: string[];
 }
+
+type CardSource = "all" | "built-in" | "custom";
+type CardType = "all" | "text" | "voucher" | "playlist";
 
 const CATEGORY_OPTIONS: { value: CardCategory; label: string; icon: typeof Heart }[] = [
   { value: "sweet", label: "Sweet", icon: Heart },
@@ -52,12 +64,6 @@ const RARITY_OPTIONS: { value: RarityKey; label: string; color: string }[] = [
   { value: "common", label: "Common", color: "bg-gray-100 text-gray-600" },
   { value: "rare", label: "Rare", color: "bg-blue-100 text-blue-600" },
   { value: "legendary", label: "Legendary", color: "bg-yellow-100 text-yellow-600" },
-];
-
-const TYPE_OPTIONS: { value: "text" | "voucher" | "playlist"; label: string; icon: typeof MessageSquare }[] = [
-  { value: "text", label: "Text", icon: MessageSquare },
-  { value: "voucher", label: "Voucher", icon: Ticket },
-  { value: "playlist", label: "Playlist", icon: Music },
 ];
 
 // Get custom cards from localStorage
@@ -75,6 +81,21 @@ const saveCustomCards = (cards: TextCard[]) => {
   localStorage.setItem(CUSTOM_CARDS_KEY, JSON.stringify(cards));
 };
 
+// Get hidden card IDs from localStorage
+const getHiddenCardIds = (): string[] => {
+  try {
+    const stored = localStorage.getItem(HIDDEN_CARDS_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+};
+
+// Save hidden card IDs to localStorage
+const saveHiddenCardIds = (ids: string[]) => {
+  localStorage.setItem(HIDDEN_CARDS_KEY, JSON.stringify(ids));
+};
+
 // Generate unique ID
 const generateId = () => `custom-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -88,11 +109,29 @@ const defaultFormData: CardFormData = {
   tags: [],
 };
 
+// ============================================================
+// MAIN COMPONENT
+// ============================================================
+
 export const CardsManager = () => {
+  // Built-in cards from cards.ts
+  const builtInTextCards = useMemo(() => [...textCards, ...extraTextCards], []);
+  const builtInVoucherCards = useMemo(() => voucherCards, []);
+  const builtInPlaylistCards = useMemo(() => playlistCards, []);
+  
+  // Custom cards (user-added)
   const [customCards, setCustomCards] = useState<TextCard[]>(getCustomCards);
+  
+  // Hidden cards (built-in cards hidden from deck)
+  const [hiddenCardIds, setHiddenCardIds] = useState<string[]>(getHiddenCardIds);
+  
+  // UI state
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState<CardCategory | "all">("all");
+  const [filterSource, setFilterSource] = useState<CardSource>("all");
+  const [filterType, setFilterType] = useState<CardType>("all");
   const [showFilters, setShowFilters] = useState(false);
+  const [showHiddenOnly, setShowHiddenOnly] = useState(false);
   const [isEditing, setIsEditing] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
@@ -100,22 +139,89 @@ export const CardsManager = () => {
   // Form state
   const [formData, setFormData] = useState<CardFormData>(defaultFormData);
 
-  // Save to localStorage whenever cards change
+  // Save to localStorage whenever cards or hidden IDs change
   useEffect(() => {
     saveCustomCards(customCards);
   }, [customCards]);
+  
+  useEffect(() => {
+    saveHiddenCardIds(hiddenCardIds);
+  }, [hiddenCardIds]);
+
+  // Combine all cards with source indicator
+  const allCardsWithSource = useMemo(() => {
+    const cards: Array<{ card: Card; source: "built-in" | "custom"; cardType: "text" | "voucher" | "playlist" }> = [];
+    
+    // Built-in text cards
+    builtInTextCards.forEach(card => {
+      cards.push({ card, source: "built-in", cardType: "text" });
+    });
+    
+    // Built-in voucher cards
+    builtInVoucherCards.forEach(card => {
+      cards.push({ card, source: "built-in", cardType: "voucher" });
+    });
+    
+    // Built-in playlist cards
+    builtInPlaylistCards.forEach(card => {
+      cards.push({ card, source: "built-in", cardType: "playlist" });
+    });
+    
+    // Custom cards
+    customCards.forEach(card => {
+      cards.push({ card, source: "custom", cardType: "text" });
+    });
+    
+    return cards;
+  }, [builtInTextCards, builtInVoucherCards, builtInPlaylistCards, customCards]);
 
   // Filter cards
   const filteredCards = useMemo(() => {
-    return customCards.filter(card => {
-      const matchesSearch = 
-        card.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        card.id.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = filterCategory === "all" || card.category === filterCategory;
-      return matchesSearch && matchesCategory;
+    return allCardsWithSource.filter(({ card, source, cardType }) => {
+      // Hidden filter
+      const isHidden = hiddenCardIds.includes(card.id);
+      if (showHiddenOnly && !isHidden) return false;
+      if (!showHiddenOnly && isHidden) return false;
+      
+      // Source filter
+      if (filterSource !== "all" && source !== filterSource) return false;
+      
+      // Type filter
+      if (filterType !== "all" && cardType !== filterType) return false;
+      
+      // Category filter
+      if (filterCategory !== "all" && card.category !== filterCategory) return false;
+      
+      // Search
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const textContent = card.type === "text" 
+          ? (card as TextCard).text 
+          : card.type === "voucher" 
+            ? (card as VoucherCard).title + " " + (card as VoucherCard).description
+            : (card as PlaylistCard).playlistName;
+        const matchesText = textContent.toLowerCase().includes(query);
+        const matchesId = card.id.toLowerCase().includes(query);
+        const matchesTags = card.tags?.some(t => t.toLowerCase().includes(query));
+        if (!matchesText && !matchesId && !matchesTags) return false;
+      }
+      
+      return true;
     });
-  }, [customCards, searchQuery, filterCategory]);
+  }, [allCardsWithSource, hiddenCardIds, showHiddenOnly, filterSource, filterType, filterCategory, searchQuery]);
 
+  // Stats
+  const stats = useMemo(() => ({
+    total: allCardsWithSource.length,
+    builtIn: allCardsWithSource.filter(c => c.source === "built-in").length,
+    custom: customCards.length,
+    hidden: hiddenCardIds.length,
+    text: allCardsWithSource.filter(c => c.cardType === "text").length,
+    voucher: allCardsWithSource.filter(c => c.cardType === "voucher").length,
+    playlist: allCardsWithSource.filter(c => c.cardType === "playlist").length,
+  }), [allCardsWithSource, customCards, hiddenCardIds]);
+
+  // Handlers
   const handleAddCard = () => {
     if (!formData.text.trim()) return;
     
@@ -161,6 +267,22 @@ export const CardsManager = () => {
     }
   };
 
+  const handleToggleHidden = (id: string) => {
+    if (hiddenCardIds.includes(id)) {
+      setHiddenCardIds(prev => prev.filter(hid => hid !== id));
+    } else {
+      setHiddenCardIds(prev => [...prev, id]);
+    }
+  };
+
+  const handleDuplicateAsCustom = (card: TextCard) => {
+    const newCard: TextCard = {
+      ...card,
+      id: generateId(),
+    };
+    setCustomCards(prev => [...prev, newCard]);
+  };
+
   const startEditing = (card: TextCard) => {
     setIsEditing(card.id);
     setFormData({
@@ -189,13 +311,42 @@ export const CardsManager = () => {
     return found?.icon || Heart;
   };
 
+  const getCardDisplayText = (card: Card): string => {
+    if (card.type === "text") return (card as TextCard).text;
+    if (card.type === "voucher") return (card as VoucherCard).title;
+    if (card.type === "playlist") return (card as PlaylistCard).playlistName;
+    return "";
+  };
+
+  const getCardEmoji = (card: Card): string => {
+    if (card.type === "text") return (card as TextCard).emoji || "💬";
+    if (card.type === "voucher") return "🎟️";
+    if (card.type === "playlist") return "🎵";
+    return "📝";
+  };
+
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-          Custom Cards ({customCards.length})
-        </h3>
+      {/* Header with Stats */}
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center gap-4 flex-wrap">
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+            All Cards ({stats.total})
+          </h3>
+          <div className="flex gap-2 text-xs flex-wrap">
+            <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full flex items-center gap-1">
+              <Database size={10} />{stats.builtIn} built-in
+            </span>
+            <span className="px-2 py-0.5 bg-green-50 text-green-600 rounded-full flex items-center gap-1">
+              <FolderPlus size={10} />{stats.custom} custom
+            </span>
+            {stats.hidden > 0 && (
+              <span className="px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full flex items-center gap-1">
+                <EyeOff size={10} />{stats.hidden} hidden
+              </span>
+            )}
+          </div>
+        </div>
         <button
           onClick={() => {
             setShowAddForm(true);
@@ -215,7 +366,7 @@ export const CardsManager = () => {
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Search cards..."
+              placeholder="Search cards by text, ID, or tag..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-3 py-2 border rounded-lg text-sm"
@@ -232,38 +383,108 @@ export const CardsManager = () => {
           </button>
         </div>
 
-        {/* Filter Pills */}
+        {/* Filter Section */}
         <AnimatePresence>
           {showFilters && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="flex flex-wrap gap-2"
+              className="space-y-3 pt-2"
             >
-              <button
-                onClick={() => setFilterCategory("all")}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                  filterCategory === "all"
-                    ? "bg-accent-pink text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                All
-              </button>
-              {CATEGORY_OPTIONS.map(({ value, label, icon: Icon }) => (
+              {/* Source Filter */}
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Source</label>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { value: "all" as CardSource, label: "All", count: stats.total },
+                    { value: "built-in" as CardSource, label: "Built-in", count: stats.builtIn },
+                    { value: "custom" as CardSource, label: "Custom", count: stats.custom },
+                  ].map(({ value, label, count }) => (
+                    <button
+                      key={value}
+                      onClick={() => setFilterSource(value)}
+                      className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                        filterSource === value
+                          ? "bg-accent-pink text-white"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      {label} ({count})
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Type Filter */}
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Type</label>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { value: "all" as CardType, label: "All", icon: MessageSquare },
+                    { value: "text" as CardType, label: "Text", icon: MessageSquare },
+                    { value: "voucher" as CardType, label: "Voucher", icon: Ticket },
+                    { value: "playlist" as CardType, label: "Playlist", icon: Music },
+                  ].map(({ value, label, icon: Icon }) => (
+                    <button
+                      key={value}
+                      onClick={() => setFilterType(value)}
+                      className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 transition-colors ${
+                        filterType === value
+                          ? "bg-accent-pink text-white"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      <Icon size={12} /> {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Category Filter */}
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Category</label>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setFilterCategory("all")}
+                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      filterCategory === "all"
+                        ? "bg-accent-pink text-white"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    All
+                  </button>
+                  {CATEGORY_OPTIONS.map(({ value, label, icon: Icon }) => (
+                    <button
+                      key={value}
+                      onClick={() => setFilterCategory(value)}
+                      className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 transition-colors ${
+                        filterCategory === value
+                          ? "bg-accent-pink text-white"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      <Icon size={12} /> {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Show Hidden Toggle */}
+              <div className="flex items-center gap-2">
                 <button
-                  key={value}
-                  onClick={() => setFilterCategory(value)}
+                  onClick={() => setShowHiddenOnly(!showHiddenOnly)}
                   className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 transition-colors ${
-                    filterCategory === value
-                      ? "bg-accent-pink text-white"
+                    showHiddenOnly
+                      ? "bg-gray-800 text-white"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
                 >
-                  <Icon size={12} /> {label}
+                  {showHiddenOnly ? <EyeOff size={12} /> : <Eye size={12} />}
+                  {showHiddenOnly ? "Showing Hidden" : "Show Hidden Cards"}
                 </button>
-              ))}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -285,28 +506,6 @@ export const CardsManager = () => {
               <button onClick={cancelEdit} className="text-gray-400 hover:text-gray-600">
                 <X size={18} />
               </button>
-            </div>
-
-            {/* Type Selection (for now, only text cards supported) */}
-            <div>
-              <label className="text-xs text-gray-500 mb-1 block">Type</label>
-              <div className="flex gap-2">
-                {TYPE_OPTIONS.map(({ value, label, icon: Icon }) => (
-                  <button
-                    key={value}
-                    onClick={() => {/* Only text supported for now */}}
-                    disabled={value !== "text"}
-                    className={`px-3 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors ${
-                      value === "text"
-                        ? "bg-accent-pink text-white"
-                        : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    }`}
-                  >
-                    <Icon size={14} /> {label}
-                  </button>
-                ))}
-              </div>
-              <p className="text-xs text-gray-400 mt-1">Voucher and Playlist cards coming soon</p>
             </div>
 
             {/* Category & Rarity Row */}
@@ -374,7 +573,7 @@ export const CardsManager = () => {
                 className="w-full px-3 py-2 border rounded-lg text-sm resize-none"
               />
               <p className="text-xs text-gray-400 mt-1">
-                Tip: Use {"{pet}"} to insert "babe", "baby", or "Caitlyn" randomly
+                Tip: Use {"{pet}"} to insert "babe", "baby", or name randomly
               </p>
             </div>
 
@@ -415,18 +614,27 @@ export const CardsManager = () => {
       </AnimatePresence>
 
       {/* Cards List */}
-      <div className="space-y-2 max-h-[40vh] overflow-y-auto">
+      <div className="space-y-2 max-h-[50vh] overflow-y-auto">
         {filteredCards.length === 0 ? (
           <div className="text-center py-8 text-gray-400">
             <MessageSquare size={48} className="mx-auto mb-2 opacity-50" />
-            <p className="font-medium">No custom cards yet</p>
-            <p className="text-sm mt-1">Add your first custom card above</p>
+            <p className="font-medium">
+              {showHiddenOnly ? "No hidden cards" : "No cards match your filters"}
+            </p>
+            <p className="text-sm mt-1">
+              {showHiddenOnly 
+                ? "Hidden cards will appear here" 
+                : "Try adjusting your search or filters"}
+            </p>
           </div>
         ) : (
-          filteredCards.map((card) => {
+          filteredCards.map(({ card, source, cardType }) => {
             const CategoryIcon = getCategoryIcon(card.category);
             const rarityOption = RARITY_OPTIONS.find(r => r.value === card.rarity);
             const isExpanded = expandedCard === card.id;
+            const isHidden = hiddenCardIds.includes(card.id);
+            const isCustom = source === "custom";
+            const isTextCard = cardType === "text";
             
             return (
               <motion.div
@@ -434,23 +642,43 @@ export const CardsManager = () => {
                 layout
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-xl border border-gray-100 overflow-hidden"
+                className={`bg-white rounded-xl border overflow-hidden ${
+                  isHidden ? "border-gray-300 opacity-60" : "border-gray-100"
+                }`}
               >
                 {/* Card Header */}
                 <div 
                   className="p-3 flex items-center gap-3 cursor-pointer hover:bg-gray-50"
                   onClick={() => setExpandedCard(isExpanded ? null : card.id)}
                 >
-                  <span className="text-2xl">{card.emoji}</span>
+                  <span className="text-2xl">{getCardEmoji(card)}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-800 truncate">{card.text}</p>
-                    <div className="flex items-center gap-2 mt-1">
+                    <p className="text-sm text-gray-800 truncate">{getCardDisplayText(card)}</p>
+                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                      {/* Source badge */}
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                        isCustom ? "bg-green-100 text-green-600" : "bg-blue-100 text-blue-600"
+                      }`}>
+                        {isCustom ? "custom" : "built-in"}
+                      </span>
+                      {/* Type badge */}
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-100 text-purple-600">
+                        {cardType}
+                      </span>
+                      {/* Category */}
                       <span className="flex items-center gap-1 text-xs text-gray-500">
                         <CategoryIcon size={10} /> {card.category}
                       </span>
+                      {/* Rarity */}
                       <span className={`text-xs px-1.5 py-0.5 rounded ${rarityOption?.color}`}>
                         {card.rarity}
                       </span>
+                      {/* Hidden indicator */}
+                      {isHidden && (
+                        <span className="text-xs text-gray-400 flex items-center gap-0.5">
+                          <EyeOff size={10} /> hidden
+                        </span>
+                      )}
                     </div>
                   </div>
                   {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -466,7 +694,9 @@ export const CardsManager = () => {
                       className="px-3 pb-3 border-t border-gray-100"
                     >
                       <div className="pt-3 space-y-2">
-                        <p className="text-sm text-gray-600">{card.text}</p>
+                        <p className="text-sm text-gray-600">{getCardDisplayText(card)}</p>
+                        
+                        {/* Tags */}
                         {card.tags && card.tags.length > 0 && (
                           <div className="flex flex-wrap gap-1">
                             {card.tags.map((tag, idx) => (
@@ -476,25 +706,66 @@ export const CardsManager = () => {
                             ))}
                           </div>
                         )}
-                        <div className="flex gap-2 pt-2">
+                        
+                        {/* ID */}
+                        <p className="text-xs text-gray-400 font-mono">{card.id}</p>
+                        
+                        {/* Actions */}
+                        <div className="flex gap-2 pt-2 flex-wrap">
+                          {/* Toggle visibility */}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              startEditing(card);
+                              handleToggleHidden(card.id);
                             }}
-                            className="flex-1 px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-medium flex items-center justify-center gap-1 hover:bg-gray-200"
+                            className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 ${
+                              isHidden 
+                                ? "bg-green-100 text-green-600 hover:bg-green-200"
+                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                            }`}
                           >
-                            <Edit3 size={12} /> Edit
+                            {isHidden ? <Eye size={12} /> : <EyeOff size={12} />}
+                            {isHidden ? "Show" : "Hide"}
                           </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteCard(card.id);
-                            }}
-                            className="flex-1 px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-medium flex items-center justify-center gap-1 hover:bg-red-100"
-                          >
-                            <Trash2 size={12} /> Delete
-                          </button>
+                          
+                          {/* Duplicate to custom (for built-in only) */}
+                          {!isCustom && isTextCard && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDuplicateAsCustom(card as TextCard);
+                              }}
+                              className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-medium flex items-center gap-1 hover:bg-blue-100"
+                            >
+                              <Copy size={12} /> Duplicate
+                            </button>
+                          )}
+                          
+                          {/* Edit (custom only) */}
+                          {isCustom && isTextCard && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                startEditing(card as TextCard);
+                              }}
+                              className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-medium flex items-center gap-1 hover:bg-gray-200"
+                            >
+                              <Edit3 size={12} /> Edit
+                            </button>
+                          )}
+                          
+                          {/* Delete (custom only) */}
+                          {isCustom && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteCard(card.id);
+                              }}
+                              className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-medium flex items-center gap-1 hover:bg-red-100"
+                            >
+                              <Trash2 size={12} /> Delete
+                            </button>
+                          )}
                         </div>
                       </div>
                     </motion.div>
@@ -506,14 +777,16 @@ export const CardsManager = () => {
         )}
       </div>
 
-      {/* Stats */}
-      {customCards.length > 0 && (
-        <div className="flex items-center justify-center gap-4 text-xs text-gray-400 pt-2">
-          <span>Total: {customCards.length}</span>
-          <span>•</span>
-          <span>Filtered: {filteredCards.length}</span>
-        </div>
-      )}
+      {/* Footer Stats */}
+      <div className="flex items-center justify-center gap-4 text-xs text-gray-400 pt-2 flex-wrap">
+        <span>Showing: {filteredCards.length}</span>
+        <span>•</span>
+        <span>Text: {stats.text}</span>
+        <span>•</span>
+        <span>Voucher: {stats.voucher}</span>
+        <span>•</span>
+        <span>Playlist: {stats.playlist}</span>
+      </div>
     </div>
   );
 };

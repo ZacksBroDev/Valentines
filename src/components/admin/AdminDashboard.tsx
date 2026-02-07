@@ -484,7 +484,7 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl flex flex-col"
+          className="absolute right-0 top-0 h-full w-full max-w-3xl bg-white shadow-xl flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
