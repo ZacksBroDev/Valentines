@@ -20,13 +20,18 @@ export const CONFIG = {
 
   // ----- DECK SETTINGS -----
   // Show end screen after this many draws OR when deck exhausted
-  drawThreshold: 30,
+  // Set high to allow users to draw all cards - deck has 250+ cards
+  drawThreshold: 500,
   // Required taps to unlock secret deck
   secretTapCount: 5,
   // Time window for secret unlock (ms)
   secretTapWindow: 3000,
   // Wax seal tap count for hint
   sealHintTaps: 3,
+  
+  // ----- SECRET DECK PROGRESS -----
+  // Number of draws required to unlock the secret deck via progress
+  secretUnlockDraws: 25,
 
   // ----- PROGRESS MILESTONES -----
   milestones: {
@@ -44,7 +49,8 @@ export const CONFIG = {
   },
 
   // ----- DAILY MODE -----
-  // If enabled, only 1 draw per calendar day
+  // Daily draw limit (3 per calendar day)
+  dailyDrawLimit: 3,
   dailyModeDefault: false,
 
   // ----- HEART TRAIL -----
@@ -158,21 +164,27 @@ export const STICKERS = {
 
 export type StickerKey = keyof typeof STICKERS;
 
-// Rarity definitions
+// Rarity definitions - use with RARITY_ICONS from components/icons.tsx
 export const RARITIES = {
   common: {
     label: "Common",
-    icon: "○",
+    iconName: "Circle" as const,
+    color: "text-gray-400",
+    bgColor: "bg-gray-100",
     shimmer: false,
   },
   rare: {
     label: "Rare",
-    icon: "◇",
+    iconName: "Diamond" as const,
+    color: "text-purple-500",
+    bgColor: "bg-purple-100",
     shimmer: true,
   },
   legendary: {
     label: "Legendary",
-    icon: "★",
+    iconName: "Star" as const,
+    color: "text-yellow-500",
+    bgColor: "bg-yellow-100",
     shimmer: true,
   },
 } as const;

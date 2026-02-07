@@ -13,6 +13,7 @@ export const STORAGE_KEYS = {
   // Core deck state
   FAVORITES: `${PREFIX}favorites`,
   SECRET_UNLOCKED: `${PREFIX}secret-unlocked`,
+  SECRET_PROGRESS_DRAWS: `${PREFIX}secret-progress-draws`,
   SEEN_IDS: `${PREFIX}seen-ids`,
   DECK_EXHAUSTED_ONCE: `${PREFIX}exhausted-once`,
 
@@ -28,9 +29,11 @@ export const STORAGE_KEYS = {
   LOVE_METER: `${PREFIX}love-meter`,
   LOVE_METER_COMPLETE: `${PREFIX}love-meter-complete`,
 
-  // Daily mode
+  // Daily mode (enhanced for 3 draws/day)
   DAILY_MODE_ENABLED: `${PREFIX}daily-mode`,
   LAST_DRAW_DATE: `${PREFIX}last-draw-date`,
+  DAILY_DRAWS_TODAY: `${PREFIX}daily-draws-today`,
+  SERVER_TIME_OFFSET: `${PREFIX}server-time-offset`,
 
   // Stickers
   CARD_STICKERS: `${PREFIX}card-stickers`,
@@ -50,6 +53,9 @@ export const STORAGE_KEYS = {
 
   // Seal hint shown
   SEAL_HINT_SHOWN: `${PREFIX}seal-hint-shown`,
+  
+  // First-run intro
+  HAS_SEEN_INTRO: `${PREFIX}has-seen-intro`,
 } as const;
 
 // ----- GENERIC HELPERS -----
@@ -89,6 +95,21 @@ export const isSecretUnlocked = (): boolean =>
   localStorage.getItem(STORAGE_KEYS.SECRET_UNLOCKED) === "true";
 export const unlockSecret = () =>
   localStorage.setItem(STORAGE_KEYS.SECRET_UNLOCKED, "true");
+
+// ----- SECRET PROGRESS (draws toward unlock) -----
+export const getSecretProgressDraws = (): number => 
+  get(STORAGE_KEYS.SECRET_PROGRESS_DRAWS, 0);
+
+export const incrementSecretProgress = (): number => {
+  const current = getSecretProgressDraws();
+  const next = current + 1;
+  set(STORAGE_KEYS.SECRET_PROGRESS_DRAWS, next);
+  return next;
+};
+
+export const resetSecretProgress = (): void => {
+  set(STORAGE_KEYS.SECRET_PROGRESS_DRAWS, 0);
+};
 
 // ----- SEEN IDS -----
 export const getSeenIds = (): string[] => get(STORAGE_KEYS.SEEN_IDS, []);
@@ -207,15 +228,94 @@ export const wasSealHintShown = (): boolean =>
   get(STORAGE_KEYS.SEAL_HINT_SHOWN, false);
 export const setSealHintShown = () => set(STORAGE_KEYS.SEAL_HINT_SHOWN, true);
 
+// ----- FIRST-RUN INTRO -----
+export const hasSeenIntro = (): boolean =>
+  get(STORAGE_KEYS.HAS_SEEN_INTRO, false);
+export const setHasSeenIntro = (seen: boolean) =>
+  set(STORAGE_KEYS.HAS_SEEN_INTRO, seen);
+
+// ----- SERVER TIME -----
+// Store the offset between server time and device time (in ms)
+export const getServerTimeOffset = (): number =>
+  get(STORAGE_KEYS.SERVER_TIME_OFFSET, 0);
+export const setServerTimeOffset = (offsetMs: number) =>
+  set(STORAGE_KEYS.SERVER_TIME_OFFSET, offsetMs);
+
+// Get server-corrected date string (UTC for consistency)
+export const getServerDateString = (): string => {
+  const offset = getServerTimeOffset();
+  const serverNow = new Date(Date.now() + offset);
+  // Use UTC to avoid timezone issues
+  return serverNow.toISOString().split("T")[0];
+};
+
+// Get server-corrected timestamp
+export const getServerTimestamp = (): number => {
+  const offset = getServerTimeOffset();
+  return Date.now() + offset;
+};
+
 // ----- DATE HELPERS -----
 export const getLocalDateString = (): string => {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 };
 
-export const canDrawToday = (): boolean => {
+// ----- DAILY MODE (3 draws/day) -----
+export const getDailyDrawsToday = (): number => {
+  const lastDrawDate = getLastDrawDate();
+  const today = getServerDateString();
+  
+  // Reset count if it's a new day
+  if (lastDrawDate !== today) {
+    set(STORAGE_KEYS.DAILY_DRAWS_TODAY, 0);
+    return 0;
+  }
+  
+  return get(STORAGE_KEYS.DAILY_DRAWS_TODAY, 0);
+};
+
+export const incrementDailyDraws = (): number => {
+  const today = getServerDateString();
+  const lastDrawDate = getLastDrawDate();
+  
+  // Reset if new day
+  let currentCount = lastDrawDate === today ? getDailyDrawsToday() : 0;
+  currentCount += 1;
+  
+  set(STORAGE_KEYS.DAILY_DRAWS_TODAY, currentCount);
+  set(STORAGE_KEYS.LAST_DRAW_DATE, today);
+  
+  return currentCount;
+};
+
+export const canDrawToday = (dailyLimit: number = 3): boolean => {
   if (!isDailyModeEnabled()) return true;
-  const lastDraw = getLastDrawDate();
-  if (!lastDraw) return true;
-  return lastDraw !== getLocalDateString();
+  
+  const drawsToday = getDailyDrawsToday();
+  return drawsToday < dailyLimit;
+};
+
+export const getDrawsRemaining = (dailyLimit: number = 3): number => {
+  if (!isDailyModeEnabled()) return Infinity;
+  
+  const drawsToday = getDailyDrawsToday();
+  return Math.max(0, dailyLimit - drawsToday);
+};
+
+// Calculate time until next draw (midnight UTC)
+export const getTimeUntilNextDraw = (): { hours: number; minutes: number } => {
+  const offset = getServerTimeOffset();
+  const serverNow = new Date(Date.now() + offset);
+  
+  // Get tomorrow midnight UTC
+  const tomorrow = new Date(serverNow);
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+  tomorrow.setUTCHours(0, 0, 0, 0);
+  
+  const diffMs = tomorrow.getTime() - serverNow.getTime();
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  
+  return { hours, minutes };
 };

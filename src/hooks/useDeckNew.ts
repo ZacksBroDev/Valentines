@@ -14,14 +14,19 @@ import {
   clearSeenIds,
   isSecretUnlocked as checkSecretUnlocked,
   unlockSecret as storeSecretUnlock,
+  getSecretProgressDraws,
+  incrementSecretProgress,
+  resetSecretProgress,
   wasDeckExhausted,
   setDeckExhausted,
   resetDeckExhausted,
   isDailyModeEnabled,
   setDailyModeEnabled as saveDailyMode,
-  setLastDrawDate,
-  getLocalDateString,
   canDrawToday,
+  getDrawsRemaining,
+  getDailyDrawsToday,
+  incrementDailyDraws,
+  getTimeUntilNextDraw,
   getCurrentMood,
   setCurrentMood as saveCurrentMood,
   getOpenWhenMode,
@@ -31,6 +36,7 @@ import { shuffleArray } from "../utils/helpers";
 
 export const useDeckNew = () => {
   const [secretUnlocked, setSecretUnlocked] = useState(checkSecretUnlocked);
+  const [secretProgressDraws, setSecretProgressDraws] = useState(getSecretProgressDraws);
   const [seenIds, setSeenIds] = useState<string[]>(getSeenIds);
   const [shuffledDeck, setShuffledDeck] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -46,7 +52,12 @@ export const useDeckNew = () => {
     getOpenWhenMode,
   );
   const [dailyModeEnabled, setDailyModeState] = useState(isDailyModeEnabled);
-  const [dailyCardDrawn, setDailyCardDrawn] = useState(!canDrawToday());
+  const [dailyDrawsToday, setDailyDrawsToday] = useState(getDailyDrawsToday);
+  const [drawsRemaining, setDrawsRemaining] = useState(getDrawsRemaining(CONFIG.dailyDrawLimit));
+  const [timeUntilNextDraw, setTimeUntilNextDraw] = useState(getTimeUntilNextDraw);
+  
+  // Legacy compatibility
+  const dailyCardDrawn = dailyModeEnabled && drawsRemaining <= 0;
 
   // Get filtered cards based on mood and open when mode
   const availableCards = useMemo(() => {
@@ -126,14 +137,27 @@ export const useDeckNew = () => {
 
   // Check daily mode on mount and date changes
   useEffect(() => {
-    setDailyCardDrawn(!canDrawToday());
+    // Update draws remaining and time until next draw
+    const updateDailyState = () => {
+      setDailyDrawsToday(getDailyDrawsToday());
+      setDrawsRemaining(getDrawsRemaining(CONFIG.dailyDrawLimit));
+      setTimeUntilNextDraw(getTimeUntilNextDraw());
+    };
+    
+    updateDailyState();
+    
+    // Update every minute for countdown
+    const interval = setInterval(updateDailyState, 60000);
+    return () => clearInterval(interval);
   }, [dailyModeEnabled]);
 
   // Draw a new card
   const drawCard = useCallback(() => {
-    // Check daily mode
-    if (dailyModeEnabled && !canDrawToday()) {
-      setDailyCardDrawn(true);
+    // Check daily mode (3 draws per day limit)
+    if (dailyModeEnabled && !canDrawToday(CONFIG.dailyDrawLimit)) {
+      // Update state to reflect exhausted draws
+      setDrawsRemaining(0);
+      setTimeUntilNextDraw(getTimeUntilNextDraw());
       return null;
     }
 
@@ -180,10 +204,25 @@ export const useDeckNew = () => {
       saveSeenIds(newSeenIds);
       setDrawCount((prev) => prev + 1);
 
-      // Update daily mode date
+      // Update daily mode - increment draw count
       if (dailyModeEnabled) {
-        setLastDrawDate(getLocalDateString());
-        setDailyCardDrawn(true);
+        const newDrawsToday = incrementDailyDraws();
+        setDailyDrawsToday(newDrawsToday);
+        setDrawsRemaining(Math.max(0, CONFIG.dailyDrawLimit - newDrawsToday));
+      }
+
+      // Update secret progress (if not already unlocked)
+      if (!secretUnlocked) {
+        const newProgress = incrementSecretProgress();
+        setSecretProgressDraws(newProgress);
+        
+        // Auto-unlock when progress threshold is reached
+        if (newProgress >= CONFIG.secretUnlockDraws) {
+          storeSecretUnlock();
+          setSecretUnlocked(true);
+          resetSecretProgress();
+          setSecretProgressDraws(0);
+        }
       }
 
       // Check for deck exhaustion
@@ -203,6 +242,7 @@ export const useDeckNew = () => {
   }, [
     shuffledDeck,
     currentIndex,
+    secretUnlocked,
     seenIds,
     drawCount,
     availableCards,
@@ -256,7 +296,11 @@ export const useDeckNew = () => {
     const newValue = !dailyModeEnabled;
     setDailyModeState(newValue);
     saveDailyMode(newValue);
-    if (!newValue) setDailyCardDrawn(false);
+    if (newValue) {
+      // Reset daily draws state when enabling
+      setDailyDrawsToday(getDailyDrawsToday());
+      setDrawsRemaining(getDrawsRemaining(CONFIG.dailyDrawLimit));
+    }
   }, [dailyModeEnabled]);
 
   // Draw final 3 cards
@@ -275,6 +319,8 @@ export const useDeckNew = () => {
 
   // Alias for daily mode
   const dailyMode = dailyModeEnabled;
+  const dailyLimit = CONFIG.dailyDrawLimit;
+  const secretUnlockThreshold = CONFIG.secretUnlockDraws;
 
   return {
     currentCard,
@@ -282,10 +328,17 @@ export const useDeckNew = () => {
     isLoading,
     isDeckExhausted,
     secretUnlocked,
+    secretProgressDraws,
+    secretUnlockThreshold,
     dailyMode,
     dailyCardDrawn,
+    dailyDrawsToday,
+    drawsRemaining,
+    timeUntilNextDraw,
+    dailyLimit,
     currentMood,
     openWhenMode,
+    seenIds,
     drawCard,
     resetDeck,
     shuffleDeck,
