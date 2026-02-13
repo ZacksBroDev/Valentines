@@ -1,49 +1,80 @@
 // ============================================================
 // REMINDER MODAL
 // "Need a reminder?" feature with reassurance text + video
+// Now with two reminder options: body positivity & love affirmation
 // ============================================================
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Play, Heart, Volume2, VolumeX } from "lucide-react";
+import { X, Play, Heart, Volume2, VolumeX, Sparkles } from "lucide-react";
 
 interface ReminderModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// Reassurance messages that rotate
-const REASSURANCE_MESSAGES = [
-  "You are so loved.",
-  "I'm always here for you.",
-  "You make everything better.",
-  "I believe in you.",
-  "You're doing amazing.",
+// Reminder types
+type ReminderType = "beautiful" | "loved" | null;
+
+// Opening messages (shown briefly before selection)
+const OPENING_MESSAGES = [
+  "Hey beautiful...",
+  "I'm here for you.",
+  "What do you need today?",
 ];
 
-// Video URL - can be configured
-const REMINDER_VIDEO_URL = "/reminder-video.mp4"; // Place video in public folder
+// Messages for "Am I fat?" / body positivity
+const BEAUTIFUL_MESSAGES = [
+  "You are absolutely beautiful.",
+  "I love every inch of you.",
+  "You're perfect to me.",
+  "Your body is amazing.",
+  "You're so gorgeous.",
+];
+
+// Messages for "Do you still love me?"
+const LOVED_MESSAGES = [
+  "I love you more every day.",
+  "You are my everything.",
+  "I'll always love you.",
+  "My heart is yours forever.",
+  "Nothing could change how I feel about you.",
+];
+
+// Video URLs - place videos in public folder
+const BEAUTIFUL_VIDEO_URL = "/reminder-beautiful.mp4"; // Body positivity video
+const LOVED_VIDEO_URL = "/reminder-loved.mp4"; // "I love you" video
+const FALLBACK_VIDEO_URL = "/reminder-video.mp4"; // Fallback if specific videos don't exist
 
 export const ReminderModal = ({ isOpen, onClose }: ReminderModalProps) => {
-  const [phase, setPhase] = useState<"text" | "video">("text");
-  const [message, setMessage] = useState(REASSURANCE_MESSAGES[0]);
+  const [phase, setPhase] = useState<"text" | "selection" | "video">("text");
+  const [reminderType, setReminderType] = useState<ReminderType>(null);
+  const [message, setMessage] = useState(OPENING_MESSAGES[0]);
   const [autoplayFailed, setAutoplayFailed] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Pick a random message on open
+  // Get the appropriate video URL based on selection
+  const getVideoUrl = useCallback(() => {
+    if (reminderType === "beautiful") return BEAUTIFUL_VIDEO_URL;
+    if (reminderType === "loved") return LOVED_VIDEO_URL;
+    return FALLBACK_VIDEO_URL;
+  }, [reminderType]);
+
+  // Pick a random opening message on open
   useEffect(() => {
     if (isOpen) {
-      const randomIndex = Math.floor(Math.random() * REASSURANCE_MESSAGES.length);
-      setMessage(REASSURANCE_MESSAGES[randomIndex]);
+      const randomIndex = Math.floor(Math.random() * OPENING_MESSAGES.length);
+      setMessage(OPENING_MESSAGES[randomIndex]);
       setPhase("text");
+      setReminderType(null);
       setAutoplayFailed(false);
 
-      // Transition to video after 2.5 seconds
+      // Transition to selection screen after 2 seconds
       timerRef.current = setTimeout(() => {
-        setPhase("video");
-      }, 2500);
+        setPhase("selection");
+      }, 2000);
     }
 
     return () => {
@@ -52,6 +83,22 @@ export const ReminderModal = ({ isOpen, onClose }: ReminderModalProps) => {
       }
     };
   }, [isOpen]);
+
+  // Handle reminder selection
+  const handleSelectReminder = useCallback((type: ReminderType) => {
+    setReminderType(type);
+
+    // Show appropriate message based on selection
+    const messages = type === "beautiful" ? BEAUTIFUL_MESSAGES : LOVED_MESSAGES;
+    const randomIndex = Math.floor(Math.random() * messages.length);
+    setMessage(messages[randomIndex]);
+
+    // Brief pause on message, then show video
+    setPhase("text");
+    timerRef.current = setTimeout(() => {
+      setPhase("video");
+    }, 2500);
+  }, []);
 
   // Attempt autoplay when video phase starts
   useEffect(() => {
@@ -139,9 +186,13 @@ export const ReminderModal = ({ isOpen, onClose }: ReminderModalProps) => {
                   transition={{ type: "spring", delay: 0.1 }}
                   className="w-20 h-20 rounded-full bg-accent-pink/20 flex items-center justify-center mb-6"
                 >
-                  <Heart size={40} className="text-accent-pink" fill="currentColor" />
+                  <Heart
+                    size={40}
+                    className="text-accent-pink"
+                    fill="currentColor"
+                  />
                 </motion.div>
-                
+
                 <motion.p
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -151,13 +202,91 @@ export const ReminderModal = ({ isOpen, onClose }: ReminderModalProps) => {
                   {message}
                 </motion.p>
 
-                {/* Loading indicator */}
-                <motion.div
-                  initial={{ width: "0%" }}
-                  animate={{ width: "100%" }}
-                  transition={{ duration: 2.5, ease: "linear" }}
-                  className="absolute bottom-0 left-0 h-1 bg-accent-pink"
-                />
+                {/* Loading indicator - only show during initial opening, not after selection */}
+                {!reminderType && (
+                  <motion.div
+                    initial={{ width: "0%" }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: 2, ease: "linear" }}
+                    className="absolute bottom-0 left-0 h-1 bg-accent-pink"
+                  />
+                )}
+                {reminderType && (
+                  <motion.div
+                    initial={{ width: "0%" }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: 2.5, ease: "linear" }}
+                    className="absolute bottom-0 left-0 h-1 bg-accent-pink"
+                  />
+                )}
+              </motion.div>
+            )}
+
+            {/* Selection Phase - Ask what she needs */}
+            {phase === "selection" && (
+              <motion.div
+                key="selection"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center"
+              >
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-xl font-medium text-gray-600 mb-8"
+                >
+                  What do you need to hear right now?
+                </motion.p>
+
+                <div className="flex flex-col gap-4 w-full max-w-xs">
+                  {/* "Am I beautiful?" button */}
+                  <motion.button
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 }}
+                    onClick={() => handleSelectReminder("beautiful")}
+                    className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-pink-100 to-rose-100 border-2 border-pink-200 hover:border-pink-400 hover:shadow-lg transition-all group"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-pink-200 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Sparkles size={24} className="text-pink-500" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-semibold text-gray-800">
+                        Am I beautiful?
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Show me I'm perfect to you
+                      </p>
+                    </div>
+                  </motion.button>
+
+                  {/* "Do you still love me?" button */}
+                  <motion.button
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                    onClick={() => handleSelectReminder("loved")}
+                    className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-red-100 to-pink-100 border-2 border-red-200 hover:border-red-400 hover:shadow-lg transition-all group"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-red-200 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Heart
+                        size={24}
+                        className="text-red-500"
+                        fill="currentColor"
+                      />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-semibold text-gray-800">
+                        Do you still love me?
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Remind me how you feel
+                      </p>
+                    </div>
+                  </motion.button>
+                </div>
               </motion.div>
             )}
 
@@ -172,7 +301,7 @@ export const ReminderModal = ({ isOpen, onClose }: ReminderModalProps) => {
               >
                 <video
                   ref={videoRef}
-                  src={REMINDER_VIDEO_URL}
+                  src={getVideoUrl()}
                   playsInline
                   loop
                   preload="auto"
@@ -208,10 +337,12 @@ export const ReminderModal = ({ isOpen, onClose }: ReminderModalProps) => {
                   </button>
                 )}
 
-                {/* Video fallback message */}
+                {/* Video fallback message - contextual based on selection */}
                 <div className="absolute bottom-4 left-4 right-16">
                   <p className="text-white/80 text-xs bg-black/30 backdrop-blur-sm rounded-lg px-3 py-2">
-                    Remember: I love you always 💕
+                    {reminderType === "beautiful"
+                      ? "You're absolutely gorgeous 💕"
+                      : "I love you always 💕"}
                   </p>
                 </div>
               </motion.div>

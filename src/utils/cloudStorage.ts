@@ -24,11 +24,25 @@ import {
 // Lazy-initialize the GraphQL client to ensure Amplify is configured first
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let _client: any = null;
+let _clientInitialized = false;
+
 const getClient = () => {
-  if (!_client) {
-    _client = generateClient();
+  if (!_client && !_clientInitialized) {
+    try {
+      _client = generateClient();
+      _clientInitialized = true;
+    } catch (error) {
+      // Amplify not yet configured - this can happen on first render
+      // Return a mock client that returns empty results
+      if (import.meta.env.DEV) {
+        console.warn("[CloudStorage] Amplify not ready yet, using fallback");
+      }
+      return {
+        graphql: async () => ({ data: null }),
+      };
+    }
   }
-  return _client;
+  return _client || { graphql: async () => ({ data: null }) };
 };
 
 // ============================================================
@@ -37,13 +51,13 @@ const getClient = () => {
 // ============================================================
 
 // Cloud voucher request status types
-export type CloudVoucherStatus = 
-  | "pending"          // REQUESTED - awaiting admin action
-  | "approved"         // APPROVED - ready for use
-  | "denied"           // DECLINED - admin rejected
+export type CloudVoucherStatus =
+  | "pending" // REQUESTED - awaiting admin action
+  | "approved" // APPROVED - ready for use
+  | "denied" // DECLINED - admin rejected
   | "counter-proposed" // COUNTERED - admin suggested alternative
-  | "redeemed"         // REDEEMED - successfully used
-  | "archived";        // ARCHIVED - historical record
+  | "redeemed" // REDEEMED - successfully used
+  | "archived"; // ARCHIVED - historical record
 
 export interface CloudVoucherRequest {
   id: string;
@@ -76,18 +90,23 @@ export interface CloudSharedNote {
 /**
  * Fetch all voucher requests from the cloud
  */
-export const fetchVoucherRequests = async (): Promise<CloudVoucherRequest[]> => {
+export const fetchVoucherRequests = async (): Promise<
+  CloudVoucherRequest[]
+> => {
   try {
     const response = await getClient().graphql({
       query: listVoucherRequests,
       authMode: "apiKey", // Use API key for public access
     });
-    
-    const data = response as { data?: { listVoucherRequests?: { items?: CloudVoucherRequest[] } } };
+
+    const data = response as {
+      data?: { listVoucherRequests?: { items?: CloudVoucherRequest[] } };
+    };
     const items = data?.data?.listVoucherRequests?.items || [];
     return items.filter((item): item is CloudVoucherRequest => item !== null);
   } catch (error) {
-    if (import.meta.env.DEV) console.error("Error fetching voucher requests:", error);
+    if (import.meta.env.DEV)
+      console.error("Error fetching voucher requests:", error);
     return [];
   }
 };
@@ -107,17 +126,19 @@ export const submitVoucherRequest = async (request: {
       requestedDate: request.requestedDate || null,
       status: "pending",
     };
-    
+
     const response = await getClient().graphql({
       query: createVoucherRequest,
       variables: { input },
       authMode: "apiKey",
     });
-    
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (response as any)?.data?.createVoucherRequest as CloudVoucherRequest;
   } catch (error) {
-    if (import.meta.env.DEV) if (import.meta.env.DEV) console.error("Error creating voucher request:", error);
+    if (import.meta.env.DEV)
+      if (import.meta.env.DEV)
+        console.error("Error creating voucher request:", error);
     return null;
   }
 };
@@ -127,9 +148,15 @@ export const submitVoucherRequest = async (request: {
  */
 export const updateVoucherRequestStatus = async (
   id: string,
-  status: "pending" | "approved" | "denied" | "counter-proposed" | "redeemed" | "archived",
+  status:
+    | "pending"
+    | "approved"
+    | "denied"
+    | "counter-proposed"
+    | "redeemed"
+    | "archived",
   counterDate?: string,
-  adminNote?: string
+  adminNote?: string,
 ): Promise<CloudVoucherRequest | null> => {
   try {
     const response = await getClient().graphql({
@@ -144,11 +171,12 @@ export const updateVoucherRequestStatus = async (
       },
       authMode: "apiKey",
     });
-    
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (response as any)?.data?.updateVoucherRequest as CloudVoucherRequest;
   } catch (error) {
-    if (import.meta.env.DEV) console.error("Error updating voucher request:", error);
+    if (import.meta.env.DEV)
+      console.error("Error updating voucher request:", error);
     return null;
   }
 };
@@ -167,7 +195,8 @@ export const removeVoucherRequest = async (id: string): Promise<boolean> => {
     });
     return true;
   } catch (error) {
-    if (import.meta.env.DEV) console.error("Error deleting voucher request:", error);
+    if (import.meta.env.DEV)
+      console.error("Error deleting voucher request:", error);
     return false;
   }
 };
@@ -177,7 +206,7 @@ export const removeVoucherRequest = async (id: string): Promise<boolean> => {
  */
 export const fetchPendingRequestsCount = async (): Promise<number> => {
   const requests = await fetchVoucherRequests();
-  return requests.filter(r => r.status === "pending").length;
+  return requests.filter((r) => r.status === "pending").length;
 };
 
 // ============================================================
@@ -193,13 +222,14 @@ export const fetchSharedNotes = async (): Promise<CloudSharedNote[]> => {
       query: listSharedNotes,
       authMode: "apiKey",
     });
-    
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const items = (response as any)?.data?.listSharedNotes?.items || [];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return items.filter((item: any) => item !== null) as CloudSharedNote[];
   } catch (error) {
-    if (import.meta.env.DEV) console.error("Error fetching shared notes:", error);
+    if (import.meta.env.DEV)
+      console.error("Error fetching shared notes:", error);
     return [];
   }
 };
@@ -209,7 +239,7 @@ export const fetchSharedNotes = async (): Promise<CloudSharedNote[]> => {
  */
 export const submitSharedNote = async (
   content: string,
-  from: "her" | "admin"
+  from: "her" | "admin",
 ): Promise<CloudSharedNote | null> => {
   try {
     const response = await getClient().graphql({
@@ -223,11 +253,12 @@ export const submitSharedNote = async (
       },
       authMode: "apiKey",
     });
-    
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (response as any)?.data?.createSharedNote as CloudSharedNote;
   } catch (error) {
-    if (import.meta.env.DEV) console.error("Error creating shared note:", error);
+    if (import.meta.env.DEV)
+      console.error("Error creating shared note:", error);
     return null;
   }
 };
@@ -249,7 +280,8 @@ export const markCloudNoteAsRead = async (id: string): Promise<boolean> => {
     });
     return true;
   } catch (error) {
-    if (import.meta.env.DEV) console.error("Error marking note as read:", error);
+    if (import.meta.env.DEV)
+      console.error("Error marking note as read:", error);
     return false;
   }
 };
@@ -268,7 +300,8 @@ export const removeSharedNote = async (id: string): Promise<boolean> => {
     });
     return true;
   } catch (error) {
-    if (import.meta.env.DEV) console.error("Error deleting shared note:", error);
+    if (import.meta.env.DEV)
+      console.error("Error deleting shared note:", error);
     return false;
   }
 };
@@ -276,14 +309,16 @@ export const removeSharedNote = async (id: string): Promise<boolean> => {
 /**
  * Get unread notes count
  */
-export const fetchUnreadNotesCount = async (forAdmin: boolean): Promise<number> => {
+export const fetchUnreadNotesCount = async (
+  forAdmin: boolean,
+): Promise<number> => {
   const notes = await fetchSharedNotes();
   if (forAdmin) {
     // Admin sees unread notes from "her"
-    return notes.filter(n => n.from === "her" && !n.read).length;
+    return notes.filter((n) => n.from === "her" && !n.read).length;
   } else {
     // She sees unread notes from "admin"
-    return notes.filter(n => n.from === "admin" && !n.read).length;
+    return notes.filter((n) => n.from === "admin" && !n.read).length;
   }
 };
 
@@ -306,19 +341,22 @@ export interface CloudVoucherTemplate {
 /**
  * Fetch all voucher templates from the cloud
  */
-export const fetchVoucherTemplates = async (): Promise<CloudVoucherTemplate[]> => {
+export const fetchVoucherTemplates = async (): Promise<
+  CloudVoucherTemplate[]
+> => {
   try {
     const response = await getClient().graphql({
       query: listVoucherTemplates,
       authMode: "apiKey",
     });
-    
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const items = (response as any)?.data?.listVoucherTemplates?.items || [];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return items.filter((item: any) => item !== null) as CloudVoucherTemplate[];
   } catch (error) {
-    if (import.meta.env.DEV) console.error("Error fetching voucher templates:", error);
+    if (import.meta.env.DEV)
+      console.error("Error fetching voucher templates:", error);
     return [];
   }
 };
@@ -340,11 +378,13 @@ export const createCloudVoucherTemplate = async (template: {
       variables: { input: template },
       authMode: "apiKey",
     });
-    
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (response as any)?.data?.createVoucherTemplate as CloudVoucherTemplate;
+    return (response as any)?.data
+      ?.createVoucherTemplate as CloudVoucherTemplate;
   } catch (error) {
-    if (import.meta.env.DEV) console.error("Error creating voucher template:", error);
+    if (import.meta.env.DEV)
+      console.error("Error creating voucher template:", error);
     return null;
   }
 };
@@ -361,7 +401,7 @@ export const updateCloudVoucherTemplate = async (
     options: string[];
     monthlyLimit: number;
     iconName: string;
-  }>
+  }>,
 ): Promise<CloudVoucherTemplate | null> => {
   try {
     const response = await getClient().graphql({
@@ -369,11 +409,13 @@ export const updateCloudVoucherTemplate = async (
       variables: { input: { id, ...updates } },
       authMode: "apiKey",
     });
-    
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (response as any)?.data?.updateVoucherTemplate as CloudVoucherTemplate;
+    return (response as any)?.data
+      ?.updateVoucherTemplate as CloudVoucherTemplate;
   } catch (error) {
-    if (import.meta.env.DEV) console.error("Error updating voucher template:", error);
+    if (import.meta.env.DEV)
+      console.error("Error updating voucher template:", error);
     return null;
   }
 };
@@ -381,7 +423,9 @@ export const updateCloudVoucherTemplate = async (
 /**
  * Delete a voucher template
  */
-export const deleteCloudVoucherTemplate = async (id: string): Promise<boolean> => {
+export const deleteCloudVoucherTemplate = async (
+  id: string,
+): Promise<boolean> => {
   try {
     await getClient().graphql({
       query: deleteVoucherTemplateMutation,
@@ -390,7 +434,8 @@ export const deleteCloudVoucherTemplate = async (id: string): Promise<boolean> =
     });
     return true;
   } catch (error) {
-    if (import.meta.env.DEV) console.error("Error deleting voucher template:", error);
+    if (import.meta.env.DEV)
+      console.error("Error deleting voucher template:", error);
     return false;
   }
 };
@@ -398,7 +443,9 @@ export const deleteCloudVoucherTemplate = async (id: string): Promise<boolean> =
 /**
  * Get rarity based on monthly limit
  */
-export const getRarityFromLimit = (monthlyLimit: number): "legendary" | "rare" | "common" => {
+export const getRarityFromLimit = (
+  monthlyLimit: number,
+): "legendary" | "rare" | "common" => {
   if (monthlyLimit === 1) return "legendary";
   if (monthlyLimit <= 3) return "rare";
   return "common";
