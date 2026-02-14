@@ -304,20 +304,26 @@ export const ReminderModal = ({ isOpen, onClose }: ReminderModalProps) => {
               >
                 <video
                   ref={videoRef}
+                  key={getVideoUrl()}
                   src={getVideoUrl()}
                   autoPlay
                   playsInline
                   loop
                   muted
                   preload="auto"
+                  crossOrigin="anonymous"
                   className="w-full h-full object-cover"
-                  onCanPlay={() => {
-                    // Ensure video plays when ready
+                  onLoadedData={() => {
+                    // Ensure video plays when data is loaded
                     if (videoRef.current) {
                       videoRef.current
                         .play()
                         .catch(() => setAutoplayFailed(true));
                     }
+                  }}
+                  onError={() => {
+                    // Video failed to load
+                    setAutoplayFailed(true);
                   }}
                 />
 

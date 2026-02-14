@@ -31,7 +31,7 @@ const getClient = () => {
     try {
       _client = generateClient();
       _clientInitialized = true;
-    } catch (error) {
+    } catch {
       // Amplify not yet configured - this can happen on first render
       // Return a mock client that returns empty results
       if (import.meta.env.DEV) {
