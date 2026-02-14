@@ -41,10 +41,13 @@ const LOVED_MESSAGES = [
   "Nothing could change how I feel about you.",
 ];
 
-// Video URLs - place videos in public folder
-const BEAUTIFUL_VIDEO_URL = "/reminder-beautiful.mp4"; // Body positivity video
-const LOVED_VIDEO_URL = "/reminder-loved.mp4"; // "I love you" video
-const FALLBACK_VIDEO_URL = "/reminder-video.mp4"; // Fallback if specific videos don't exist
+// Video URLs - hosted on Cloudinary for fast CDN delivery (using .mp4 for browser compatibility)
+const BEAUTIFUL_VIDEO_URL =
+  "https://res.cloudinary.com/djnazqqgr/video/upload/v1771032632/IMG_0562_1_1_sfnx8m.mp4"; // Body positivity video
+const LOVED_VIDEO_URL =
+  "https://res.cloudinary.com/djnazqqgr/video/upload/v1771033045/IMG_0561_wfrz4a.mp4"; // "I love you" video
+const FALLBACK_VIDEO_URL =
+  "https://res.cloudinary.com/djnazqqgr/video/upload/v1771033045/IMG_0561_wfrz4a.mp4"; // Fallback to love video
 
 export const ReminderModal = ({ isOpen, onClose }: ReminderModalProps) => {
   const [phase, setPhase] = useState<"text" | "selection" | "video">("text");
@@ -302,11 +305,20 @@ export const ReminderModal = ({ isOpen, onClose }: ReminderModalProps) => {
                 <video
                   ref={videoRef}
                   src={getVideoUrl()}
+                  autoPlay
                   playsInline
                   loop
+                  muted
                   preload="auto"
                   className="w-full h-full object-cover"
-                  muted={isMuted}
+                  onCanPlay={() => {
+                    // Ensure video plays when ready
+                    if (videoRef.current) {
+                      videoRef.current
+                        .play()
+                        .catch(() => setAutoplayFailed(true));
+                    }
+                  }}
                 />
 
                 {/* Play button overlay if autoplay failed */}
