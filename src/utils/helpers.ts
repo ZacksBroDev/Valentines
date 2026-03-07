@@ -5,7 +5,7 @@ import {
   isVoucherCard,
   isPlaylistCard,
 } from "../types";
-import { getAvailableCards } from "../data/cards";
+
 
 // Fisher-Yates shuffle
 export const shuffleArray = <T>(array: T[]): T[] => {
@@ -15,12 +15,6 @@ export const shuffleArray = <T>(array: T[]): T[] => {
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   return shuffled;
-};
-
-// Create a shuffled deck of card IDs
-export const createShuffledDeck = (secretUnlocked: boolean): string[] => {
-  const cards = getAvailableCards(secretUnlocked);
-  return shuffleArray(cards.map((c) => c.id));
 };
 
 // Get card by ID
