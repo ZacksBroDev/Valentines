@@ -7,7 +7,7 @@ import { Suspense, lazy } from "react";
 import { LoadingScreen } from "../components/LoadingScreen";
 
 const AdminDashboard = lazy(() =>
-  import("../components/admin").then((m) => ({ default: m.AdminDashboard }))
+  import("../components/admin").then((m) => ({ default: m.AdminDashboard })),
 );
 
 export default function AdminPage() {

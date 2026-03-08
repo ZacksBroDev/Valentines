@@ -152,9 +152,7 @@ export default function LandingPage() {
 
       {/* Architecture Diagram placeholder */}
       <section className="max-w-5xl mx-auto px-6 py-16 text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">
-          How It Works
-        </h2>
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">How It Works</h2>
         <p className="text-gray-600 max-w-2xl mx-auto mb-8">
           Cards are stored in DynamoDB and only fetched after Cognito
           authentication. The frontend bundle contains zero private content.
@@ -164,7 +162,7 @@ export default function LandingPage() {
 
         <div className="bg-gray-50 rounded-2xl p-8 ring-1 ring-gray-200 max-w-3xl mx-auto">
           <pre className="text-left text-sm text-gray-600 leading-relaxed font-mono whitespace-pre-wrap">
-{`┌─────────────┐     ┌──────────────┐     ┌────────────┐
+            {`┌─────────────┐     ┌──────────────┐     ┌────────────┐
 │  React SPA  │────▶│ AWS Cognito  │────▶│  AppSync   │
 │  (Vite)     │     │  Auth + RBAC │     │  GraphQL   │
 └─────────────┘     └──────────────┘     └─────┬──────┘

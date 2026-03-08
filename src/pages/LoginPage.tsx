@@ -23,8 +23,9 @@ export default function LoginPage() {
   >("SIGN_IN");
 
   // Redirect destination after login
-  const from = (location.state as { from?: { pathname: string } })?.from
-    ?.pathname ?? "/app";
+  const from =
+    (location.state as { from?: { pathname: string } })?.from?.pathname ??
+    "/app";
 
   // If already authenticated, redirect (using Navigate, not navigate() during render)
   if (isAuthenticated) {
@@ -50,14 +51,17 @@ export default function LoginPage() {
         if (result.isSignedIn) {
           navigate(from, { replace: true });
         } else if (
-          result.nextStep?.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED"
+          result.nextStep?.signInStep ===
+          "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED"
         ) {
           setChallengeStep("NEW_PASSWORD_REQUIRED");
         }
       }
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Sign in failed. Check your credentials."
+        err instanceof Error
+          ? err.message
+          : "Sign in failed. Check your credentials.",
       );
     } finally {
       setIsSubmitting(false);
