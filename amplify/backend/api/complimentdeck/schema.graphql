@@ -1,54 +1,175 @@
-# Simplified schema for cross-device sync
-# Using public API key access for simplicity
+# ============================================================
+# Compliment Deck GraphQL Schema
+# Auth rules:
+#   - Cards: Admins can CRUD, authenticated users can read
+#   - SharedNote / VoucherRequest / VoucherTemplate: keep public apiKey for now
+#     (existing cross-device sync uses API key; can tighten later)
+#   - UserSettings / UserFavorite / UserSeenCard: owner-based (each user owns their data)
+# ============================================================
 
-type SharedNote @model @auth(rules: [
-  { allow: public, provider: apiKey }
-]) {
+type SharedNote
+  @model
+  @auth(
+    rules: [
+      { allow: public, provider: apiKey }
+      {
+        allow: groups
+        groups: ["Admins"]
+        operations: [create, update, delete, read]
+      }
+      { allow: private, provider: userPools, operations: [create, read] }
+    ]
+  ) {
   id: ID!
   content: String!
-  from: String! # "admin" or "her"
+  from: String!
   read: Boolean!
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
 }
 
-type VoucherRequest @model @auth(rules: [
-  { allow: public, provider: apiKey }
-]) {
+type VoucherRequest
+  @model
+  @auth(
+    rules: [
+      { allow: public, provider: apiKey }
+      {
+        allow: groups
+        groups: ["Admins"]
+        operations: [create, update, delete, read]
+      }
+      {
+        allow: private
+        provider: userPools
+        operations: [create, read, update]
+      }
+    ]
+  ) {
   id: ID!
   voucherType: String!
   voucherTitle: String!
   requestedDate: String
-  status: String! # "pending", "approved", "denied", "counter"
+  status: String!
   counterDate: String
   adminNote: String
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
 }
 
-type VoucherTemplate @model @auth(rules: [
-  { allow: public, provider: apiKey }
-]) {
+type VoucherTemplate
+  @model
+  @auth(
+    rules: [
+      { allow: public, provider: apiKey }
+      {
+        allow: groups
+        groups: ["Admins"]
+        operations: [create, update, delete, read]
+      }
+      { allow: private, provider: userPools, operations: [read] }
+    ]
+  ) {
   id: ID!
   type: String!
   title: String!
   description: String!
   options: [String!]!
   monthlyLimit: Int!
-  iconName: String! # Lucide icon name like "Flower2", "Heart", "Mountain"
+  iconName: String!
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
 }
 
-type Card @model @auth(rules: [
-  { allow: public, provider: apiKey }
-]) {
+# Cards: private content — only available after Cognito auth
+# Admins can CRUD, authenticated users can only read
+type Card
+  @model
+  @auth(
+    rules: [
+      {
+        allow: groups
+        groups: ["Admins"]
+        operations: [create, update, delete, read]
+      }
+      { allow: private, provider: userPools, operations: [read] }
+    ]
+  ) {
   id: ID!
+  type: String!
   text: String!
-  emoji: String!
+  emoji: String
   category: String!
   subCategory: String
   rarity: String
+  intensity: Int
+  tags: [String]
+  title: String
+  options: [String]
+  songTitle: String
+  artist: String
+  link: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+# Per-user settings (theme, daily mode, etc.)
+type UserSettings
+  @model
+  @auth(
+    rules: [
+      {
+        allow: owner
+        provider: userPools
+        operations: [create, update, delete, read]
+      }
+      { allow: groups, groups: ["Admins"], operations: [read] }
+    ]
+  ) {
+  id: ID!
+  owner: String!
+  currentTheme: String
+  dailyModeEnabled: Boolean
+  heartTrailEnabled: Boolean
+  isMuted: Boolean
+  secretUnlocked: Boolean
+  loveMeterValue: Int
+  loveMeterComplete: Boolean
+  drawCount: Int
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+# Per-user favorites
+type UserFavorite
+  @model
+  @auth(
+    rules: [
+      {
+        allow: owner
+        provider: userPools
+        operations: [create, update, delete, read]
+      }
+    ]
+  ) {
+  id: ID!
+  owner: String!
+  cardId: String!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+# Per-user seen card history
+type UserSeenCard
+  @model
+  @auth(
+    rules: [
+      { allow: owner, provider: userPools, operations: [create, delete, read] }
+    ]
+  ) {
+  id: ID!
+  owner: String!
+  cardId: String!
+  seenAt: AWSDateTime!
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
 }

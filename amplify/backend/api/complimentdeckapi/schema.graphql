@@ -1,7 +1,19 @@
-# AMPLIFY GRAPHQL SCHEMA - Compliment Deck
-# Simplified for easy cross-device sync without login
+# AMPLIFY GRAPHQL SCHEMA - Compliment Deck (secondary API)
+# Mirrors the main schema auth rules
 
-type SharedNote @model @auth(rules: [{ allow: public, provider: apiKey }]) {
+type SharedNote
+  @model
+  @auth(
+    rules: [
+      { allow: public, provider: apiKey }
+      {
+        allow: groups
+        groups: ["Admins"]
+        operations: [create, update, delete, read]
+      }
+      { allow: private, provider: userPools, operations: [create, read] }
+    ]
+  ) {
   id: ID!
   content: String!
   from: String!
@@ -10,7 +22,23 @@ type SharedNote @model @auth(rules: [{ allow: public, provider: apiKey }]) {
   updatedAt: AWSDateTime!
 }
 
-type VoucherRequest @model @auth(rules: [{ allow: public, provider: apiKey }]) {
+type VoucherRequest
+  @model
+  @auth(
+    rules: [
+      { allow: public, provider: apiKey }
+      {
+        allow: groups
+        groups: ["Admins"]
+        operations: [create, update, delete, read]
+      }
+      {
+        allow: private
+        provider: userPools
+        operations: [create, read, update]
+      }
+    ]
+  ) {
   id: ID!
   voucherType: String!
   voucherTitle: String!
@@ -22,13 +50,32 @@ type VoucherRequest @model @auth(rules: [{ allow: public, provider: apiKey }]) {
   updatedAt: AWSDateTime!
 }
 
-type Card @model @auth(rules: [{ allow: public, provider: apiKey }]) {
+type Card
+  @model
+  @auth(
+    rules: [
+      {
+        allow: groups
+        groups: ["Admins"]
+        operations: [create, update, delete, read]
+      }
+      { allow: private, provider: userPools, operations: [read] }
+    ]
+  ) {
   id: ID!
+  type: String!
   text: String!
-  emoji: String!
+  emoji: String
   category: String!
   subCategory: String
   rarity: String
+  intensity: Int
+  tags: [String]
+  title: String
+  options: [String]
+  songTitle: String
+  artist: String
+  link: String
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
 }
