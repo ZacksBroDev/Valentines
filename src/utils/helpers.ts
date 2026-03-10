@@ -6,7 +6,6 @@ import {
   isPlaylistCard,
 } from "../types";
 
-
 // Fisher-Yates shuffle
 export const shuffleArray = <T>(array: T[]): T[] => {
   const shuffled = [...array];

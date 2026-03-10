@@ -137,8 +137,7 @@ export const submitVoucherRequest = async (request: {
     return (response as any)?.data?.createVoucherRequest as CloudVoucherRequest;
   } catch (error) {
     if (import.meta.env.DEV)
-      if (import.meta.env.DEV)
-        console.error("Error creating voucher request:", error);
+      console.error("Error creating voucher request:", error);
     return null;
   }
 };
