@@ -2,11 +2,21 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, isTextCard, isVoucherCard, isPlaylistCard } from "../types";
 import { RARITIES } from "../config";
-import { withPet } from "../data/cards";
+import { withPet } from "../context/CardContext";
 import { formatCategory, prefersReducedMotion } from "../utils/helpers";
 import { redeemVoucher, getRedeemedVouchers } from "../utils/storage";
 import { CATEGORY_ICONS } from "./icons";
-import { Heart, Mail, Circle, Diamond, Star, Ticket, Music, Clock, Check } from "lucide-react";
+import {
+  Heart,
+  Mail,
+  Circle,
+  Diamond,
+  Star,
+  Ticket,
+  Music,
+  Clock,
+  Check,
+} from "lucide-react";
 
 // Anniversary date constant
 const ANNIVERSARY_DATE = new Date("2024-04-13T00:00:00");
@@ -24,23 +34,23 @@ interface CardProps {
 // Anniversary counter component - updates every second when visible
 const AnniversaryCounter = ({ isDark }: { isDark?: boolean }) => {
   const [now, setNow] = useState(new Date());
-  
+
   useEffect(() => {
     const interval = setInterval(() => {
       setNow(new Date());
     }, 1000);
-    
+
     return () => clearInterval(interval);
   }, []);
-  
+
   const getTimeDiff = useCallback(() => {
     const diff = now.getTime() - ANNIVERSARY_DATE.getTime();
-    
+
     const seconds = Math.floor(diff / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
-    
+
     return {
       days,
       hours: hours % 24,
@@ -48,9 +58,9 @@ const AnniversaryCounter = ({ isDark }: { isDark?: boolean }) => {
       seconds: seconds % 60,
     };
   }, [now]);
-  
+
   const time = getTimeDiff();
-  
+
   return (
     <div className="flex flex-col items-center gap-3">
       {/* Days - prominent */}
@@ -59,12 +69,18 @@ const AnniversaryCounter = ({ isDark }: { isDark?: boolean }) => {
         animate={{ opacity: 1, scale: 1 }}
         className="text-center"
       >
-        <span className={`text-4xl sm:text-5xl font-bold ${isDark ? "text-white" : "text-accent-pink"}`}>
+        <span
+          className={`text-4xl sm:text-5xl font-bold ${isDark ? "text-white" : "text-accent-pink"}`}
+        >
           {time.days.toLocaleString()}
         </span>
-        <p className={`text-xs sm:text-sm ${isDark ? "text-gray-300" : "text-gray-500"}`}>days</p>
+        <p
+          className={`text-xs sm:text-sm ${isDark ? "text-gray-300" : "text-gray-500"}`}
+        >
+          days
+        </p>
       </motion.div>
-      
+
       {/* Hours, Minutes, Seconds row */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -78,14 +94,20 @@ const AnniversaryCounter = ({ isDark }: { isDark?: boolean }) => {
           { value: time.seconds, label: "sec" },
         ].map(({ value, label }) => (
           <div key={label} className="text-center min-w-[40px]">
-            <span className={`text-lg sm:text-xl font-semibold tabular-nums ${isDark ? "text-white" : "text-gray-700"}`}>
+            <span
+              className={`text-lg sm:text-xl font-semibold tabular-nums ${isDark ? "text-white" : "text-gray-700"}`}
+            >
               {value.toString().padStart(2, "0")}
             </span>
-            <p className={`text-[10px] ${isDark ? "text-gray-400" : "text-gray-400"}`}>{label}</p>
+            <p
+              className={`text-[10px] ${isDark ? "text-gray-400" : "text-gray-400"}`}
+            >
+              {label}
+            </p>
           </div>
         ))}
       </motion.div>
-      
+
       {/* Tagline */}
       <motion.p
         initial={{ opacity: 0 }}
@@ -262,7 +284,12 @@ export const ComplimentCard = ({
 
           {/* Rarity label with icon */}
           {(() => {
-            const RarityIcon = card.rarity === "legendary" ? Star : card.rarity === "rare" ? Diamond : Circle;
+            const RarityIcon =
+              card.rarity === "legendary"
+                ? Star
+                : card.rarity === "rare"
+                  ? Diamond
+                  : Circle;
             return (
               <motion.span
                 initial={{ opacity: 0, scale: 0 }}
@@ -273,11 +300,17 @@ export const ComplimentCard = ({
                     ? "bg-yellow-100 text-yellow-700"
                     : card.rarity === "rare"
                       ? "bg-purple-100 text-purple-600"
-                      : isDark ? "bg-white/10 text-gray-300" : "bg-gray-100 text-gray-500"
+                      : isDark
+                        ? "bg-white/10 text-gray-300"
+                        : "bg-gray-100 text-gray-500"
                 }`}
                 title={rarity.label}
               >
-                <RarityIcon size={10} strokeWidth={2.5} fill={card.rarity !== "common" ? "currentColor" : "none"} />
+                <RarityIcon
+                  size={10}
+                  strokeWidth={2.5}
+                  fill={card.rarity !== "common" ? "currentColor" : "none"}
+                />
                 {rarity.label}
               </motion.span>
             );
@@ -294,11 +327,15 @@ export const ComplimentCard = ({
             whileTap={{ scale: 0.85 }}
             whileHover={{ scale: 1.1 }}
             className={`absolute top-10 right-3 z-20 w-11 h-11 min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center shadow-md transition-all cursor-pointer ${
-              isFavorite 
-                ? "bg-accent-pink text-white" 
-                : isDark ? "bg-white/10 hover:bg-white/20 text-gray-400" : "bg-white/90 hover:bg-white text-gray-400 hover:text-accent-pink"
+              isFavorite
+                ? "bg-accent-pink text-white"
+                : isDark
+                  ? "bg-white/10 hover:bg-white/20 text-gray-400"
+                  : "bg-white/90 hover:bg-white text-gray-400 hover:text-accent-pink"
             }`}
-            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            aria-label={
+              isFavorite ? "Remove from favorites" : "Add to favorites"
+            }
             type="button"
           >
             <motion.div
@@ -307,9 +344,9 @@ export const ComplimentCard = ({
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 500 }}
             >
-              <Heart 
-                size={20} 
-                strokeWidth={2} 
+              <Heart
+                size={20}
+                strokeWidth={2}
                 fill={isFavorite ? "currentColor" : "none"}
               />
             </motion.div>
@@ -332,7 +369,7 @@ export const ComplimentCard = ({
               <AnniversaryCounter isDark={isDark} />
             </>
           )}
-          
+
           {/* Regular Text Card */}
           {isTextCard(card) && card.id !== "anniversary-counter" && (
             <>
@@ -344,7 +381,9 @@ export const ComplimentCard = ({
               >
                 {(() => {
                   const CategoryIcon = CATEGORY_ICONS[card.category] || Heart;
-                  return <CategoryIcon size={48} className="text-accent-pink" />;
+                  return (
+                    <CategoryIcon size={48} className="text-accent-pink" />
+                  );
                 })()}
               </motion.div>
               <motion.p
@@ -355,7 +394,13 @@ export const ComplimentCard = ({
                   isDark ? "text-white" : "text-gray-800"
                 }`}
               >
-                "<TypewriterText text={withPet(card.text)} delay={200} forceReduceMotion={reduceMotion} />"
+                "
+                <TypewriterText
+                  text={withPet(card.text)}
+                  delay={200}
+                  forceReduceMotion={reduceMotion}
+                />
+                "
               </motion.p>
             </>
           )}
@@ -382,7 +427,9 @@ export const ComplimentCard = ({
                 </div>
               ) : (
                 <div className="space-y-2 w-full">
-                  <p className={`text-xs text-center mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                  <p
+                    className={`text-xs text-center mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}
+                  >
                     Pick an option:
                   </p>
                   {card.options.map((option, i) => (
@@ -400,7 +447,7 @@ export const ComplimentCard = ({
                       {option}
                     </button>
                   ))}
-                  
+
                   {/* Redeem button - only shows after selection */}
                   <AnimatePresence>
                     {selectedVoucher && (

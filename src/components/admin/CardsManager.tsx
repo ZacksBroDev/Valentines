@@ -1,10 +1,9 @@
 // ============================================================
-// CARDS MANAGER - Admin CRUD for ALL deck cards
-// No emojis - uses category icons instead
-// Supports editing both built-in and custom cards
+// CARDS MANAGER - Admin CRUD for deck cards via GraphQL
+// All cards live in DynamoDB, managed through AppSync
 // ============================================================
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
@@ -24,46 +23,138 @@ import {
   ChevronUp,
   Save,
   X,
-  Database,
-  FolderPlus,
-  Eye,
-  EyeOff,
-  RotateCcw,
+  RefreshCw,
+  Loader2,
 } from "lucide-react";
-import { Card, TextCard, CardCategory, VoucherCard, PlaylistCard } from "../../types";
-import { RarityKey } from "../../config";
-import { textCards, voucherCards, playlistCards, extraTextCards } from "../../data/cards";
+import { generateClient } from "aws-amplify/api";
+import { CardCategory } from "../../types";
+import { CONFIG, RarityKey } from "../../config";
 
 // ============================================================
-// STORAGE KEYS & HELPERS
+// GRAPHQL OPERATIONS
 // ============================================================
 
-const CUSTOM_CARDS_KEY = "valentine-deck-custom-cards";
-const HIDDEN_CARDS_KEY = "valentine-deck-hidden-cards";
-const CARD_OVERRIDES_KEY = "valentine-deck-card-overrides";
+const listCardsQuery = /* GraphQL */ `
+  query ListCards($limit: Int, $nextToken: String) {
+    listCards(limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        type
+        text
+        emoji
+        category
+        subCategory
+        rarity
+        intensity
+        tags
+        title
+        options
+        songTitle
+        artist
+        link
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
 
-// Overrides for built-in cards (only changed fields are stored)
-interface CardOverride {
-  category?: CardCategory;
-  rarity?: RarityKey;
-  intensity?: 1 | 2 | 3;
-  text?: string;
-  tags?: string[];
-}
+const createCardMutation = /* GraphQL */ `
+  mutation CreateCard($input: CreateCardInput!) {
+    createCard(input: $input) {
+      id
+      type
+      text
+      emoji
+      category
+      subCategory
+      rarity
+      intensity
+      tags
+      title
+      options
+      songTitle
+      artist
+      link
+    }
+  }
+`;
+
+const updateCardMutation = /* GraphQL */ `
+  mutation UpdateCard($input: UpdateCardInput!) {
+    updateCard(input: $input) {
+      id
+      type
+      text
+      emoji
+      category
+      subCategory
+      rarity
+      intensity
+      tags
+      title
+      options
+      songTitle
+      artist
+      link
+    }
+  }
+`;
+
+const deleteCardMutation = /* GraphQL */ `
+  mutation DeleteCard($input: DeleteCardInput!) {
+    deleteCard(input: $input) {
+      id
+    }
+  }
+`;
+
+// ============================================================
+// TYPES
+// ============================================================
 
 interface CardFormData {
-  type: "text";
+  type: "text" | "voucher" | "playlist";
   category: CardCategory;
   rarity: RarityKey;
   intensity: 1 | 2 | 3;
   text: string;
+  emoji: string;
   tags: string[];
+  title: string;
+  options: string[];
+  songTitle: string;
+  artist: string;
+  link: string;
 }
 
-type CardSource = "all" | "built-in" | "custom" | "modified";
 type CardType = "all" | "text" | "voucher" | "playlist";
 
-const CATEGORY_OPTIONS: { value: CardCategory; label: string; icon: typeof Heart }[] = [
+interface DbCard {
+  id: string;
+  type: string;
+  text: string;
+  emoji: string | null;
+  category: string;
+  subCategory: string | null;
+  rarity: string | null;
+  intensity: number | null;
+  tags: string[] | null;
+  title: string | null;
+  options: string[] | null;
+  songTitle: string | null;
+  artist: string | null;
+  link: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+const CATEGORY_OPTIONS: {
+  value: CardCategory;
+  label: string;
+  icon: typeof Heart;
+}[] = [
   { value: "sweet", label: "Sweet", icon: Heart },
   { value: "funny", label: "Funny", icon: Smile },
   { value: "supportive", label: "Supportive", icon: Shield },
@@ -74,56 +165,12 @@ const CATEGORY_OPTIONS: { value: CardCategory; label: string; icon: typeof Heart
 const RARITY_OPTIONS: { value: RarityKey; label: string; color: string }[] = [
   { value: "common", label: "Common", color: "bg-gray-100 text-gray-600" },
   { value: "rare", label: "Rare", color: "bg-blue-100 text-blue-600" },
-  { value: "legendary", label: "Legendary", color: "bg-yellow-100 text-yellow-600" },
+  {
+    value: "legendary",
+    label: "Legendary",
+    color: "bg-yellow-100 text-yellow-600",
+  },
 ];
-
-// Get custom cards from localStorage
-const getCustomCards = (): TextCard[] => {
-  try {
-    const stored = localStorage.getItem(CUSTOM_CARDS_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-};
-
-// Save custom cards to localStorage
-const saveCustomCards = (cards: TextCard[]) => {
-  localStorage.setItem(CUSTOM_CARDS_KEY, JSON.stringify(cards));
-};
-
-// Get hidden card IDs from localStorage
-const getHiddenCardIds = (): string[] => {
-  try {
-    const stored = localStorage.getItem(HIDDEN_CARDS_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-};
-
-// Save hidden card IDs to localStorage
-const saveHiddenCardIds = (ids: string[]) => {
-  localStorage.setItem(HIDDEN_CARDS_KEY, JSON.stringify(ids));
-};
-
-// Get card overrides from localStorage
-const getCardOverrides = (): Record<string, CardOverride> => {
-  try {
-    const stored = localStorage.getItem(CARD_OVERRIDES_KEY);
-    return stored ? JSON.parse(stored) : {};
-  } catch {
-    return {};
-  }
-};
-
-// Save card overrides to localStorage
-const saveCardOverrides = (overrides: Record<string, CardOverride>) => {
-  localStorage.setItem(CARD_OVERRIDES_KEY, JSON.stringify(overrides));
-};
-
-// Generate unique ID
-const generateId = () => `custom-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 const defaultFormData: CardFormData = {
   type: "text",
@@ -131,320 +178,312 @@ const defaultFormData: CardFormData = {
   rarity: "common",
   intensity: 2,
   text: "",
+  emoji: "",
   tags: [],
+  title: "",
+  options: [],
+  songTitle: "",
+  artist: "",
+  link: "",
 };
+
+const generateId = () =>
+  `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 // ============================================================
 // MAIN COMPONENT
 // ============================================================
 
 export const CardsManager = () => {
-  // Built-in cards from cards.ts
-  const builtInTextCards = useMemo(() => [...textCards, ...extraTextCards], []);
-  const builtInVoucherCards = useMemo(() => voucherCards, []);
-  const builtInPlaylistCards = useMemo(() => playlistCards, []);
-  
-  // Custom cards (user-added)
-  const [customCards, setCustomCards] = useState<TextCard[]>(getCustomCards);
-  
-  // Hidden cards (built-in cards hidden from deck)
-  const [hiddenCardIds, setHiddenCardIds] = useState<string[]>(getHiddenCardIds);
-  
-  // Card overrides (edits to built-in cards)
-  const [cardOverrides, setCardOverrides] = useState<Record<string, CardOverride>>(getCardOverrides);
-  
+  const [cards, setCards] = useState<DbCard[]>([]);
+  const [isLoadingCards, setIsLoadingCards] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
   // UI state
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterCategory, setFilterCategory] = useState<CardCategory | "all">("all");
-  const [filterSource, setFilterSource] = useState<CardSource>("all");
+  const [filterCategory, setFilterCategory] = useState<CardCategory | "all">(
+    "all",
+  );
   const [filterType, setFilterType] = useState<CardType>("all");
   const [showFilters, setShowFilters] = useState(false);
-  const [showHiddenOnly, setShowHiddenOnly] = useState(false);
   const [isEditing, setIsEditing] = useState<string | null>(null);
-  const [editingSource, setEditingSource] = useState<"built-in" | "custom" | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
-  
-  // Form state
   const [formData, setFormData] = useState<CardFormData>(defaultFormData);
 
-  // Save to localStorage whenever state changes
-  useEffect(() => {
-    saveCustomCards(customCards);
-  }, [customCards]);
-  
-  useEffect(() => {
-    saveHiddenCardIds(hiddenCardIds);
-  }, [hiddenCardIds]);
-  
-  useEffect(() => {
-    saveCardOverrides(cardOverrides);
-  }, [cardOverrides]);
+  // Fetch all cards from DynamoDB
+  const fetchCards = useCallback(async () => {
+    setIsLoadingCards(true);
+    try {
+      const client = generateClient();
+      const allItems: DbCard[] = [];
+      let nextToken: string | null = null;
 
-  // Apply overrides to a card
-  const applyOverrides = (card: Card): Card => {
-    const override = cardOverrides[card.id];
-    if (!override) return card;
-    
-    if (card.type === "text") {
-      return {
-        ...card,
-        category: override.category ?? card.category,
-        rarity: override.rarity ?? card.rarity,
-        intensity: override.intensity ?? (card as TextCard).intensity,
-        text: override.text ?? (card as TextCard).text,
-        tags: override.tags ?? card.tags,
-      } as TextCard;
+      do {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const response: any = await client.graphql({
+          query: listCardsQuery,
+          variables: { limit: CONFIG.graphqlPageLimit, nextToken },
+          authMode: "userPool",
+        });
+        const items = response.data?.listCards?.items ?? [];
+        allItems.push(...items);
+        nextToken = response.data?.listCards?.nextToken ?? null;
+      } while (nextToken);
+
+      setCards(allItems.sort((a, b) => a.id.localeCompare(b.id)));
+    } catch (err) {
+      console.error("[CardsManager] Failed to fetch cards:", err);
+    } finally {
+      setIsLoadingCards(false);
     }
-    return card;
-  };
+  }, []);
 
-  // Combine all cards with source indicator
-  const allCardsWithSource = useMemo(() => {
-    const cards: Array<{ card: Card; source: "built-in" | "custom"; cardType: "text" | "voucher" | "playlist"; isModified: boolean }> = [];
-    
-    // Built-in text cards (with overrides applied)
-    builtInTextCards.forEach(card => {
-      const isModified = !!cardOverrides[card.id];
-      cards.push({ card: applyOverrides(card), source: "built-in", cardType: "text", isModified });
-    });
-    
-    // Built-in voucher cards
-    builtInVoucherCards.forEach(card => {
-      cards.push({ card, source: "built-in", cardType: "voucher", isModified: false });
-    });
-    
-    // Built-in playlist cards
-    builtInPlaylistCards.forEach(card => {
-      cards.push({ card, source: "built-in", cardType: "playlist", isModified: false });
-    });
-    
-    // Custom cards
-    customCards.forEach(card => {
-      cards.push({ card, source: "custom", cardType: "text", isModified: false });
-    });
-    
-    return cards;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [builtInTextCards, builtInVoucherCards, builtInPlaylistCards, customCards, cardOverrides]);
+  useEffect(() => {
+    fetchCards();
+  }, [fetchCards]);
 
   // Filter cards
   const filteredCards = useMemo(() => {
-    return allCardsWithSource.filter(({ card, source, cardType, isModified }) => {
-      // Hidden filter
-      const isHidden = hiddenCardIds.includes(card.id);
-      if (showHiddenOnly && !isHidden) return false;
-      if (!showHiddenOnly && isHidden) return false;
-      
-      // Source filter
-      if (filterSource === "modified" && !isModified) return false;
-      if (filterSource === "built-in" && source !== "built-in") return false;
-      if (filterSource === "custom" && source !== "custom") return false;
-      
-      // Type filter
-      if (filterType !== "all" && cardType !== filterType) return false;
-      
-      // Category filter
-      if (filterCategory !== "all" && card.category !== filterCategory) return false;
-      
-      // Search
+    return cards.filter((card) => {
+      if (filterType !== "all" && card.type !== filterType) return false;
+      if (filterCategory !== "all" && card.category !== filterCategory)
+        return false;
       if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        const textContent = card.type === "text" 
-          ? (card as TextCard).text 
-          : card.type === "voucher" 
-            ? (card as VoucherCard).title
-            : (card as PlaylistCard).songTitle + " - " + (card as PlaylistCard).artist;
-        const matchesText = textContent.toLowerCase().includes(query);
-        const matchesId = card.id.toLowerCase().includes(query);
-        const matchesTags = card.tags?.some(t => t.toLowerCase().includes(query));
-        if (!matchesText && !matchesId && !matchesTags) return false;
+        const q = searchQuery.toLowerCase();
+        const text = (
+          card.text ||
+          card.title ||
+          `${card.songTitle} ${card.artist}`
+        ).toLowerCase();
+        if (
+          !text.includes(q) &&
+          !card.id.toLowerCase().includes(q) &&
+          !card.tags?.some((t) => t.toLowerCase().includes(q))
+        )
+          return false;
       }
-      
       return true;
     });
-  }, [allCardsWithSource, hiddenCardIds, showHiddenOnly, filterSource, filterType, filterCategory, searchQuery]);
+  }, [cards, filterType, filterCategory, searchQuery]);
 
   // Stats
-  const stats = useMemo(() => ({
-    total: allCardsWithSource.length,
-    builtIn: allCardsWithSource.filter(c => c.source === "built-in").length,
-    custom: customCards.length,
-    hidden: hiddenCardIds.length,
-    modified: Object.keys(cardOverrides).length,
-    text: allCardsWithSource.filter(c => c.cardType === "text").length,
-    voucher: allCardsWithSource.filter(c => c.cardType === "voucher").length,
-    playlist: allCardsWithSource.filter(c => c.cardType === "playlist").length,
-  }), [allCardsWithSource, customCards, hiddenCardIds, cardOverrides]);
+  const stats = useMemo(
+    () => ({
+      total: cards.length,
+      text: cards.filter((c) => c.type === "text").length,
+      voucher: cards.filter((c) => c.type === "voucher").length,
+      playlist: cards.filter((c) => c.type === "playlist").length,
+    }),
+    [cards],
+  );
 
-  // Handlers
-  const handleAddCard = () => {
-    if (!formData.text.trim()) return;
-    
-    const newCard: TextCard = {
-      id: generateId(),
-      type: "text",
-      category: formData.category,
-      rarity: formData.rarity,
-      intensity: formData.intensity,
-      emoji: "", // Deprecated, kept for compatibility
-      text: formData.text,
-      tags: formData.tags,
-    };
-    
-    setCustomCards(prev => [...prev, newCard]);
-    setShowAddForm(false);
-    resetForm();
-  };
+  // CRUD Handlers
+  const handleAddCard = async () => {
+    if (formData.type === "text" && !formData.text.trim()) return;
+    if (formData.type === "voucher" && !formData.title.trim()) return;
+    if (formData.type === "playlist" && !formData.songTitle.trim()) return;
 
-  const handleUpdateCard = (id: string) => {
-    if (editingSource === "custom") {
-      // Update custom card directly
-      setCustomCards(prev => 
-        prev.map(card => 
-          card.id === id 
-            ? { 
-                ...card, 
-                category: formData.category,
-                rarity: formData.rarity,
-                intensity: formData.intensity,
-                text: formData.text,
-                tags: formData.tags,
-              }
-            : card
-        )
-      );
-    } else {
-      // Store override for built-in card
-      setCardOverrides(prev => ({
-        ...prev,
-        [id]: {
-          category: formData.category,
-          rarity: formData.rarity,
-          intensity: formData.intensity,
-          text: formData.text,
-          tags: formData.tags,
-        },
-      }));
-    }
-    setIsEditing(null);
-    setEditingSource(null);
-    resetForm();
-  };
+    setIsSaving(true);
+    try {
+      const client = generateClient();
+      const input: Record<string, unknown> = {
+        id: generateId(),
+        type: formData.type,
+        text: formData.text || "",
+        emoji: formData.emoji || null,
+        category: formData.category,
+        rarity: formData.rarity,
+        intensity: formData.intensity,
+        tags: formData.tags.length > 0 ? formData.tags : null,
+      };
+      if (formData.type === "voucher") {
+        input.title = formData.title;
+        input.options = formData.options;
+      }
+      if (formData.type === "playlist") {
+        input.songTitle = formData.songTitle;
+        input.artist = formData.artist;
+        input.link = formData.link;
+      }
 
-  const handleResetToOriginal = (id: string) => {
-    if (confirm("Reset this card to its original state? Your changes will be lost.")) {
-      setCardOverrides(prev => {
-        const updated = { ...prev };
-        delete updated[id];
-        return updated;
+      await client.graphql({
+        query: createCardMutation,
+        variables: { input },
+        authMode: "userPool",
       });
+      await fetchCards();
+      setShowAddForm(false);
+      resetForm();
+    } catch (err) {
+      console.error("[CardsManager] Create failed:", err);
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const handleDeleteCard = (id: string) => {
-    if (confirm("Delete this card? This action cannot be undone.")) {
-      setCustomCards(prev => prev.filter(card => card.id !== id));
+  const handleUpdateCard = async (id: string) => {
+    setIsSaving(true);
+    try {
+      const client = generateClient();
+      const input: Record<string, unknown> = {
+        id,
+        type: formData.type,
+        text: formData.text,
+        emoji: formData.emoji || null,
+        category: formData.category,
+        rarity: formData.rarity,
+        intensity: formData.intensity,
+        tags: formData.tags.length > 0 ? formData.tags : null,
+      };
+      if (formData.type === "voucher") {
+        input.title = formData.title;
+        input.options = formData.options;
+      }
+      if (formData.type === "playlist") {
+        input.songTitle = formData.songTitle;
+        input.artist = formData.artist;
+        input.link = formData.link;
+      }
+
+      await client.graphql({
+        query: updateCardMutation,
+        variables: { input },
+        authMode: "userPool",
+      });
+      await fetchCards();
+      setIsEditing(null);
+      resetForm();
+    } catch (err) {
+      console.error("[CardsManager] Update failed:", err);
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const handleToggleHidden = (id: string) => {
-    if (hiddenCardIds.includes(id)) {
-      setHiddenCardIds(prev => prev.filter(hid => hid !== id));
-    } else {
-      setHiddenCardIds(prev => [...prev, id]);
+  const handleDeleteCard = async (id: string) => {
+    if (!confirm("Delete this card permanently? This cannot be undone."))
+      return;
+    setIsSaving(true);
+    try {
+      const client = generateClient();
+      await client.graphql({
+        query: deleteCardMutation,
+        variables: { input: { id } },
+        authMode: "userPool",
+      });
+      await fetchCards();
+    } catch (err) {
+      console.error("[CardsManager] Delete failed:", err);
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const startEditing = (card: TextCard, source: "built-in" | "custom") => {
+  const startEditing = (card: DbCard) => {
     setIsEditing(card.id);
-    setEditingSource(source);
     setFormData({
-      type: "text",
-      category: card.category,
-      rarity: card.rarity,
-      intensity: card.intensity,
-      text: card.text,
+      type: (card.type as CardFormData["type"]) || "text",
+      category: card.category as CardCategory,
+      rarity: (card.rarity as RarityKey) || "common",
+      intensity: (card.intensity as 1 | 2 | 3) || 2,
+      text: card.text || "",
+      emoji: card.emoji || "",
       tags: card.tags || [],
+      title: card.title || "",
+      options: card.options || [],
+      songTitle: card.songTitle || "",
+      artist: card.artist || "",
+      link: card.link || "",
     });
   };
 
-  const resetForm = () => {
-    setFormData(defaultFormData);
-  };
-
+  const resetForm = () => setFormData(defaultFormData);
   const cancelEdit = () => {
     setIsEditing(null);
-    setEditingSource(null);
     setShowAddForm(false);
     resetForm();
   };
 
-  const getCategoryIcon = (category: CardCategory) => {
-    const found = CATEGORY_OPTIONS.find(c => c.value === category);
+  const getCategoryIcon = (category: string) => {
+    const found = CATEGORY_OPTIONS.find((c) => c.value === category);
     return found?.icon || Heart;
   };
 
-  const getCardDisplayText = (card: Card): string => {
-    if (card.type === "text") return (card as TextCard).text;
-    if (card.type === "voucher") return (card as VoucherCard).title;
-    if (card.type === "playlist") return `${(card as PlaylistCard).songTitle} - ${(card as PlaylistCard).artist}`;
-    return "";
+  const getCardDisplayText = (card: DbCard): string => {
+    if (card.type === "voucher") return card.title || "(untitled voucher)";
+    if (card.type === "playlist")
+      return `${card.songTitle || ""} - ${card.artist || ""}`;
+    return card.text || "(empty)";
   };
 
-  const getCardIcon = (card: Card, category: CardCategory) => {
+  const getCardIcon = (card: DbCard) => {
     if (card.type === "voucher") return Ticket;
     if (card.type === "playlist") return Music;
-    return getCategoryIcon(category);
+    return getCategoryIcon(card.category);
   };
+
+  if (isLoadingCards) {
+    return (
+      <div className="flex items-center justify-center py-12 text-gray-400">
+        <Loader2 size={24} className="animate-spin mr-2" />
+        Loading cards from database...
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
-      {/* Header with Stats */}
+      {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-4 flex-wrap">
           <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-            All Cards ({stats.total})
+            Cards ({stats.total})
           </h3>
           <div className="flex gap-2 text-xs flex-wrap">
-            <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full flex items-center gap-1">
-              <Database size={10} />{stats.builtIn} built-in
+            <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full">
+              {stats.text} text
             </span>
-            <span className="px-2 py-0.5 bg-green-50 text-green-600 rounded-full flex items-center gap-1">
-              <FolderPlus size={10} />{stats.custom} custom
+            <span className="px-2 py-0.5 bg-purple-50 text-purple-600 rounded-full">
+              {stats.voucher} voucher
             </span>
-            {stats.modified > 0 && (
-              <span className="px-2 py-0.5 bg-orange-50 text-orange-600 rounded-full flex items-center gap-1">
-                <Edit3 size={10} />{stats.modified} modified
-              </span>
-            )}
-            {stats.hidden > 0 && (
-              <span className="px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full flex items-center gap-1">
-                <EyeOff size={10} />{stats.hidden} hidden
-              </span>
-            )}
+            <span className="px-2 py-0.5 bg-green-50 text-green-600 rounded-full">
+              {stats.playlist} playlist
+            </span>
           </div>
         </div>
-        <button
-          onClick={() => {
-            setShowAddForm(true);
-            resetForm();
-          }}
-          className="px-3 py-1.5 bg-accent-pink text-white rounded-lg text-sm font-medium flex items-center gap-1"
-          disabled={showAddForm || isEditing !== null}
-        >
-          <Plus size={14} /> Add Card
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={fetchCards}
+            className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium flex items-center gap-1 hover:bg-gray-200"
+            disabled={isSaving}
+          >
+            <RefreshCw size={14} /> Refresh
+          </button>
+          <button
+            onClick={() => {
+              setShowAddForm(true);
+              resetForm();
+            }}
+            className="px-3 py-1.5 bg-accent-pink text-white rounded-lg text-sm font-medium flex items-center gap-1"
+            disabled={showAddForm || isEditing !== null}
+          >
+            <Plus size={14} /> Add Card
+          </button>
+        </div>
       </div>
 
       {/* Search and Filters */}
       <div className="space-y-2">
         <div className="flex gap-2">
           <div className="relative flex-1">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search
+              size={16}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
             <input
               type="text"
-              placeholder="Search cards by text, ID, or tag..."
+              placeholder="Search cards..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-3 py-2 border rounded-lg text-sm"
@@ -452,16 +491,13 @@ export const CardsManager = () => {
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`px-3 py-2 rounded-lg text-sm flex items-center gap-1 ${
-              showFilters ? "bg-accent-pink text-white" : "bg-gray-100 text-gray-600"
-            }`}
+            className={`px-3 py-2 rounded-lg text-sm flex items-center gap-1 ${showFilters ? "bg-accent-pink text-white" : "bg-gray-100 text-gray-600"}`}
           >
             <Filter size={14} />
             {showFilters ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </button>
         </div>
 
-        {/* Filter Section */}
         <AnimatePresence>
           {showFilters && (
             <motion.div
@@ -470,67 +506,35 @@ export const CardsManager = () => {
               exit={{ opacity: 0, height: 0 }}
               className="space-y-3 pt-2"
             >
-              {/* Source Filter */}
-              <div>
-                <label className="text-xs text-gray-500 mb-1 block">Source</label>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    { value: "all" as CardSource, label: "All", count: stats.total },
-                    { value: "built-in" as CardSource, label: "Built-in", count: stats.builtIn },
-                    { value: "custom" as CardSource, label: "Custom", count: stats.custom },
-                    { value: "modified" as CardSource, label: "Modified", count: stats.modified },
-                  ].map(({ value, label, count }) => (
-                    <button
-                      key={value}
-                      onClick={() => setFilterSource(value)}
-                      className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                        filterSource === value
-                          ? "bg-accent-pink text-white"
-                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                      }`}
-                    >
-                      {label} ({count})
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Type Filter */}
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">Type</label>
                 <div className="flex flex-wrap gap-2">
-                  {[
-                    { value: "all" as CardType, label: "All", icon: MessageSquare },
-                    { value: "text" as CardType, label: "Text", icon: MessageSquare },
-                    { value: "voucher" as CardType, label: "Voucher", icon: Ticket },
-                    { value: "playlist" as CardType, label: "Playlist", icon: Music },
-                  ].map(({ value, label, icon: Icon }) => (
+                  {(
+                    [
+                      ["all", "All", MessageSquare],
+                      ["text", "Text", MessageSquare],
+                      ["voucher", "Voucher", Ticket],
+                      ["playlist", "Playlist", Music],
+                    ] as const
+                  ).map(([value, label, Icon]) => (
                     <button
                       key={value}
-                      onClick={() => setFilterType(value)}
-                      className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 transition-colors ${
-                        filterType === value
-                          ? "bg-accent-pink text-white"
-                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                      }`}
+                      onClick={() => setFilterType(value as CardType)}
+                      className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 transition-colors ${filterType === value ? "bg-accent-pink text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
                     >
                       <Icon size={12} /> {label}
                     </button>
                   ))}
                 </div>
               </div>
-
-              {/* Category Filter */}
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">Category</label>
+                <label className="text-xs text-gray-500 mb-1 block">
+                  Category
+                </label>
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => setFilterCategory("all")}
-                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                      filterCategory === "all"
-                        ? "bg-accent-pink text-white"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                    }`}
+                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${filterCategory === "all" ? "bg-accent-pink text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
                   >
                     All
                   </button>
@@ -538,31 +542,12 @@ export const CardsManager = () => {
                     <button
                       key={value}
                       onClick={() => setFilterCategory(value)}
-                      className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 transition-colors ${
-                        filterCategory === value
-                          ? "bg-accent-pink text-white"
-                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                      }`}
+                      className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 transition-colors ${filterCategory === value ? "bg-accent-pink text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
                     >
                       <Icon size={12} /> {label}
                     </button>
                   ))}
                 </div>
-              </div>
-
-              {/* Show Hidden Toggle */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setShowHiddenOnly(!showHiddenOnly)}
-                  className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 transition-colors ${
-                    showHiddenOnly
-                      ? "bg-gray-800 text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
-                >
-                  {showHiddenOnly ? <EyeOff size={12} /> : <Eye size={12} />}
-                  {showHiddenOnly ? "Showing Hidden" : "Show Hidden Cards"}
-                </button>
               </div>
             </motion.div>
           )}
@@ -580,95 +565,231 @@ export const CardsManager = () => {
           >
             <div className="flex items-center justify-between">
               <h4 className="font-medium text-gray-800">
-                {isEditing 
-                  ? editingSource === "built-in" 
-                    ? "Edit Built-in Card" 
-                    : "Edit Custom Card" 
-                  : "Add New Card"}
+                {isEditing ? "Edit Card" : "Add New Card"}
               </h4>
-              <button onClick={cancelEdit} className="text-gray-400 hover:text-gray-600">
+              <button
+                onClick={cancelEdit}
+                className="text-gray-400 hover:text-gray-600"
+              >
                 <X size={18} />
               </button>
             </div>
 
-            {editingSource === "built-in" && (
-              <p className="text-xs text-orange-600 bg-orange-50 px-3 py-2 rounded-lg">
-                Editing a built-in card creates an override. You can reset to original anytime.
-              </p>
+            {/* Type selector (add only) */}
+            {showAddForm && (
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">
+                  Card Type
+                </label>
+                <select
+                  value={formData.type}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      type: e.target.value as CardFormData["type"],
+                    })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg text-sm"
+                >
+                  <option value="text">Text</option>
+                  <option value="voucher">Voucher</option>
+                  <option value="playlist">Playlist</option>
+                </select>
+              </div>
             )}
 
-            {/* Category & Rarity Row */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">Category</label>
+                <label className="text-xs text-gray-500 mb-1 block">
+                  Category
+                </label>
                 <select
                   value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value as CardCategory })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      category: e.target.value as CardCategory,
+                    })
+                  }
                   className="w-full px-3 py-2 border rounded-lg text-sm"
                 >
                   {CATEGORY_OPTIONS.map(({ value, label }) => (
-                    <option key={value} value={value}>{label}</option>
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">Rarity</label>
+                <label className="text-xs text-gray-500 mb-1 block">
+                  Rarity
+                </label>
                 <select
                   value={formData.rarity}
-                  onChange={(e) => setFormData({ ...formData, rarity: e.target.value as RarityKey })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      rarity: e.target.value as RarityKey,
+                    })
+                  }
                   className="w-full px-3 py-2 border rounded-lg text-sm"
                 >
                   {RARITY_OPTIONS.map(({ value, label }) => (
-                    <option key={value} value={value}>{label}</option>
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
                   ))}
                 </select>
               </div>
             </div>
 
-            {/* Intensity */}
-            <div>
-              <label className="text-xs text-gray-500 mb-1 block">Intensity (1-3)</label>
-              <input
-                type="number"
-                min="1"
-                max="3"
-                value={formData.intensity}
-                onChange={(e) => setFormData({ ...formData, intensity: Math.min(3, Math.max(1, parseInt(e.target.value) || 2)) as 1 | 2 | 3 })}
-                className="w-24 px-3 py-2 border rounded-lg text-sm text-center"
-              />
-            </div>
+            {formData.type === "text" && (
+              <>
+                <div>
+                  <label className="text-xs text-gray-500 mb-1 block">
+                    Intensity (1-3)
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="3"
+                    value={formData.intensity}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        intensity: Math.min(
+                          3,
+                          Math.max(1, parseInt(e.target.value) || 2),
+                        ) as 1 | 2 | 3,
+                      })
+                    }
+                    className="w-24 px-3 py-2 border rounded-lg text-sm text-center"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 mb-1 block">
+                    Card Text
+                  </label>
+                  <textarea
+                    value={formData.text}
+                    onChange={(e) =>
+                      setFormData({ ...formData, text: e.target.value })
+                    }
+                    placeholder="Write your compliment here..."
+                    rows={3}
+                    className="w-full px-3 py-2 border rounded-lg text-sm resize-none"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">
+                    Tip: Use {"{pet}"} for random pet name
+                  </p>
+                </div>
+              </>
+            )}
 
-            {/* Card Text */}
-            <div>
-              <label className="text-xs text-gray-500 mb-1 block">Card Text</label>
-              <textarea
-                value={formData.text}
-                onChange={(e) => setFormData({ ...formData, text: e.target.value })}
-                placeholder="Write your compliment here... Use {pet} for random pet name"
-                rows={3}
-                className="w-full px-3 py-2 border rounded-lg text-sm resize-none"
-              />
-              <p className="text-xs text-gray-400 mt-1">
-                Tip: Use {"{pet}"} to insert "babe", "baby", or name randomly
-              </p>
-            </div>
+            {formData.type === "voucher" && (
+              <>
+                <div>
+                  <label className="text-xs text-gray-500 mb-1 block">
+                    Voucher Title
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
+                    placeholder="e.g. Movie Night"
+                    className="w-full px-3 py-2 border rounded-lg text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 mb-1 block">
+                    Options (comma separated)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.options.join(", ")}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        options: e.target.value
+                          .split(",")
+                          .map((t) => t.trim())
+                          .filter(Boolean),
+                      })
+                    }
+                    placeholder="Option A, Option B"
+                    className="w-full px-3 py-2 border rounded-lg text-sm"
+                  />
+                </div>
+              </>
+            )}
 
-            {/* Tags */}
+            {formData.type === "playlist" && (
+              <>
+                <div>
+                  <label className="text-xs text-gray-500 mb-1 block">
+                    Song Title
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.songTitle}
+                    onChange={(e) =>
+                      setFormData({ ...formData, songTitle: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border rounded-lg text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 mb-1 block">
+                    Artist
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.artist}
+                    onChange={(e) =>
+                      setFormData({ ...formData, artist: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border rounded-lg text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 mb-1 block">
+                    Link
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.link}
+                    onChange={(e) =>
+                      setFormData({ ...formData, link: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border rounded-lg text-sm"
+                  />
+                </div>
+              </>
+            )}
+
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Tags (comma separated)</label>
+              <label className="text-xs text-gray-500 mb-1 block">
+                Tags (comma separated)
+              </label>
               <input
                 type="text"
                 value={formData.tags.join(", ")}
-                onChange={(e) => setFormData({ 
-                  ...formData, 
-                  tags: e.target.value.split(",").map(t => t.trim()).filter(Boolean) 
-                })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    tags: e.target.value
+                      .split(",")
+                      .map((t) => t.trim())
+                      .filter(Boolean),
+                  })
+                }
                 placeholder="lonely, stressed, doubting"
                 className="w-full px-3 py-2 border rounded-lg text-sm"
               />
             </div>
 
-            {/* Actions */}
             <div className="flex gap-2 pt-2">
               <button
                 onClick={cancelEdit}
@@ -677,11 +798,17 @@ export const CardsManager = () => {
                 Cancel
               </button>
               <button
-                onClick={() => isEditing ? handleUpdateCard(isEditing) : handleAddCard()}
-                disabled={!formData.text.trim()}
+                onClick={() =>
+                  isEditing ? handleUpdateCard(isEditing) : handleAddCard()
+                }
+                disabled={isSaving}
                 className="flex-1 px-4 py-2 bg-accent-pink text-white rounded-lg text-sm font-medium flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                <Save size={14} />
+                {isSaving ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <Save size={14} />
+                )}
                 {isEditing ? "Save Changes" : "Add Card"}
               </button>
             </div>
@@ -694,36 +821,25 @@ export const CardsManager = () => {
         {filteredCards.length === 0 ? (
           <div className="text-center py-8 text-gray-400">
             <MessageSquare size={48} className="mx-auto mb-2 opacity-50" />
-            <p className="font-medium">
-              {showHiddenOnly ? "No hidden cards" : "No cards match your filters"}
-            </p>
-            <p className="text-sm mt-1">
-              {showHiddenOnly 
-                ? "Hidden cards will appear here" 
-                : "Try adjusting your search or filters"}
-            </p>
+            <p className="font-medium">No cards match your filters</p>
           </div>
         ) : (
-          filteredCards.map(({ card, source, cardType, isModified }) => {
-            const CategoryIcon = getCardIcon(card, card.category);
-            const rarityOption = RARITY_OPTIONS.find(r => r.value === card.rarity);
+          filteredCards.map((card) => {
+            const CategoryIcon = getCardIcon(card);
+            const rarityOption = RARITY_OPTIONS.find(
+              (r) => r.value === card.rarity,
+            );
             const isExpanded = expandedCard === card.id;
-            const isHidden = hiddenCardIds.includes(card.id);
-            const isCustom = source === "custom";
-            const isTextCard = cardType === "text";
-            
+
             return (
               <motion.div
                 key={card.id}
                 layout
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`bg-white rounded-xl border overflow-hidden ${
-                  isHidden ? "border-gray-300 opacity-60" : isModified ? "border-orange-200" : "border-gray-100"
-                }`}
+                className="bg-white rounded-xl border border-gray-100 overflow-hidden"
               >
-                {/* Card Header */}
-                <div 
+                <div
                   className="p-3 flex items-center gap-3 cursor-pointer hover:bg-gray-50"
                   onClick={() => setExpandedCard(isExpanded ? null : card.id)}
                 >
@@ -731,44 +847,30 @@ export const CardsManager = () => {
                     <CategoryIcon size={20} className="text-accent-pink" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-800 truncate">{getCardDisplayText(card)}</p>
+                    <p className="text-sm text-gray-800 truncate">
+                      {getCardDisplayText(card)}
+                    </p>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
-                      {/* Source badge */}
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                        isCustom ? "bg-green-100 text-green-600" : "bg-blue-100 text-blue-600"
-                      }`}>
-                        {isCustom ? "custom" : "built-in"}
-                      </span>
-                      {/* Modified badge */}
-                      {isModified && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-orange-100 text-orange-600">
-                          modified
-                        </span>
-                      )}
-                      {/* Type badge */}
                       <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-100 text-purple-600">
-                        {cardType}
+                        {card.type}
                       </span>
-                      {/* Category */}
                       <span className="flex items-center gap-1 text-xs text-gray-500">
                         {card.category}
                       </span>
-                      {/* Rarity */}
-                      <span className={`text-xs px-1.5 py-0.5 rounded ${rarityOption?.color}`}>
+                      <span
+                        className={`text-xs px-1.5 py-0.5 rounded ${rarityOption?.color || "bg-gray-100 text-gray-600"}`}
+                      >
                         {card.rarity}
                       </span>
-                      {/* Hidden indicator */}
-                      {isHidden && (
-                        <span className="text-xs text-gray-400 flex items-center gap-0.5">
-                          <EyeOff size={10} /> hidden
-                        </span>
-                      )}
                     </div>
                   </div>
-                  {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  {isExpanded ? (
+                    <ChevronUp size={16} />
+                  ) : (
+                    <ChevronDown size={16} />
+                  )}
                 </div>
 
-                {/* Expanded Content */}
                 <AnimatePresence>
                   {isExpanded && (
                     <motion.div
@@ -778,78 +880,44 @@ export const CardsManager = () => {
                       className="px-3 pb-3 border-t border-gray-100"
                     >
                       <div className="pt-3 space-y-2">
-                        <p className="text-sm text-gray-600">{getCardDisplayText(card)}</p>
-                        
-                        {/* Tags */}
+                        <p className="text-sm text-gray-600">
+                          {getCardDisplayText(card)}
+                        </p>
                         {card.tags && card.tags.length > 0 && (
                           <div className="flex flex-wrap gap-1">
                             {card.tags.map((tag, idx) => (
-                              <span key={idx} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                              <span
+                                key={idx}
+                                className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded"
+                              >
                                 {tag}
                               </span>
                             ))}
                           </div>
                         )}
-                        
-                        {/* ID */}
-                        <p className="text-xs text-gray-400 font-mono">{card.id}</p>
-                        
-                        {/* Actions */}
+                        <p className="text-xs text-gray-400 font-mono">
+                          {card.id}
+                        </p>
                         <div className="flex gap-2 pt-2 flex-wrap">
-                          {/* Toggle visibility */}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleToggleHidden(card.id);
+                              startEditing(card);
                             }}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 ${
-                              isHidden 
-                                ? "bg-green-100 text-green-600 hover:bg-green-200"
-                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                            }`}
+                            className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-medium flex items-center gap-1 hover:bg-gray-200"
                           >
-                            {isHidden ? <Eye size={12} /> : <EyeOff size={12} />}
-                            {isHidden ? "Show" : "Hide"}
+                            <Edit3 size={12} /> Edit
                           </button>
-                          
-                          {/* Edit (all text cards) */}
-                          {isTextCard && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                startEditing(card as TextCard, source);
-                              }}
-                              className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-medium flex items-center gap-1 hover:bg-gray-200"
-                            >
-                              <Edit3 size={12} /> Edit
-                            </button>
-                          )}
-                          
-                          {/* Reset to original (modified built-in only) */}
-                          {isModified && !isCustom && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleResetToOriginal(card.id);
-                              }}
-                              className="px-3 py-1.5 bg-orange-50 text-orange-600 rounded-lg text-xs font-medium flex items-center gap-1 hover:bg-orange-100"
-                            >
-                              <RotateCcw size={12} /> Reset
-                            </button>
-                          )}
-                          
-                          {/* Delete (custom only) */}
-                          {isCustom && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteCard(card.id);
-                              }}
-                              className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-medium flex items-center gap-1 hover:bg-red-100"
-                            >
-                              <Trash2 size={12} /> Delete
-                            </button>
-                          )}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteCard(card.id);
+                            }}
+                            disabled={isSaving}
+                            className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-medium flex items-center gap-1 hover:bg-red-100 disabled:opacity-50"
+                          >
+                            <Trash2 size={12} /> Delete
+                          </button>
                         </div>
                       </div>
                     </motion.div>
@@ -861,14 +929,13 @@ export const CardsManager = () => {
         )}
       </div>
 
-      {/* Footer Stats */}
       <div className="flex items-center justify-center gap-4 text-xs text-gray-400 pt-2 flex-wrap">
         <span>Showing: {filteredCards.length}</span>
-        <span>•</span>
+        <span>·</span>
         <span>Text: {stats.text}</span>
-        <span>•</span>
+        <span>·</span>
         <span>Voucher: {stats.voucher}</span>
-        <span>•</span>
+        <span>·</span>
         <span>Playlist: {stats.playlist}</span>
       </div>
     </div>

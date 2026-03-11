@@ -2,16 +2,23 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useFavorites } from "../useFavorites";
 
-// Mock the cards module to provide predictable card IDs
-vi.mock("../../data/cards", () => ({
-  allCards: [
-    { id: "card-1" },
-    { id: "card-2" },
-    { id: "card-3" },
-    { id: "card-4" },
-    { id: "persisted-card" },
-    { id: "external-card" },
-  ],
+// Mock the CardContext to provide predictable card IDs
+const mockCards = [
+  { id: "card-1" },
+  { id: "card-2" },
+  { id: "card-3" },
+  { id: "card-4" },
+  { id: "persisted-card" },
+  { id: "external-card" },
+];
+
+vi.mock("../../context/CardContext", () => ({
+  useCardContext: () => ({
+    allCards: mockCards,
+    getCardById: (id: string) => mockCards.find((c) => c.id === id),
+    getAvailableCards: () => mockCards,
+    isLoading: false,
+  }),
 }));
 
 describe("useFavorites", () => {
@@ -91,7 +98,7 @@ describe("useFavorites", () => {
     // Simulate external storage change
     localStorage.setItem(
       "valentine-deck-favorites",
-      JSON.stringify(["external-card"])
+      JSON.stringify(["external-card"]),
     );
 
     act(() => {
