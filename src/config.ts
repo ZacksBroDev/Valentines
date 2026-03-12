@@ -28,7 +28,7 @@ export const CONFIG = {
   secretTapWindow: 3000,
   // Wax seal tap count for hint
   sealHintTaps: 3,
-  
+
   // ----- SECRET DECK PROGRESS -----
   // Number of draws required to unlock the secret deck via progress
   secretUnlockDraws: 25,
@@ -55,6 +55,12 @@ export const CONFIG = {
 
   // ----- HEART TRAIL -----
   heartTrailDefault: false,
+
+  // ----- AUTH & ADMIN -----
+  adminGroupName: "Admins",
+
+  // ----- GRAPHQL -----
+  graphqlPageLimit: 1000,
 } as const;
 
 // Theme definitions

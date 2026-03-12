@@ -23,7 +23,7 @@ import {
   Plus,
   Edit3,
 } from "lucide-react";
-import { clearAdminSession } from "./AdminAuth";
+import { useAuth } from "../../context/AuthContext";
 import { CardsManager } from "./CardsManager";
 // Use cloud storage for cross-device sync
 import {
@@ -444,8 +444,9 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
     await loadData();
   };
 
-  const handleLogout = () => {
-    clearAdminSession();
+  const { logout } = useAuth();
+  const handleLogout = async () => {
+    await logout();
     onClose();
   };
 

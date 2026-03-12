@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 import { Amplify } from "aws-amplify";
 import amplifyconfig from "./aws-exports";
 import App from "./App.tsx";
@@ -19,7 +20,9 @@ const renderApp = () => {
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
       <ErrorBoundary>
-        <App />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
       </ErrorBoundary>
     </StrictMode>,
   );
