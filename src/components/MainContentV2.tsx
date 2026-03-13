@@ -13,14 +13,14 @@ import { EndScreen } from "./EndScreen";
 import { SkipLink } from "./SkipLink";
 import { Mascots } from "./mascots/Mascots";
 import { MoodPickerV2 } from "./MoodPickerV2";
-import { AdminAuth, isAdminSessionValid } from "./admin";
+import { useAuth } from "../context/AuthContext";
 import { Cloud, Heart, Loader2 } from "lucide-react";
 
 import { MoodKey } from "../config";
 import { AppStateReturn } from "../hooks/useAppState";
 import { Card } from "../types";
 import { useVoucherInventory } from "../api/hooks";
-import { allCards, getAvailableCards, getAllCards } from "../data/cards";
+import { useCardContext } from "../context/CardContext";
 import { getNotes, getRedeemedVoucherCount } from "../utils/storage";
 import { fetchUnreadNotesCount, fetchSharedNotes } from "../utils/cloudStorage";
 
@@ -100,6 +100,7 @@ const MoodPickerModal = ({
 };
 
 export const MainContentV2 = ({ state }: MainContentV2Props) => {
+  const { allCards, getAvailableCards } = useCardContext();
   const {
     // Sound
     isMuted,
@@ -180,7 +181,7 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
   const [viewingCard, setViewingCard] = useState<Card | null>(null);
   
   // Admin states
-  const [showAdminAuth, setShowAdminAuth] = useState(false);
+  const { isAdmin } = useAuth();
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
 
   // Wrapped state setters for lazy-loaded modals to avoid Suspense issues
@@ -199,20 +200,11 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
     setIsSeenCardsOpen(false); // Close modal to show the card
   }, []);
 
-  // Handle admin long-press on settings
+  // Handle admin long-press on settings (Cognito group-based)
   const handleAdminLongPress = () => {
-    if (isAdminSessionValid()) {
-      // Already authenticated, go straight to dashboard
+    if (isAdmin) {
       openAdminDashboard();
-    } else {
-      // Need to authenticate first
-      setShowAdminAuth(true);
     }
-  };
-
-  const handleAdminAuthSuccess = () => {
-    setShowAdminAuth(false);
-    openAdminDashboard();
   };
 
   // Voucher inventory (API-based) + local deck vouchers
@@ -258,8 +250,8 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
 
   // Calculate stats for drawer
   const stats = useMemo(() => {
-    // Use getAllCards() for totals (includes all cards regardless of filters)
-    const all = getAllCards();
+    // Use allCards for totals (includes all cards regardless of filters)
+    const all = allCards;
     const available = availableCards;
     
     // By type - use ALL cards for accurate totals
@@ -562,13 +554,6 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
         onViewFavorites={() => setIsFavoritesOpen(true)}
         onFinalThree={onDrawFinalThree}
         playChime={playChime}
-      />
-
-      {/* Admin Auth */}
-      <AdminAuth
-        isOpen={showAdminAuth}
-        onClose={() => setShowAdminAuth(false)}
-        onSuccess={handleAdminAuthSuccess}
       />
 
       {/* Admin Dashboard (lazy loaded) */}

@@ -1,7 +1,22 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Smile, Shield, Flame, Lock, Ticket, Music, LucideIcon } from "lucide-react";
-import { Card, CardCategory, isTextCard, isVoucherCard, isPlaylistCard } from "../types";
-import { allCards, withPet } from "../data/cards";
+import {
+  Heart,
+  Smile,
+  Shield,
+  Flame,
+  Lock,
+  Ticket,
+  Music,
+  LucideIcon,
+} from "lucide-react";
+import {
+  Card,
+  CardCategory,
+  isTextCard,
+  isVoucherCard,
+  isPlaylistCard,
+} from "../types";
+import { useCardContext, withPet } from "../context/CardContext";
 import { formatCategory } from "../utils/helpers";
 import { Modal } from "./Modal";
 
@@ -27,6 +42,7 @@ export const FavoritesModal = ({
   favoriteIds,
   onRemove,
 }: FavoritesModalProps) => {
+  const { allCards } = useCardContext();
   const favoriteCards = favoriteIds
     .map((id) => allCards.find((c) => c.id === id))
     .filter(Boolean) as Card[];
