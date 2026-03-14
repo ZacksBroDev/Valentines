@@ -145,9 +145,9 @@ that items were created.
 
 In the **AWS Amplify Console** → Your App → **Rewrites and redirects**, add:
 
-| Source address | Target address | Type |
-|---|---|---|
-| `</^[^.]+$\|\.(?!(css\|gif\|ico\|jpg\|js\|png\|txt\|svg\|woff\|woff2\|ttf\|map\|json\|webp)$)([^.]+$)/>` | `/index.html` | `200 (Rewrite)` |
+| Source address                                                                                           | Target address | Type            |
+| -------------------------------------------------------------------------------------------------------- | -------------- | --------------- |
+| `</^[^.]+$\|\.(?!(css\|gif\|ico\|jpg\|js\|png\|txt\|svg\|woff\|woff2\|ttf\|map\|json\|webp)$)([^.]+$)/>` | `/index.html`  | `200 (Rewrite)` |
 
 This ensures all client-side routes (`/login`, `/app`, `/admin`) serve
 `index.html` instead of returning 404.

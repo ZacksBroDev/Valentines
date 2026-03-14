@@ -4,11 +4,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  X, 
-  Shield, 
-  Clock, 
-  CreditCard, 
+import {
+  X,
+  Shield,
+  Clock,
+  CreditCard,
   Settings,
   LogOut,
   Check,
@@ -77,7 +77,7 @@ const AVAILABLE_ICONS: { name: string; icon: LucideIcon }[] = [
 ];
 
 const getIconComponent = (iconName: string): LucideIcon => {
-  const found = AVAILABLE_ICONS.find(i => i.name === iconName);
+  const found = AVAILABLE_ICONS.find((i) => i.name === iconName);
   return found?.icon || Gift;
 };
 
@@ -109,36 +109,48 @@ const VouchersManager = () => {
   const handleAdd = async () => {
     if (!formData.title.trim()) return;
     setIsLoading(true);
-    
+
     const result = await createCloudVoucherTemplate({
       type: formData.title.toLowerCase().replace(/\s+/g, "-"),
       title: formData.title,
       description: formData.description,
-      options: formData.options.split(",").map(o => o.trim()).filter(Boolean),
+      options: formData.options
+        .split(",")
+        .map((o) => o.trim())
+        .filter(Boolean),
       monthlyLimit: formData.monthlyLimit,
       iconName: formData.iconName,
     });
-    
+
     if (result) {
       await loadTemplates();
     }
-    
+
     setShowAddForm(false);
-    setFormData({ title: "", description: "", options: "", monthlyLimit: 1, iconName: "Gift" });
+    setFormData({
+      title: "",
+      description: "",
+      options: "",
+      monthlyLimit: 1,
+      iconName: "Gift",
+    });
     setIsLoading(false);
   };
 
   const handleUpdate = async (id: string) => {
     setIsLoading(true);
-    
+
     await updateCloudVoucherTemplate(id, {
       title: formData.title,
       description: formData.description,
-      options: formData.options.split(",").map(o => o.trim()).filter(Boolean),
+      options: formData.options
+        .split(",")
+        .map((o) => o.trim())
+        .filter(Boolean),
       monthlyLimit: formData.monthlyLimit,
       iconName: formData.iconName,
     });
-    
+
     await loadTemplates();
     setEditingId(null);
     setIsLoading(false);
@@ -173,7 +185,13 @@ const VouchersManager = () => {
         <button
           onClick={() => {
             setShowAddForm(true);
-            setFormData({ title: "", description: "", options: "", monthlyLimit: 1, iconName: "Gift" });
+            setFormData({
+              title: "",
+              description: "",
+              options: "",
+              monthlyLimit: 1,
+              iconName: "Gift",
+            });
           }}
           className="px-3 py-1.5 bg-accent-pink text-white rounded-lg text-sm font-medium flex items-center gap-1"
           disabled={isLoading}
@@ -210,21 +228,27 @@ const VouchersManager = () => {
             type="text"
             placeholder="Title (e.g. Redeem for flowers)"
             value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
             className="w-full px-3 py-2 border rounded-lg text-sm"
           />
           <input
             type="text"
             placeholder="Description"
             value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
             className="w-full px-3 py-2 border rounded-lg text-sm"
           />
           <input
             type="text"
             placeholder="Options (comma separated)"
             value={formData.options}
-            onChange={(e) => setFormData({ ...formData, options: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, options: e.target.value })
+            }
             className="w-full px-3 py-2 border rounded-lg text-sm"
           />
           <div className="flex items-center gap-4">
@@ -235,16 +259,29 @@ const VouchersManager = () => {
                 min="1"
                 max="10"
                 value={formData.monthlyLimit}
-                onChange={(e) => setFormData({ ...formData, monthlyLimit: parseInt(e.target.value) || 1 })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    monthlyLimit: parseInt(e.target.value) || 1,
+                  })
+                }
                 className="w-16 px-2 py-1 border rounded-lg text-sm text-center"
               />
             </div>
-            <span className={`text-xs px-2 py-1 rounded-full ${
-              formData.monthlyLimit === 1 ? "bg-yellow-100 text-yellow-700" :
-              formData.monthlyLimit <= 3 ? "bg-purple-100 text-purple-700" :
-              "bg-gray-100 text-gray-600"
-            }`}>
-              {formData.monthlyLimit === 1 ? "Legendary" : formData.monthlyLimit <= 3 ? "Rare" : "Common"}
+            <span
+              className={`text-xs px-2 py-1 rounded-full ${
+                formData.monthlyLimit === 1
+                  ? "bg-yellow-100 text-yellow-700"
+                  : formData.monthlyLimit <= 3
+                    ? "bg-purple-100 text-purple-700"
+                    : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              {formData.monthlyLimit === 1
+                ? "Legendary"
+                : formData.monthlyLimit <= 3
+                  ? "Rare"
+                  : "Common"}
             </span>
           </div>
           <div className="flex gap-2 pt-2">
@@ -259,7 +296,11 @@ const VouchersManager = () => {
               disabled={isLoading}
               className="flex-1 py-2 bg-accent-pink text-white rounded-lg text-sm font-medium disabled:opacity-50"
             >
-              {isLoading ? "Saving..." : editingId ? "Save Changes" : "Add Voucher"}
+              {isLoading
+                ? "Saving..."
+                : editingId
+                  ? "Save Changes"
+                  : "Add Voucher"}
             </button>
             <button
               onClick={() => {
@@ -284,22 +325,30 @@ const VouchersManager = () => {
               key={template.id}
               layout
               className={`p-3 bg-white rounded-xl border-2 transition-colors ${
-                rarity === "legendary" ? "border-yellow-300 bg-yellow-50" :
-                rarity === "rare" ? "border-purple-200" :
-                "border-gray-100 hover:border-blush-200"
+                rarity === "legendary"
+                  ? "border-yellow-300 bg-yellow-50"
+                  : rarity === "rare"
+                    ? "border-purple-200"
+                    : "border-gray-100 hover:border-blush-200"
               }`}
             >
               <div className="flex items-start gap-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                  rarity === "legendary" ? "bg-yellow-200 text-yellow-700" :
-                  rarity === "rare" ? "bg-purple-100 text-purple-600" :
-                  "bg-blush-100 text-accent-pink"
-                }`}>
+                <div
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    rarity === "legendary"
+                      ? "bg-yellow-200 text-yellow-700"
+                      : rarity === "rare"
+                        ? "bg-purple-100 text-purple-600"
+                        : "bg-blush-100 text-accent-pink"
+                  }`}
+                >
                   <Icon size={20} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <h4 className="font-medium text-gray-800 text-sm">{template.title}</h4>
+                    <h4 className="font-medium text-gray-800 text-sm">
+                      {template.title}
+                    </h4>
                     {rarity === "legendary" && (
                       <span className="text-[10px] px-1.5 py-0.5 bg-yellow-200 text-yellow-700 rounded-full font-medium">
                         Legendary
@@ -311,17 +360,24 @@ const VouchersManager = () => {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500">{template.description}</p>
+                  <p className="text-xs text-gray-500">
+                    {template.description}
+                  </p>
                   {template.options && template.options.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
                       {template.options.map((opt, i) => (
-                        <span key={i} className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded">
+                        <span
+                          key={i}
+                          className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded"
+                        >
                           {opt}
                         </span>
                       ))}
                     </div>
                   )}
-                  <p className="text-[10px] text-gray-400 mt-1">{template.monthlyLimit}/month</p>
+                  <p className="text-[10px] text-gray-400 mt-1">
+                    {template.monthlyLimit}/month
+                  </p>
                 </div>
                 <div className="flex gap-1">
                   <button
@@ -420,7 +476,12 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
 
   const handleCounter = async (id: string) => {
     if (!counterDate) return;
-    await updateVoucherRequestStatus(id, "counter-proposed", counterDate, counterMessage);
+    await updateVoucherRequestStatus(
+      id,
+      "counter-proposed",
+      counterDate,
+      counterMessage,
+    );
     setShowCounterForm(null);
     setCounterDate("");
     setCounterMessage("");
@@ -452,20 +513,38 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
 
   if (!isOpen) return null;
 
-  const pendingCount = requests.filter(r => r.status === "pending").length;
-  const unreadNotesCount = notes.filter(n => n.from === "her" && !n.read).length;
-  
+  const pendingCount = requests.filter((r) => r.status === "pending").length;
+  const unreadNotesCount = notes.filter(
+    (n) => n.from === "her" && !n.read,
+  ).length;
+
   // Filter notes
-  const notesFromHer = notes.filter(n => n.from === "her").sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-  const notesFromAdmin = notes.filter(n => n.from === "admin").sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+  const notesFromHer = notes
+    .filter((n) => n.from === "her")
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+  const notesFromAdmin = notes
+    .filter((n) => n.from === "admin")
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
 
   const tabs = [
-    { key: "requests" as Tab, label: "Requests", icon: Clock, badge: pendingCount },
-    { key: "notes" as Tab, label: "Notes", icon: StickyNote, badge: unreadNotesCount },
+    {
+      key: "requests" as Tab,
+      label: "Requests",
+      icon: Clock,
+      badge: pendingCount,
+    },
+    {
+      key: "notes" as Tab,
+      label: "Notes",
+      icon: StickyNote,
+      badge: unreadNotesCount,
+    },
     { key: "vouchers" as Tab, label: "Vouchers", icon: Ticket },
     { key: "cards" as Tab, label: "Cards", icon: CreditCard },
     { key: "settings" as Tab, label: "Settings", icon: Settings },
@@ -492,7 +571,9 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
           <div className="shrink-0 px-4 py-3 border-b border-gray-100 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Shield className="w-5 h-5 text-accent-pink" />
-              <h2 className="text-lg font-semibold text-gray-800">Admin Panel</h2>
+              <h2 className="text-lg font-semibold text-gray-800">
+                Admin Panel
+              </h2>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -520,7 +601,7 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
 
           {/* Tabs */}
           <div className="shrink-0 px-4 py-2 border-b border-gray-100 flex gap-1.5 overflow-x-auto">
-            {tabs.map(tab => {
+            {tabs.map((tab) => {
               const Icon = tab.icon;
               const showBadge = tab.badge !== undefined && tab.badge > 0;
               return (
@@ -530,9 +611,10 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
                   className={`
                     flex-1 flex items-center justify-center gap-1 py-2 px-2 rounded-lg
                     text-xs font-medium transition-all relative whitespace-nowrap min-h-[44px]
-                    ${activeTab === tab.key
-                      ? "bg-accent-pink text-white"
-                      : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                    ${
+                      activeTab === tab.key
+                        ? "bg-accent-pink text-white"
+                        : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                     }
                   `}
                 >
@@ -540,13 +622,16 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
                   <span>{tab.label}</span>
                   {/* Show count in parentheses if > 0 */}
                   {showBadge && (
-                    <span className={`
+                    <span
+                      className={`
                       ml-0.5 px-1.5 py-0.5 text-[10px] rounded-full font-semibold
-                      ${activeTab === tab.key 
-                        ? "bg-white/20 text-white" 
-                        : "bg-red-100 text-red-600"
+                      ${
+                        activeTab === tab.key
+                          ? "bg-white/20 text-white"
+                          : "bg-red-100 text-red-600"
                       }
-                    `}>
+                    `}
+                    >
                       {tab.badge}
                     </span>
                   )}
@@ -562,24 +647,25 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
                 <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
                   Pending Voucher Requests
                 </h3>
-                
+
                 {requests.length === 0 ? (
                   <div className="text-center py-8 text-gray-400">
                     <Clock size={48} className="mx-auto mb-2 opacity-50" />
                     <p>No pending requests</p>
                   </div>
                 ) : (
-                  requests.map(request => (
+                  requests.map((request) => (
                     <motion.div
                       key={request.id}
                       layout
                       className={`
                         p-4 rounded-xl border-2 transition-all
-                        ${request.status === "approved" 
-                          ? "border-green-200 bg-green-50" 
-                          : request.status === "counter-proposed"
-                            ? "border-yellow-200 bg-yellow-50"
-                            : "border-gray-200 bg-white"
+                        ${
+                          request.status === "approved"
+                            ? "border-green-200 bg-green-50"
+                            : request.status === "counter-proposed"
+                              ? "border-yellow-200 bg-yellow-50"
+                              : "border-gray-200 bg-white"
                         }
                       `}
                     >
@@ -593,16 +679,21 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
                             {request.voucherType}
                           </p>
                         </div>
-                        <span className={`
+                        <span
+                          className={`
                           px-2 py-1 rounded-full text-[10px] font-semibold uppercase
-                          ${request.status === "approved" 
-                            ? "bg-green-100 text-green-700"
-                            : request.status === "counter-proposed"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : "bg-orange-100 text-orange-700"
+                          ${
+                            request.status === "approved"
+                              ? "bg-green-100 text-green-700"
+                              : request.status === "counter-proposed"
+                                ? "bg-yellow-100 text-yellow-700"
+                                : "bg-orange-100 text-orange-700"
                           }
-                        `}>
-                          {request.status === "counter-proposed" ? "Counter Sent" : request.status}
+                        `}
+                        >
+                          {request.status === "counter-proposed"
+                            ? "Counter Sent"
+                            : request.status}
                         </span>
                       </div>
 
@@ -610,13 +701,21 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
                       {request.requestedDate && (
                         <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
                           <Calendar size={14} />
-                          <span>Requested: {new Date(request.requestedDate).toLocaleDateString()}</span>
+                          <span>
+                            Requested:{" "}
+                            {new Date(
+                              request.requestedDate,
+                            ).toLocaleDateString()}
+                          </span>
                         </div>
                       )}
-                      
+
                       {request.adminNote && (
                         <div className="flex items-start gap-2 text-sm text-gray-600 mb-3">
-                          <MessageSquare size={14} className="mt-0.5 shrink-0" />
+                          <MessageSquare
+                            size={14}
+                            className="mt-0.5 shrink-0"
+                          />
                           <span>"{request.adminNote}"</span>
                         </div>
                       )}
@@ -633,7 +732,9 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
                                 <input
                                   type="date"
                                   value={counterDate}
-                                  onChange={(e) => setCounterDate(e.target.value)}
+                                  onChange={(e) =>
+                                    setCounterDate(e.target.value)
+                                  }
                                   className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
                                 />
                               </div>
@@ -644,7 +745,9 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
                                 <input
                                   type="text"
                                   value={counterMessage}
-                                  onChange={(e) => setCounterMessage(e.target.value)}
+                                  onChange={(e) =>
+                                    setCounterMessage(e.target.value)
+                                  }
                                   placeholder="How about this day instead?"
                                   className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
                                 />
@@ -735,35 +838,45 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
                       </span>
                     )}
                   </h3>
-                  
+
                   {notesFromHer.length === 0 ? (
                     <div className="text-center py-6 text-gray-400">
-                      <StickyNote size={32} className="mx-auto mb-2 opacity-50" />
+                      <StickyNote
+                        size={32}
+                        className="mx-auto mb-2 opacity-50"
+                      />
                       <p className="text-sm">No notes from her yet</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      {notesFromHer.map(note => (
+                      {notesFromHer.map((note) => (
                         <motion.div
                           key={note.id}
                           layout
                           className={`
                             p-3 rounded-lg border transition-all cursor-pointer
-                            ${!note.read 
-                              ? "border-accent-pink bg-accent-pink/5" 
-                              : "border-gray-200 bg-gray-50"
+                            ${
+                              !note.read
+                                ? "border-accent-pink bg-accent-pink/5"
+                                : "border-gray-200 bg-gray-50"
                             }
                           `}
-                          onClick={() => !note.read && handleMarkNoteRead(note.id)}
+                          onClick={() =>
+                            !note.read && handleMarkNoteRead(note.id)
+                          }
                         >
-                          <p className="text-sm text-gray-700">{note.content}</p>
+                          <p className="text-sm text-gray-700">
+                            {note.content}
+                          </p>
                           <div className="flex items-center justify-between mt-2">
                             <span className="text-xs text-gray-400">
                               {new Date(note.createdAt).toLocaleString()}
                             </span>
                             <div className="flex items-center gap-2">
                               {!note.read && (
-                                <span className="text-[10px] text-accent-pink font-medium">NEW</span>
+                                <span className="text-[10px] text-accent-pink font-medium">
+                                  NEW
+                                </span>
                               )}
                               <button
                                 onClick={(e) => {
@@ -789,12 +902,14 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
                       Notes you sent
                     </h3>
                     <div className="space-y-2">
-                      {notesFromAdmin.map(note => (
+                      {notesFromAdmin.map((note) => (
                         <div
                           key={note.id}
                           className="p-3 rounded-lg border border-gray-200 bg-gray-50"
                         >
-                          <p className="text-sm text-gray-700">{note.content}</p>
+                          <p className="text-sm text-gray-700">
+                            {note.content}
+                          </p>
                           <div className="flex items-center justify-between mt-2">
                             <span className="text-xs text-gray-400">
                               {new Date(note.createdAt).toLocaleString()}
@@ -814,32 +929,36 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
               </div>
             )}
 
-            {activeTab === "vouchers" && (
-              <VouchersManager />
-            )}
+            {activeTab === "vouchers" && <VouchersManager />}
 
-            {activeTab === "cards" && (
-              <CardsManager />
-            )}
+            {activeTab === "cards" && <CardsManager />}
 
             {activeTab === "settings" && (
               <div className="space-y-4">
                 <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
                   Admin Settings
                 </h3>
-                
+
                 <div className="space-y-3">
                   <div className="p-4 bg-gray-50 rounded-xl">
-                    <h4 className="font-medium text-gray-800 mb-1">Reset PIN</h4>
-                    <p className="text-sm text-gray-500 mb-3">Change your admin PIN</p>
+                    <h4 className="font-medium text-gray-800 mb-1">
+                      Reset PIN
+                    </h4>
+                    <p className="text-sm text-gray-500 mb-3">
+                      Change your admin PIN
+                    </p>
                     <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium">
                       Change PIN
                     </button>
                   </div>
-                  
+
                   <div className="p-4 bg-gray-50 rounded-xl">
-                    <h4 className="font-medium text-gray-800 mb-1">Voucher Limits</h4>
-                    <p className="text-sm text-gray-500 mb-3">Adjust monthly voucher limits</p>
+                    <h4 className="font-medium text-gray-800 mb-1">
+                      Voucher Limits
+                    </h4>
+                    <p className="text-sm text-gray-500 mb-3">
+                      Adjust monthly voucher limits
+                    </p>
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div className="flex justify-between">
                         <span>Flowers:</span>
@@ -865,8 +984,12 @@ export const AdminDashboard = ({ isOpen, onClose }: AdminDashboardProps) => {
                   </div>
 
                   <div className="p-4 bg-red-50 rounded-xl">
-                    <h4 className="font-medium text-red-800 mb-1">Danger Zone</h4>
-                    <p className="text-sm text-red-600 mb-3">Reset all data (cannot be undone)</p>
+                    <h4 className="font-medium text-red-800 mb-1">
+                      Danger Zone
+                    </h4>
+                    <p className="text-sm text-red-600 mb-3">
+                      Reset all data (cannot be undone)
+                    </p>
                     <button className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium">
                       Reset Everything
                     </button>
