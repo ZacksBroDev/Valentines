@@ -6,11 +6,11 @@
 
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  History, 
-  Search, 
-  Filter, 
-  X, 
+import {
+  History,
+  Search,
+  Filter,
+  X,
   Eye,
   Heart,
   Smile,
@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { Modal } from "./Modal";
 import { Card, CardCategory, isTextCard, isVoucherCard } from "../types";
-import { getCardById } from "../data/cards";
+import { useCardContext } from "../context/CardContext";
 import { CATEGORY_ICONS } from "./icons";
 
 interface SeenCardsModalProps {
@@ -51,13 +51,14 @@ const CATEGORY_FILTER_ICONS: Record<CategoryFilter, typeof Heart> = {
   secret: Lock,
 };
 
-export const SeenCardsModal = ({ 
-  isOpen, 
-  onClose, 
-  seenIds, 
+export const SeenCardsModal = ({
+  isOpen,
+  onClose,
+  seenIds,
   onViewCard,
   favorites,
 }: SeenCardsModalProps) => {
+  const { getCardById } = useCardContext();
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("all");
   const [showFilters, setShowFilters] = useState(false);
@@ -65,7 +66,7 @@ export const SeenCardsModal = ({
   // Get all seen cards
   const seenCards = useMemo(() => {
     return seenIds
-      .map(id => getCardById(id))
+      .map((id) => getCardById(id))
       .filter((card): card is Card => card !== null);
   }, [seenIds]);
 
@@ -75,13 +76,13 @@ export const SeenCardsModal = ({
 
     // Category filter
     if (categoryFilter !== "all") {
-      cards = cards.filter(c => c.category === categoryFilter);
+      cards = cards.filter((c) => c.category === categoryFilter);
     }
 
     // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      cards = cards.filter(card => {
+      cards = cards.filter((card) => {
         if (isTextCard(card)) {
           return card.text.toLowerCase().includes(query);
         }
@@ -98,7 +99,7 @@ export const SeenCardsModal = ({
   // Category counts
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = { all: seenCards.length };
-    seenCards.forEach(card => {
+    seenCards.forEach((card) => {
       counts[card.category] = (counts[card.category] || 0) + 1;
     });
     return counts;
@@ -110,10 +111,10 @@ export const SeenCardsModal = ({
   };
 
   return (
-    <Modal 
-      isOpen={isOpen} 
-      onClose={onClose} 
-      title="Seen Cards" 
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Seen Cards"
       icon={<History size={20} className="text-accent-pink" />}
       fullHeight
     >
@@ -123,7 +124,10 @@ export const SeenCardsModal = ({
           <div className="flex items-center gap-2">
             {/* Search */}
             <div className="flex-1 relative">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              />
               <input
                 type="text"
                 placeholder="Search cards..."
@@ -140,7 +144,7 @@ export const SeenCardsModal = ({
                 </button>
               )}
             </div>
-            
+
             {/* Filter toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}
@@ -163,11 +167,20 @@ export const SeenCardsModal = ({
                 className="overflow-hidden"
               >
                 <div className="flex flex-wrap gap-2 pt-3">
-                  {(["all", "sweet", "funny", "supportive", "spicy-lite", "secret"] as CategoryFilter[]).map(cat => {
+                  {(
+                    [
+                      "all",
+                      "sweet",
+                      "funny",
+                      "supportive",
+                      "spicy-lite",
+                      "secret",
+                    ] as CategoryFilter[]
+                  ).map((cat) => {
                     const Icon = CATEGORY_FILTER_ICONS[cat];
                     const count = categoryCounts[cat] || 0;
                     const isActive = categoryFilter === cat;
-                    
+
                     return (
                       <button
                         key={cat}
@@ -176,20 +189,25 @@ export const SeenCardsModal = ({
                         className={`
                           px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5
                           transition-all min-h-[32px]
-                          ${isActive 
-                            ? "bg-accent-pink text-white" 
-                            : count > 0
-                              ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                              : "bg-gray-50 text-gray-300 cursor-not-allowed"
+                          ${
+                            isActive
+                              ? "bg-accent-pink text-white"
+                              : count > 0
+                                ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                : "bg-gray-50 text-gray-300 cursor-not-allowed"
                           }
                         `}
                       >
                         <Icon size={12} />
-                        {cat === "all" ? "All" : CATEGORY_LABELS[cat as CardCategory]}
-                        <span className={`
+                        {cat === "all"
+                          ? "All"
+                          : CATEGORY_LABELS[cat as CardCategory]}
+                        <span
+                          className={`
                           ml-1 px-1.5 py-0.5 rounded-full text-[10px]
                           ${isActive ? "bg-white/20" : "bg-gray-200"}
-                        `}>
+                        `}
+                        >
                           {count}
                         </span>
                       </button>
@@ -203,9 +221,16 @@ export const SeenCardsModal = ({
 
         {/* Stats Bar */}
         <div className="px-4 py-2 bg-blush-50 text-sm text-gray-600 shrink-0">
-          <span className="font-medium text-accent-pink">{seenCards.length}</span> cards seen
+          <span className="font-medium text-accent-pink">
+            {seenCards.length}
+          </span>{" "}
+          cards seen
           {filteredCards.length !== seenCards.length && (
-            <span> • Showing <span className="font-medium">{filteredCards.length}</span></span>
+            <span>
+              {" "}
+              • Showing{" "}
+              <span className="font-medium">{filteredCards.length}</span>
+            </span>
           )}
         </div>
 
@@ -215,17 +240,16 @@ export const SeenCardsModal = ({
             <div className="text-center py-8 text-gray-400">
               <History size={48} className="mx-auto mb-2 opacity-50" />
               <p>
-                {seenCards.length === 0 
-                  ? "No cards seen yet. Start drawing!" 
-                  : "No cards match your filters"
-                }
+                {seenCards.length === 0
+                  ? "No cards seen yet. Start drawing!"
+                  : "No cards match your filters"}
               </p>
             </div>
           ) : (
             filteredCards.map((card, index) => {
               const CategoryIcon = CATEGORY_ICONS[card.category] || Heart;
               const isFavorite = favorites.includes(card.id);
-              
+
               return (
                 <motion.button
                   key={card.id}
@@ -240,35 +264,49 @@ export const SeenCardsModal = ({
                   <div className="w-8 h-8 rounded-lg bg-blush-100 flex items-center justify-center shrink-0">
                     <CategoryIcon size={16} className="text-accent-pink" />
                   </div>
-                  
+
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-gray-800 line-clamp-2">
-                      {isTextCard(card) ? card.text : isVoucherCard(card) ? card.title : "Card"}
+                      {isTextCard(card)
+                        ? card.text
+                        : isVoucherCard(card)
+                          ? card.title
+                          : "Card"}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-[10px] text-gray-400 uppercase">
                         {CATEGORY_LABELS[card.category]}
                       </span>
                       <span className="text-[10px] text-gray-300">•</span>
-                      <span className={`text-[10px] capitalize ${
-                        card.rarity === "legendary" ? "text-yellow-500 font-medium" :
-                        card.rarity === "rare" ? "text-purple-500 font-medium" :
-                        "text-gray-400"
-                      }`}>
+                      <span
+                        className={`text-[10px] capitalize ${
+                          card.rarity === "legendary"
+                            ? "text-yellow-500 font-medium"
+                            : card.rarity === "rare"
+                              ? "text-purple-500 font-medium"
+                              : "text-gray-400"
+                        }`}
+                      >
                         {card.rarity}
                       </span>
                       {isFavorite && (
                         <>
                           <span className="text-[10px] text-gray-300">•</span>
-                          <Heart size={10} className="text-red-400 fill-red-400" />
+                          <Heart
+                            size={10}
+                            className="text-red-400 fill-red-400"
+                          />
                         </>
                       )}
                     </div>
                   </div>
-                  
+
                   {/* Arrow */}
-                  <ChevronRight size={16} className="text-gray-300 group-hover:text-accent-pink transition-colors shrink-0" />
+                  <ChevronRight
+                    size={16}
+                    className="text-gray-300 group-hover:text-accent-pink transition-colors shrink-0"
+                  />
                 </motion.button>
               );
             })

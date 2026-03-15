@@ -4,10 +4,18 @@
 // ============================================================
 
 import { motion } from "framer-motion";
-import { Brain, Laugh, HelpCircle, Heart, Activity, X, Sparkles } from "lucide-react";
+import {
+  Brain,
+  Laugh,
+  HelpCircle,
+  Heart,
+  Activity,
+  X,
+  Sparkles,
+} from "lucide-react";
 import { OPEN_WHEN_CATEGORIES, OpenWhenKey } from "../config";
 import { Modal } from "./Modal";
-import { getAvailableCards } from "../data/cards";
+import { useCardContext } from "../context/CardContext";
 import { useMemo } from "react";
 
 interface OpenWhenModalV2Props {
@@ -52,17 +60,20 @@ const CategoryCard = ({
       onClick={onClick}
       className={`
         w-full p-4 rounded-2xl text-left transition-all
-        ${isActive
-          ? "bg-accent-pink text-white shadow-lg"
-          : "bg-blush-50 hover:bg-blush-100"
+        ${
+          isActive
+            ? "bg-accent-pink text-white shadow-lg"
+            : "bg-blush-50 hover:bg-blush-100"
         }
       `}
     >
       <div className="flex items-center gap-3">
-        <div className={`
+        <div
+          className={`
           w-10 h-10 rounded-xl flex items-center justify-center
           ${isActive ? "bg-white/20" : "bg-white"}
-        `}>
+        `}
+        >
           <Icon
             size={22}
             className={isActive ? "text-white" : "text-accent-pink"}
@@ -71,17 +82,22 @@ const CategoryCard = ({
         <div className="flex-1">
           <div className="flex items-center justify-between">
             <p className="font-medium">{label}</p>
-            <span className={`
+            <span
+              className={`
               text-xs px-2 py-0.5 rounded-full
-              ${isActive 
-                ? "bg-white/20 text-white" 
-                : "bg-blush-100 text-blush-600"
+              ${
+                isActive
+                  ? "bg-white/20 text-white"
+                  : "bg-blush-100 text-blush-600"
               }
-            `}>
+            `}
+            >
               {cardCount} cards
             </span>
           </div>
-          <p className={`text-sm ${isActive ? "text-white/80" : "text-gray-500"}`}>
+          <p
+            className={`text-sm ${isActive ? "text-white/80" : "text-gray-500"}`}
+          >
             {description}
           </p>
         </div>
@@ -97,15 +113,16 @@ export const OpenWhenModalV2 = ({
   onSelectMode,
   secretUnlocked,
 }: OpenWhenModalV2Props) => {
+  const { getAvailableCards } = useCardContext();
   // Calculate card counts for each category (tag-based only)
   const categoryCounts = useMemo(() => {
     const available = getAvailableCards(secretUnlocked);
     const counts: Record<string, number> = {};
-    
+
     for (const key of Object.keys(OPEN_WHEN_CATEGORIES)) {
       counts[key] = available.filter((card) => card.tags?.includes(key)).length;
     }
-    
+
     return counts;
   }, [secretUnlocked]);
 
@@ -120,10 +137,10 @@ export const OpenWhenModalV2 = ({
   };
 
   return (
-    <Modal 
-      isOpen={isOpen} 
-      onClose={onClose} 
-      title="Open when I feel…" 
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Open when I feel…"
       icon={<Sparkles size={20} className="text-accent-pink" />}
     >
       <div className="space-y-3">
@@ -131,19 +148,22 @@ export const OpenWhenModalV2 = ({
           Pick a feeling, and I'll find the perfect words for you.
         </p>
 
-        {(Object.entries(OPEN_WHEN_CATEGORIES) as [OpenWhenKey, typeof OPEN_WHEN_CATEGORIES[OpenWhenKey]][]).map(
-          ([key, { label, description }]) => (
-            <CategoryCard
-              key={key}
-              categoryKey={key}
-              label={label}
-              description={description}
-              isActive={currentMode === key}
-              cardCount={categoryCounts[key] || 0}
-              onClick={() => handleSelect(key)}
-            />
-          )
-        )}
+        {(
+          Object.entries(OPEN_WHEN_CATEGORIES) as [
+            OpenWhenKey,
+            (typeof OPEN_WHEN_CATEGORIES)[OpenWhenKey],
+          ][]
+        ).map(([key, { label, description }]) => (
+          <CategoryCard
+            key={key}
+            categoryKey={key}
+            label={label}
+            description={description}
+            isActive={currentMode === key}
+            cardCount={categoryCounts[key] || 0}
+            onClick={() => handleSelect(key)}
+          />
+        ))}
 
         {currentMode && (
           <button
