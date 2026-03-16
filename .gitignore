@@ -1,9 +1,11 @@
 node_modules
+coverage
 dist
 dist-ssr
 *.local
 .DS_Store
 tsconfig.tsbuildinfo
+private/
 
 #amplify-do-not-edit-begin
 amplify/\#current-cloud-backend
