@@ -2,8 +2,7 @@
 # Compliment Deck GraphQL Schema
 # Auth rules:
 #   - Cards: Admins can CRUD, authenticated users can read
-#   - SharedNote / VoucherRequest / VoucherTemplate: keep public apiKey for now
-#     (existing cross-device sync uses API key; can tighten later)
+#   - SharedNote / VoucherRequest / VoucherTemplate: authenticated users only
 #   - UserSettings / UserFavorite / UserSeenCard: owner-based (each user owns their data)
 # ============================================================
 
@@ -11,7 +10,6 @@ type SharedNote
   @model
   @auth(
     rules: [
-      { allow: public, provider: apiKey }
       {
         allow: groups
         groups: ["Admins"]
@@ -32,7 +30,6 @@ type VoucherRequest
   @model
   @auth(
     rules: [
-      { allow: public, provider: apiKey }
       {
         allow: groups
         groups: ["Admins"]
@@ -60,7 +57,6 @@ type VoucherTemplate
   @model
   @auth(
     rules: [
-      { allow: public, provider: apiKey }
       {
         allow: groups
         groups: ["Admins"]

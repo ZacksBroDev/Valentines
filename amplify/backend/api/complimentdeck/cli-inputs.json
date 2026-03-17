@@ -4,14 +4,8 @@
     "apiName": "complimentdeck",
     "serviceName": "AppSync",
     "defaultAuthType": {
-      "mode": "API_KEY",
-      "expirationTime": 7
-    },
-    "additionalAuthTypes": [
-      {
-        "mode": "AMAZON_COGNITO_USER_POOLS",
-        "cognitoUserPoolId": "authcomplimentdeck842267af"
-      }
-    ]
+      "mode": "AMAZON_COGNITO_USER_POOLS",
+      "cognitoUserPoolId": "authcomplimentdeck842267af"
+    }
   }
 }
