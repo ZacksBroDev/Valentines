@@ -65,8 +65,8 @@ src/
 ├── context/
 │   └── ToastContext.tsx       # Toast notification system
 ├── data/
-│   ├── cards.ts               # All card definitions
-│   └── compliments.ts         # Adapter for backward compatibility
+│   ├── cards.ts               # Public-safe sample card definitions
+│   └── compliments.ts         # Legacy adapter for sample data
 ├── hooks/
 │   ├── useAppState.ts         # Main app state manager
 │   ├── useDeckNew.ts          # Deck shuffling and draws
@@ -100,7 +100,12 @@ export const CONFIG = {
 
 ### Adding Cards
 
-Edit `src/data/cards.ts`. Card types:
+Keep real card content in `private/cards.private.ts` so the repo can remain
+public. `src/data/cards.ts` is a sanitized sample file for documentation only.
+The seed script reads `private/cards.private.ts` by default, or a custom path
+via `CARD_SOURCE_PATH`.
+
+Card types:
 
 ```typescript
 // Text card
@@ -134,7 +139,7 @@ Edit `src/data/cards.ts`. Card types:
 }
 ```
 
-The `{pet}` placeholder is replaced with the partner name at runtime.
+The `{pet}` placeholder is replaced with a pet name at runtime.
 
 ## Tech Stack
 
