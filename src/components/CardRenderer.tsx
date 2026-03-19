@@ -1,10 +1,16 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, isTextCard, isVoucherCard, isPlaylistCard } from "../types";
+import {
+  Card,
+  VoucherCard,
+  isTextCard,
+  isVoucherCard,
+  isPlaylistCard,
+} from "../types";
 import { RARITIES } from "../config";
 import { withPet } from "../context/CardContext";
 import { formatCategory, prefersReducedMotion } from "../utils/helpers";
-import { redeemVoucher, getRedeemedVouchers } from "../utils/storage";
+import { getRedeemedVouchers } from "../utils/storage";
 import { CATEGORY_ICONS } from "./icons";
 import {
   Heart,
@@ -26,7 +32,10 @@ interface CardProps {
   isFavorite: boolean;
   cardKey: number;
   onSave?: () => void;
-  onVoucherRedeem?: (option: string) => void;
+  onVoucherRedeem?: (
+    card: VoucherCard,
+    option: string,
+  ) => Promise<boolean> | boolean;
   isDark?: boolean;
   reduceMotion?: boolean;
 }
@@ -198,6 +207,13 @@ export const ComplimentCard = ({
 }: CardProps) => {
   const [selectedVoucher, setSelectedVoucher] = useState<string | null>(null);
   const [justRedeemed, setJustRedeemed] = useState(false);
+  const [isRequestingVoucher, setIsRequestingVoucher] = useState(false);
+
+  useEffect(() => {
+    setSelectedVoucher(null);
+    setJustRedeemed(false);
+    setIsRequestingVoucher(false);
+  }, [card?.id]);
 
   // Check if voucher already redeemed
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -455,15 +471,26 @@ export const ComplimentCard = ({
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        onClick={() => {
-                          redeemVoucher(card.id, selectedVoucher, card.title);
-                          setJustRedeemed(true);
-                          onVoucherRedeem?.(selectedVoucher);
+                        onClick={async () => {
+                          if (isRequestingVoucher) return;
+                          setIsRequestingVoucher(true);
+                          try {
+                            const wasRequested = await onVoucherRedeem?.(
+                              card,
+                              selectedVoucher,
+                            );
+                            if (wasRequested) {
+                              setJustRedeemed(true);
+                            }
+                          } finally {
+                            setIsRequestingVoucher(false);
+                          }
                         }}
+                        disabled={isRequestingVoucher}
                         className="w-full mt-3 p-3 rounded-xl bg-green-500 hover:bg-green-600 text-white font-medium text-sm transition-colors flex items-center justify-center gap-2"
                       >
                         <Check size={16} />
-                        Redeem This Voucher
+                        {isRequestingVoucher ? "Requesting..." : "Redeem This Voucher"}
                       </motion.button>
                     )}
                   </AnimatePresence>

@@ -68,7 +68,7 @@ export const SeenCardsModal = ({
     return seenIds
       .map((id) => getCardById(id))
       .filter((card): card is Card => card !== null);
-  }, [seenIds]);
+  }, [getCardById, seenIds]);
 
   // Filter cards
   const filteredCards = useMemo(() => {

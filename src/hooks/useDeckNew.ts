@@ -146,7 +146,7 @@ export const useDeckNew = () => {
       const lastCard = getCardById(lastSeenId);
       if (lastCard) setCurrentCard(lastCard);
     }
-  }, [initializeDeck]);
+  }, [getCardById, initializeDeck]);
 
   // Re-initialize when filters change
   useEffect(() => {
@@ -263,6 +263,7 @@ export const useDeckNew = () => {
   }, [
     shuffledDeck,
     currentIndex,
+    getCardById,
     secretUnlocked,
     seenIds,
     drawCount,

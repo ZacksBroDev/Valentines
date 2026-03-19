@@ -124,7 +124,7 @@ export const OpenWhenModalV2 = ({
     }
 
     return counts;
-  }, [secretUnlocked]);
+  }, [getAvailableCards, secretUnlocked]);
 
   const handleSelect = (mode: OpenWhenKey) => {
     onSelectMode(mode);

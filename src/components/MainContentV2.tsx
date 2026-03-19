@@ -28,14 +28,15 @@ import { SkipLink } from "./SkipLink";
 import { Mascots } from "./mascots/Mascots";
 import { MoodPickerV2 } from "./MoodPickerV2";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 import { Cloud, Heart, Loader2 } from "lucide-react";
 
 import { MoodKey } from "../config";
 import { AppStateReturn } from "../hooks/useAppState";
-import { Card } from "../types";
+import { Card, VoucherCard } from "../types";
 import { useVoucherInventory } from "../api/hooks";
 import { useCardContext } from "../context/CardContext";
-import { getNotes, getRedeemedVoucherCount } from "../utils/storage";
+import { getNotes, redeemVoucher } from "../utils/storage";
 import { fetchUnreadNotesCount, fetchSharedNotes } from "../utils/cloudStorage";
 
 // Lazy-loaded heavy modals for performance
@@ -82,6 +83,14 @@ const ModalLoadingFallback = () => (
 interface MainContentV2Props {
   state: AppStateReturn;
 }
+
+const VOUCHER_CARD_TEMPLATE_MAP: Record<string, string> = {
+  "voucher-001": "flowers",
+  "voucher-002": "comfort",
+  "voucher-003": "adventure",
+  "voucher-004": "movie",
+  "voucher-005": "dinner",
+};
 
 /**
  * Mood picker bottom sheet modal
@@ -135,6 +144,7 @@ const MoodPickerModal = ({
 
 export const MainContentV2 = ({ state }: MainContentV2Props) => {
   const { allCards, getAvailableCards } = useCardContext();
+  const { showToast } = useToast();
   const {
     // Sound
     isMuted,
@@ -256,27 +266,54 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
     }
   };
 
-  // Voucher inventory (API-based) + local deck vouchers
-  const { inventory } = useVoucherInventory();
-  const [localVoucherCount, setLocalVoucherCount] = useState(
-    getRedeemedVoucherCount,
-  );
-  const voucherCount = (inventory?.totalAvailable || 0) + localVoucherCount;
+  // Voucher inventory is the single source of truth for requests/availability.
+  const { inventory, requestRedemption, getAvailableByType, refreshInventory } =
+    useVoucherInventory();
+  const voucherCount = inventory?.totalAvailable || 0;
 
-  // Handler for when a voucher is redeemed from the deck
-  const handleVoucherRedeemed = useCallback(() => {
-    // Update local voucher count
-    setLocalVoucherCount(getRedeemedVoucherCount());
-    // Note: The deck will automatically exclude the redeemed voucher on next draw
-    // since getAvailableCards filters out redeemed voucher IDs
-  }, []);
+  const handleVoucherRedeemed = useCallback(
+    async (card: VoucherCard, option: string): Promise<boolean> => {
+      const templateType = VOUCHER_CARD_TEMPLATE_MAP[card.id];
+
+      if (!templateType) {
+        showToast("Voucher setup is incomplete for this card.", "error");
+        return false;
+      }
+
+      const [instance] = getAvailableByType(templateType);
+
+      if (!instance) {
+        await refreshInventory();
+        showToast("That voucher is not available right now.", "info");
+        return false;
+      }
+
+      try {
+        await requestRedemption({
+          voucherInstanceId: instance.id,
+          selectedOption: option,
+        });
+        redeemVoucher(card.id, option, card.title);
+        showToast("Voucher requested!", "success");
+        return true;
+      } catch (error) {
+        await refreshInventory();
+        showToast(
+          error instanceof Error ? error.message : "Failed to request voucher",
+          "error",
+        );
+        return false;
+      }
+    },
+    [getAvailableByType, refreshInventory, requestRedemption, showToast],
+  );
 
   // Calculate card counts - include openWhenMode filter for accurate count
   // Also re-calculate when local voucher count changes (voucher redeemed = removed from deck)
   const availableCards = useMemo(
     () =>
       getAvailableCards(secretUnlocked, undefined, openWhenMode || undefined),
-    [secretUnlocked, openWhenMode, localVoucherCount],
+    [getAvailableCards, openWhenMode, secretUnlocked],
   );
   const localNotesCount = getNotes().length;
 
@@ -370,6 +407,7 @@ export const MainContentV2 = ({ state }: MainContentV2Props) => {
       loveMeterMax: 100,
     };
   }, [
+    allCards,
     availableCards,
     drawCount,
     favorites.length,

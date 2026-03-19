@@ -35,10 +35,8 @@ import {
 } from "../api/types";
 import { useToast } from "../context/ToastContext";
 import {
-  submitVoucherRequest,
   fetchVoucherRequests,
   updateVoucherRequestStatus,
-  removeVoucherRequest,
   CloudVoucherRequest,
 } from "../utils/cloudStorage";
 
@@ -281,8 +279,9 @@ export const VoucherInventoryModal = ({
     inventory,
     isLoading,
     error,
-    // pendingRedemptions available for future use
+    redemptions,
     requestRedemption,
+    completeRedemption,
     refreshInventory,
   } = useVoucherInventory();
 
@@ -358,30 +357,37 @@ export const VoucherInventoryModal = ({
   };
 
   const handleMarkRedeemed = async (requestId: string) => {
-    const previousStatus = cloudRequests.find(
-      (r) => r.id === requestId,
-    )?.status;
-    await updateVoucherRequestStatus(requestId, "redeemed");
-    fetchVoucherRequests().then(setCloudRequests);
-    refreshInventory();
+    const request = cloudRequests.find((item) => item.id === requestId);
+    if (!request) return;
 
-    showUndoToast("Marked as redeemed!", async () => {
-      if (previousStatus) {
-        await updateVoucherRequestStatus(
-          requestId,
-          previousStatus as
-            | "pending"
-            | "approved"
-            | "denied"
-            | "counter-proposed"
-            | "redeemed"
-            | "archived",
-        );
-        fetchVoucherRequests().then(setCloudRequests);
-        refreshInventory();
-        showToast("Reverted to previous status", "info");
+    const matchingRedemption = [...redemptions]
+      .filter(
+        (redemption) =>
+          redemption.voucherTemplateType === request.voucherType &&
+          (redemption.status === "REQUESTED" ||
+            redemption.status === "APPROVED"),
+      )
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      )[0];
+
+    if (matchingRedemption) {
+      try {
+        await completeRedemption(matchingRedemption.id);
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.warn("Failed to complete local redemption:", error);
+        }
       }
-    });
+    }
+
+    await updateVoucherRequestStatus(requestId, "redeemed");
+    await Promise.all([
+      refreshInventory(),
+      fetchVoucherRequests().then(setCloudRequests),
+    ]);
+    showToast("Marked as redeemed!", "success");
   };
 
   // Legacy filter compatibility
@@ -396,47 +402,23 @@ export const VoucherInventoryModal = ({
   const handleConfirmRedeem = async (option: string) => {
     if (!selectedInstance) return;
 
-    let cloudRequestId: string | null = null;
-
-    // Sync to cloud for admin to see
-    try {
-      const cloudResult = await submitVoucherRequest({
-        voucherType: selectedInstance.templateType,
-        voucherTitle:
-          selectedInstance.template?.title || selectedInstance.templateType,
-        requestedDate: null,
-      });
-      cloudRequestId = cloudResult?.id || null;
-    } catch (err) {
-      if (import.meta.env.DEV) console.error("Failed to sync to cloud:", err);
-    }
-
-    // Try local update (may fail but that's ok)
     try {
       await requestRedemption({
         voucherInstanceId: selectedInstance.id,
         selectedOption: option,
       });
-    } catch (err) {
-      if (import.meta.env.DEV) console.warn("Local redemption failed:", err);
-      // Force refresh inventory to update counts anyway
-      refreshInventory();
+      setSelectedInstance(null);
+      await Promise.all([
+        refreshInventory(),
+        fetchVoucherRequests().then(setCloudRequests),
+      ]);
+      showToast("Voucher requested!", "success");
+    } catch (error) {
+      showToast(
+        error instanceof Error ? error.message : "Failed to request voucher",
+        "error",
+      );
     }
-
-    setSelectedInstance(null);
-
-    // Refresh cloud requests to show the new pending request
-    fetchVoucherRequests().then(setCloudRequests);
-
-    // Show undo toast instead of success modal
-    showUndoToast("Voucher requested!", async () => {
-      if (cloudRequestId) {
-        await removeVoucherRequest(cloudRequestId);
-        fetchVoucherRequests().then(setCloudRequests);
-        refreshInventory();
-        showToast("Request cancelled", "info");
-      }
-    });
   };
 
   const handleCancelRedeem = () => {
