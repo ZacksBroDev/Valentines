@@ -35,7 +35,7 @@ const FEATURES = [
     icon: <Shield className="w-6 h-6" />,
     title: "Auth & Privacy",
     description:
-      "Cognito-backed authentication with role-based access. All sensitive content lives server-side — never shipped in JS bundles.",
+      "Cognito-backed authentication with role-based access and protected backend reads for private app features.",
   },
   {
     icon: <Sparkles className="w-6 h-6" />,
@@ -154,10 +154,9 @@ export default function LandingPage() {
       <section className="max-w-5xl mx-auto px-6 py-16 text-center">
         <h2 className="text-3xl font-bold text-gray-900 mb-4">How It Works</h2>
         <p className="text-gray-600 max-w-2xl mx-auto mb-8">
-          Cards are stored in DynamoDB and only fetched after Cognito
-          authentication. The frontend bundle contains zero private content.
-          Admin and user roles are enforced server-side via Cognito groups and
-          AppSync auth directives.
+          The live app fetches protected data after Cognito authentication, and
+          admin and user roles are enforced with Cognito groups plus AppSync
+          authorization rules.
         </p>
 
         <div className="bg-gray-50 rounded-2xl p-8 ring-1 ring-gray-200 max-w-3xl mx-auto">

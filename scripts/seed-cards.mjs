@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // ============================================================
-// SEED SCRIPT — Reads card data from src/data/cards.ts and
+// SEED SCRIPT — Reads card data from a private TypeScript source and
 // batch-writes to DynamoDB Card table via AWS SDK.
 //
 // Prerequisites:
@@ -9,13 +9,14 @@
 //
 // Usage:
 //   node scripts/seed-cards.mjs
+//   CARD_SOURCE_PATH=./private/cards.private.ts node scripts/seed-cards.mjs
 //
 // This is a one-time migration tool. Run it before stripping
 // card text from the frontend bundle.
 // ============================================================
 
 import { DynamoDBClient, BatchWriteItemCommand } from "@aws-sdk/client-dynamodb";
-import { readFileSync } from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -29,7 +30,20 @@ const REGION = process.env.AWS_REGION || "us-east-1";
 // We read the raw file and extract card arrays using regex/manual parsing.
 // This avoids needing a TS compiler for a one-time seed.
 
-const cardsFilePath = resolve(__dirname, "../src/data/cards.ts");
+const cardsFilePath = process.env.CARD_SOURCE_PATH
+  ? resolve(process.cwd(), process.env.CARD_SOURCE_PATH)
+  : resolve(__dirname, "../private/cards.private.ts");
+
+if (!existsSync(cardsFilePath)) {
+  throw new Error(
+    [
+      `Card source not found: ${cardsFilePath}`,
+      "Keep your real card content in private/cards.private.ts",
+      "or pass CARD_SOURCE_PATH=/absolute/or/relative/path/to/cards.ts",
+    ].join("\n"),
+  );
+}
+
 const src = readFileSync(cardsFilePath, "utf-8");
 
 /**
@@ -40,7 +54,9 @@ function extractArray(varName) {
   // Find: const varName: Type[] = [  ...  ];
   const startPattern = new RegExp(`(?:const|let|var)\\s+${varName}[^=]*=\\s*\\[`);
   const match = startPattern.exec(src);
-  if (!match) throw new Error(`Could not find array "${varName}" in cards.ts`);
+  if (!match) {
+    throw new Error(`Could not find array "${varName}" in ${cardsFilePath}`);
+  }
 
   let depth = 0;
   let start = match.index + match[0].length - 1; // position of [
@@ -76,7 +92,6 @@ function extractArray(varName) {
     return JSON.parse(raw);
   } catch (e) {
     // Debug: write the problematic JSON to a temp file
-    const { writeFileSync } = await import("fs");
     writeFileSync("/tmp/seed-debug.json", raw);
     throw new Error(`Failed to parse "${varName}": ${e.message}\nDebug written to /tmp/seed-debug.json`);
   }
@@ -89,7 +104,7 @@ function extractExtraTextCards() {
   // Find the extraTexts array
   const startPattern = /const\s+extraTexts\s*:\s*string\[\]\s*=\s*\[/;
   const match = startPattern.exec(src);
-  if (!match) throw new Error("Could not find extraTexts array");
+  if (!match) throw new Error(`Could not find extraTexts array in ${cardsFilePath}`);
 
   let depth = 0;
   let start = match.index + match[0].length - 1;
@@ -127,7 +142,7 @@ function extractExtraTextCards() {
 }
 
 // ---- Build the complete card list ----
-console.log("Parsing card data from src/data/cards.ts ...");
+console.log(`Parsing card data from ${cardsFilePath} ...`);
 
 const textCards = extractArray("textCards");
 const voucherCards = extractArray("voucherCards");
