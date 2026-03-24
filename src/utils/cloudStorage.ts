@@ -25,6 +25,7 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let _client: any = null;
 let _clientInitialized = false;
+const GRAPHQL_AUTH_MODE = "userPool" as const;
 
 const getClient = () => {
   if (!_client && !_clientInitialized) {
@@ -96,7 +97,7 @@ export const fetchVoucherRequests = async (): Promise<
   try {
     const response = await getClient().graphql({
       query: listVoucherRequests,
-      authMode: "apiKey", // Use API key for public access
+      authMode: GRAPHQL_AUTH_MODE,
     });
 
     const data = response as {
@@ -130,7 +131,7 @@ export const submitVoucherRequest = async (request: {
     const response = await getClient().graphql({
       query: createVoucherRequest,
       variables: { input },
-      authMode: "apiKey",
+      authMode: GRAPHQL_AUTH_MODE,
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -168,7 +169,7 @@ export const updateVoucherRequestStatus = async (
           adminNote: adminNote || null,
         },
       },
-      authMode: "apiKey",
+      authMode: GRAPHQL_AUTH_MODE,
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -190,7 +191,7 @@ export const removeVoucherRequest = async (id: string): Promise<boolean> => {
       variables: {
         input: { id },
       },
-      authMode: "apiKey",
+      authMode: GRAPHQL_AUTH_MODE,
     });
     return true;
   } catch (error) {
@@ -219,7 +220,7 @@ export const fetchSharedNotes = async (): Promise<CloudSharedNote[]> => {
   try {
     const response = await getClient().graphql({
       query: listSharedNotes,
-      authMode: "apiKey",
+      authMode: GRAPHQL_AUTH_MODE,
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -250,7 +251,7 @@ export const submitSharedNote = async (
           read: false, // New notes are always unread for the recipient
         },
       },
-      authMode: "apiKey",
+      authMode: GRAPHQL_AUTH_MODE,
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -275,7 +276,7 @@ export const markCloudNoteAsRead = async (id: string): Promise<boolean> => {
           read: true,
         },
       },
-      authMode: "apiKey",
+      authMode: GRAPHQL_AUTH_MODE,
     });
     return true;
   } catch (error) {
@@ -295,7 +296,7 @@ export const removeSharedNote = async (id: string): Promise<boolean> => {
       variables: {
         input: { id },
       },
-      authMode: "apiKey",
+      authMode: GRAPHQL_AUTH_MODE,
     });
     return true;
   } catch (error) {
@@ -346,7 +347,7 @@ export const fetchVoucherTemplates = async (): Promise<
   try {
     const response = await getClient().graphql({
       query: listVoucherTemplates,
-      authMode: "apiKey",
+      authMode: GRAPHQL_AUTH_MODE,
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -375,7 +376,7 @@ export const createCloudVoucherTemplate = async (template: {
     const response = await getClient().graphql({
       query: createVoucherTemplate,
       variables: { input: template },
-      authMode: "apiKey",
+      authMode: GRAPHQL_AUTH_MODE,
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -406,7 +407,7 @@ export const updateCloudVoucherTemplate = async (
     const response = await getClient().graphql({
       query: updateVoucherTemplate,
       variables: { input: { id, ...updates } },
-      authMode: "apiKey",
+      authMode: GRAPHQL_AUTH_MODE,
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -429,7 +430,7 @@ export const deleteCloudVoucherTemplate = async (
     await getClient().graphql({
       query: deleteVoucherTemplateMutation,
       variables: { input: { id } },
-      authMode: "apiKey",
+      authMode: GRAPHQL_AUTH_MODE,
     });
     return true;
   } catch (error) {

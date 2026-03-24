@@ -33,7 +33,12 @@ import {
   StreakInfo,
 } from "./types";
 
-import { submitVoucherRequest, fetchVoucherTemplates, CloudVoucherTemplate, getRarityFromLimit } from "../utils/cloudStorage";
+import {
+  submitVoucherRequest,
+  fetchVoucherTemplates,
+  CloudVoucherTemplate,
+  getRarityFromLimit,
+} from "../utils/cloudStorage";
 import { setServerTimeOffset } from "../utils/storage";
 
 // ============================================================
@@ -65,7 +70,7 @@ export const syncServerTime = async (): Promise<void> => {
     setServerTimeOffset(0);
     return;
   }
-  
+
   try {
     // When Amplify is configured, call a lightweight API endpoint
     // that returns the server timestamp
@@ -74,13 +79,16 @@ export const syncServerTime = async (): Promise<void> => {
     // const clientTime = Date.now();
     // const offset = serverTime - clientTime;
     // setServerTimeOffset(offset);
-    
+
     // Fallback: Use a public time API or AWS time sync
-    const response = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC', {
-      method: 'GET',
-      cache: 'no-cache',
-    });
-    
+    const response = await fetch(
+      "https://worldtimeapi.org/api/timezone/Etc/UTC",
+      {
+        method: "GET",
+        cache: "no-cache",
+      },
+    );
+
     if (response.ok) {
       const data = await response.json();
       const serverTime = new Date(data.datetime).getTime();
@@ -89,7 +97,8 @@ export const syncServerTime = async (): Promise<void> => {
       setServerTimeOffset(offset);
     }
   } catch (error) {
-    if (import.meta.env.DEV) console.warn('[TimeSync] Failed to sync server time', error);
+    if (import.meta.env.DEV)
+      console.warn("[TimeSync] Failed to sync server time", error);
     // Use local time as fallback
     setServerTimeOffset(0);
   }
@@ -146,7 +155,11 @@ export const userProfileApi = {
     if (MOCK_MODE) {
       const current = await this.get();
       if (!current) throw new Error("Profile not found");
-      const updated = { ...current, ...input, updatedAt: new Date().toISOString() };
+      const updated = {
+        ...current,
+        ...input,
+        updatedAt: new Date().toISOString(),
+      };
       localStorage.setItem("compliment-deck-profile", JSON.stringify(updated));
       return updated;
     }
@@ -187,7 +200,10 @@ export const coupleApi = {
     throw new Error("Not implemented");
   },
 
-  async joinWithCode(_inviteCode: string, displayName: string): Promise<Couple> {
+  async joinWithCode(
+    _inviteCode: string,
+    displayName: string,
+  ): Promise<Couple> {
     if (MOCK_MODE) {
       // In real implementation, this would query by invite code
       const couple = await this.get();
@@ -240,7 +256,10 @@ export const favoritesApi = {
         createdAt: new Date().toISOString(),
       };
       favorites.push(newFav);
-      localStorage.setItem("compliment-deck-favorites", JSON.stringify(favorites));
+      localStorage.setItem(
+        "compliment-deck-favorites",
+        JSON.stringify(favorites),
+      );
       return newFav;
     }
     throw new Error("Not implemented");
@@ -250,7 +269,10 @@ export const favoritesApi = {
     if (MOCK_MODE) {
       const favorites = await this.list();
       const filtered = favorites.filter((f) => f.cardId !== cardId);
-      localStorage.setItem("compliment-deck-favorites", JSON.stringify(filtered));
+      localStorage.setItem(
+        "compliment-deck-favorites",
+        JSON.stringify(filtered),
+      );
       return;
     }
     throw new Error("Not implemented");
@@ -333,7 +355,10 @@ export const reactionsApi = {
         createdAt: new Date().toISOString(),
       };
       reactions.push(newReaction);
-      localStorage.setItem("compliment-deck-reactions", JSON.stringify(reactions));
+      localStorage.setItem(
+        "compliment-deck-reactions",
+        JSON.stringify(reactions),
+      );
       return newReaction;
     }
     throw new Error("Not implemented");
@@ -351,7 +376,11 @@ const DEFAULT_TEMPLATES: VoucherTemplate[] = [
     type: "flowers",
     title: "Redeem for flowers",
     description: "A beautiful bouquet just for you",
-    options: ["Surprise bouquet + note", "Pick the flowers together", "Flowers + coffee date"],
+    options: [
+      "Surprise bouquet + note",
+      "Pick the flowers together",
+      "Flowers + coffee date",
+    ],
     monthlyLimit: 1,
     rarity: "rare",
     emoji: "💐",
@@ -364,7 +393,11 @@ const DEFAULT_TEMPLATES: VoucherTemplate[] = [
     type: "comfort",
     title: "Redeem for comfort mode",
     description: "When you need to be taken care of",
-    options: ["Quiet cuddle + show", "Snack run + blanket burrito", "Massage + early night"],
+    options: [
+      "Quiet cuddle + show",
+      "Snack run + blanket burrito",
+      "Massage + early night",
+    ],
     monthlyLimit: 2,
     rarity: "legendary",
     emoji: "🫶",
@@ -377,7 +410,11 @@ const DEFAULT_TEMPLATES: VoucherTemplate[] = [
     type: "adventure",
     title: "Redeem for adventure day",
     description: "Let's go explore together",
-    options: ["Hike + photos", "Climbing + food after", "Snow day + hot drinks"],
+    options: [
+      "Hike + photos",
+      "Climbing + food after",
+      "Snow day + hot drinks",
+    ],
     monthlyLimit: 1,
     rarity: "rare",
     emoji: "🏔️",
@@ -403,7 +440,11 @@ const DEFAULT_TEMPLATES: VoucherTemplate[] = [
     type: "dinner",
     title: "Redeem for dinner date",
     description: "A delicious meal together",
-    options: ["Your restaurant pick", "Cook together at home", "Takeout + candlelight"],
+    options: [
+      "Your restaurant pick",
+      "Cook together at home",
+      "Takeout + candlelight",
+    ],
     monthlyLimit: 2,
     rarity: "rare",
     emoji: "🍕",
@@ -418,7 +459,7 @@ export const voucherApi = {
     try {
       // Try to fetch from cloud first
       const cloudTemplates = await fetchVoucherTemplates();
-      
+
       if (cloudTemplates.length > 0) {
         // Map cloud templates to VoucherTemplate format
         return cloudTemplates.map((ct: CloudVoucherTemplate) => ({
@@ -435,26 +476,28 @@ export const voucherApi = {
           updatedAt: ct.updatedAt || new Date().toISOString(),
         }));
       }
-      
+
       // Fallback to defaults if cloud is empty
-      if (import.meta.env.DEV) console.log("No cloud templates found, using defaults");
+      if (import.meta.env.DEV)
+        console.log("No cloud templates found, using defaults");
       return DEFAULT_TEMPLATES;
     } catch (error) {
-      if (import.meta.env.DEV) console.error("Failed to fetch cloud templates:", error);
+      if (import.meta.env.DEV)
+        console.error("Failed to fetch cloud templates:", error);
       return DEFAULT_TEMPLATES;
     }
   },
 
   async getInventory(monthKey?: string): Promise<MonthlyVoucherInventory> {
     const key = monthKey || getCurrentMonthKey();
-    
+
     if (MOCK_MODE) {
       // Check if we need to mint vouchers for this month
       const storageKey = `compliment-deck-vouchers-${key}`;
       let instances: VoucherInstance[] = [];
       const stored = localStorage.getItem(storageKey);
       const templates = await this.getTemplates();
-      
+
       if (!stored) {
         // Lazy mint: create vouchers for the month
         for (const template of templates) {
@@ -478,15 +521,16 @@ export const voucherApi = {
         localStorage.setItem(storageKey, JSON.stringify(instances));
       } else {
         instances = JSON.parse(stored);
-        
+
         // Check for new templates that aren't in stored instances
-        const existingTypes = new Set(instances.map(i => i.templateId));
+        const existingTypes = new Set(instances.map((i) => i.templateId));
         let updated = false;
-        
+
         for (const template of templates) {
           if (!existingTypes.has(template.id)) {
             // New template - mint instances for it
-            if (import.meta.env.DEV) console.log(`Minting new template: ${template.type}`);
+            if (import.meta.env.DEV)
+              console.log(`Minting new template: ${template.type}`);
             for (let i = 0; i < template.monthlyLimit; i++) {
               instances.push({
                 id: crypto.randomUUID(),
@@ -506,41 +550,51 @@ export const voucherApi = {
             updated = true;
           } else {
             // Update existing instances with latest template data
-            instances = instances.map(inst => 
-              inst.templateId === template.id 
-                ? { ...inst, template }
-                : inst
+            instances = instances.map((inst) =>
+              inst.templateId === template.id ? { ...inst, template } : inst,
             );
           }
         }
-        
+
         // Remove instances for templates that no longer exist
-        const currentTemplateIds = new Set(templates.map(t => t.id));
-        const filteredInstances = instances.filter(i => currentTemplateIds.has(i.templateId));
+        const currentTemplateIds = new Set(templates.map((t) => t.id));
+        const filteredInstances = instances.filter((i) =>
+          currentTemplateIds.has(i.templateId),
+        );
         if (filteredInstances.length !== instances.length) {
           instances = filteredInstances;
           updated = true;
         }
-        
+
         if (updated) {
           localStorage.setItem(storageKey, JSON.stringify(instances));
         }
       }
-      
+
       // Group by template type
       const items: VoucherInventoryItem[] = templates.map((template) => {
-        const typeInstances = instances.filter((i) => i.templateType === template.type);
+        const typeInstances = instances.filter(
+          (i) => i.templateType === template.type,
+        );
         return {
           templateType: template.type,
           template,
           instances: typeInstances,
-          available: typeInstances.filter((i) => i.status === "AVAILABLE").length,
-          pending: typeInstances.filter((i) => i.status === "REQUESTED" || i.status === "APPROVED" || i.status === "COUNTERED").length,
-          used: typeInstances.filter((i) => i.status === "REDEEMED" || i.status === "ARCHIVED").length,
+          available: typeInstances.filter((i) => i.status === "AVAILABLE")
+            .length,
+          pending: typeInstances.filter(
+            (i) =>
+              i.status === "REQUESTED" ||
+              i.status === "APPROVED" ||
+              i.status === "COUNTERED",
+          ).length,
+          used: typeInstances.filter(
+            (i) => i.status === "REDEEMED" || i.status === "ARCHIVED",
+          ).length,
           total: typeInstances.length,
         };
       });
-      
+
       return {
         monthKey: key,
         items,
@@ -548,7 +602,7 @@ export const voucherApi = {
         totalUsed: items.reduce((sum, i) => sum + i.used, 0),
       };
     }
-    
+
     throw new Error("Not implemented");
   },
 
@@ -558,18 +612,19 @@ export const voucherApi = {
       const storageKey = `compliment-deck-vouchers-${monthKey}`;
       const stored = localStorage.getItem(storageKey);
       if (!stored) throw new Error("No vouchers found");
-      
+
       const instances: VoucherInstance[] = JSON.parse(stored);
       const instance = instances.find((i) => i.id === input.voucherInstanceId);
-      
+
       if (!instance) throw new Error("Voucher not found");
-      if (instance.status !== "AVAILABLE") throw new Error("Voucher not available");
-      
+      if (instance.status !== "AVAILABLE")
+        throw new Error("Voucher not available");
+
       // Update instance status (simulates conditional update)
       instance.status = "REQUESTED";
       instance.version += 1;
       instance.updatedAt = new Date().toISOString();
-      
+
       // Create redemption
       const redemption: Redemption = {
         id: crypto.randomUUID(),
@@ -587,56 +642,70 @@ export const voucherApi = {
         completedAt: null,
         completedByUserId: null,
       };
-      
+
       instance.redemptionId = redemption.id;
       localStorage.setItem(storageKey, JSON.stringify(instances));
-      
+
       // Store redemption
       const redemptionsKey = "compliment-deck-redemptions";
-      const redemptions: Redemption[] = JSON.parse(localStorage.getItem(redemptionsKey) || "[]");
+      const redemptions: Redemption[] = JSON.parse(
+        localStorage.getItem(redemptionsKey) || "[]",
+      );
       redemptions.push(redemption);
       localStorage.setItem(redemptionsKey, JSON.stringify(redemptions));
-      
-      // Sync to cloud for admin to see
-      submitVoucherRequest({
-        voucherType: instance.templateType,
-        voucherTitle: instance.template?.title || instance.templateType,
-        requestedDate: input.requestedForDate || null,
-      }).catch(err => {
-        if (import.meta.env.DEV) console.error("Failed to sync redemption:", err);
-      });
-      
+
+      // Sync to cloud for admin to see before resolving the request.
+      try {
+        await submitVoucherRequest({
+          voucherType: instance.templateType,
+          voucherTitle: instance.template?.title || instance.templateType,
+          requestedDate: input.requestedForDate || null,
+        });
+      } catch (err) {
+        if (import.meta.env.DEV)
+          console.error("Failed to sync redemption:", err);
+      }
+
       return redemption;
     }
     throw new Error("Not implemented");
   },
 
-  async completeRedemption(input: CompleteRedemptionInput): Promise<Redemption> {
+  async completeRedemption(
+    input: CompleteRedemptionInput,
+  ): Promise<Redemption> {
     if (MOCK_MODE) {
       const redemptionsKey = "compliment-deck-redemptions";
-      const redemptions: Redemption[] = JSON.parse(localStorage.getItem(redemptionsKey) || "[]");
+      const redemptions: Redemption[] = JSON.parse(
+        localStorage.getItem(redemptionsKey) || "[]",
+      );
       const redemption = redemptions.find((r) => r.id === input.redemptionId);
-      
+
       if (!redemption) throw new Error("Redemption not found");
-      if (redemption.status !== "REQUESTED" && redemption.status !== "APPROVED") throw new Error("Redemption not in requestable state");
-      
+      if (redemption.status !== "REQUESTED" && redemption.status !== "APPROVED")
+        throw new Error("Redemption not in requestable state");
+
       redemption.status = "COMPLETED";
       redemption.completedAt = new Date().toISOString();
       redemption.completedByUserId = "mock-user";
       localStorage.setItem(redemptionsKey, JSON.stringify(redemptions));
-      
+
       // Update voucher instance
       const monthKey = getCurrentMonthKey();
       const storageKey = `compliment-deck-vouchers-${monthKey}`;
-      const instances: VoucherInstance[] = JSON.parse(localStorage.getItem(storageKey) || "[]");
-      const instance = instances.find((i) => i.id === redemption.voucherInstanceId);
+      const instances: VoucherInstance[] = JSON.parse(
+        localStorage.getItem(storageKey) || "[]",
+      );
+      const instance = instances.find(
+        (i) => i.id === redemption.voucherInstanceId,
+      );
       if (instance) {
         instance.status = "REDEEMED";
         instance.version += 1;
         instance.updatedAt = new Date().toISOString();
         localStorage.setItem(storageKey, JSON.stringify(instances));
       }
-      
+
       return redemption;
     }
     throw new Error("Not implemented");
@@ -660,7 +729,7 @@ export const streaksApi = {
     if (MOCK_MODE) {
       const profile = await userProfileApi.get();
       const today = getTodayKey();
-      
+
       return {
         currentDrawStreak: profile?.currentDrawStreak || 0,
         longestDrawStreak: profile?.longestDrawStreak || 0,
@@ -679,12 +748,14 @@ export const streaksApi = {
     if (MOCK_MODE) {
       const profile = await userProfileApi.get();
       if (!profile) throw new Error("No profile found");
-      
+
       const today = getTodayKey();
-      const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
-      
+      const yesterday = new Date(Date.now() - 86400000)
+        .toISOString()
+        .split("T")[0];
+
       let newStreak = profile.currentDrawStreak;
-      
+
       if (profile.lastDrawDate === today) {
         // Already drew today, no streak change
       } else if (profile.lastDrawDate === yesterday) {
@@ -694,7 +765,7 @@ export const streaksApi = {
         // Streak broken, start fresh
         newStreak = 1;
       }
-      
+
       const updates: UpdateUserProfileInput = {
         id: profile.id,
         seenCardIds: [...profile.seenCardIds, cardId],
@@ -703,9 +774,9 @@ export const streaksApi = {
         lastDrawDate: today,
         totalDraws: profile.totalDraws + 1,
       };
-      
+
       await userProfileApi.update(updates);
-      
+
       return this.getStreakInfo();
     }
     throw new Error("Not implemented");
@@ -717,12 +788,14 @@ export const streaksApi = {
     if (MOCK_MODE) {
       const profile = await userProfileApi.get();
       if (!profile) throw new Error("No profile found");
-      
+
       const today = getTodayKey();
-      const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
-      
+      const yesterday = new Date(Date.now() - 86400000)
+        .toISOString()
+        .split("T")[0];
+
       let newStreak = profile.currentLoveStreak;
-      
+
       if (profile.lastLoveLogDate === today) {
         // Already logged today
       } else if (profile.lastLoveLogDate === yesterday) {
@@ -730,7 +803,7 @@ export const streaksApi = {
       } else {
         newStreak = 1;
       }
-      
+
       const updates: UpdateUserProfileInput = {
         id: profile.id,
         currentLoveStreak: newStreak,
@@ -738,9 +811,9 @@ export const streaksApi = {
         lastLoveLogDate: today,
         reasonsLogged: profile.reasonsLogged + 1,
       };
-      
+
       await userProfileApi.update(updates);
-      
+
       return this.getStreakInfo();
     }
     throw new Error("Not implemented");
@@ -765,7 +838,7 @@ export const dailyLogApi = {
     if (MOCK_MODE) {
       const today = getTodayKey();
       let log = await this.getToday();
-      
+
       if (!log) {
         log = {
           id: `mock-user#${today}`,
@@ -784,12 +857,15 @@ export const dailyLogApi = {
           updatedAt: new Date().toISOString(),
         };
       }
-      
+
       log.cardsDrawn += 1;
       log.cardIdsDrawn.push(cardId);
       log.updatedAt = new Date().toISOString();
-      
-      localStorage.setItem(`compliment-deck-daily-${today}`, JSON.stringify(log));
+
+      localStorage.setItem(
+        `compliment-deck-daily-${today}`,
+        JSON.stringify(log),
+      );
       return log;
     }
     throw new Error("Not implemented");

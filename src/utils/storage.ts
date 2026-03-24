@@ -5,7 +5,6 @@
 
 import { ThemeKey, StickerKey, MoodKey, OpenWhenKey } from "../config";
 import { Note } from "../types";
-import { submitVoucherRequest } from "./cloudStorage";
 
 const PREFIX = "valentine-deck-";
 
@@ -54,7 +53,7 @@ export const STORAGE_KEYS = {
 
   // Seal hint shown
   SEAL_HINT_SHOWN: `${PREFIX}seal-hint-shown`,
-  
+
   // First-run intro
   HAS_SEEN_INTRO: `${PREFIX}has-seen-intro`,
 } as const;
@@ -98,7 +97,7 @@ export const unlockSecret = () =>
   localStorage.setItem(STORAGE_KEYS.SECRET_UNLOCKED, "true");
 
 // ----- SECRET PROGRESS (draws toward unlock) -----
-export const getSecretProgressDraws = (): number => 
+export const getSecretProgressDraws = (): number =>
   get(STORAGE_KEYS.SECRET_PROGRESS_DRAWS, 0);
 
 export const incrementSecretProgress = (): number => {
@@ -180,17 +179,22 @@ export const setCardSticker = (cardId: string, sticker: StickerKey) => {
 // Get the current month key (e.g., "2026-02")
 const getCurrentMonthKey = (): string => {
   const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 };
 
 // Check if vouchers need to be reset (new month)
 const checkVoucherMonthlyReset = (): void => {
   const currentMonth = getCurrentMonthKey();
-  const storedMonth = get(STORAGE_KEYS.VOUCHER_REDEMPTION_MONTH, '');
-  
+  const storedMonth = get(STORAGE_KEYS.VOUCHER_REDEMPTION_MONTH, "");
+
   if (storedMonth !== currentMonth) {
     // New month! Reset redeemed vouchers
-    console.log('🔄 New month detected, resetting vouchers. Old:', storedMonth, 'New:', currentMonth);
+    console.log(
+      "🔄 New month detected, resetting vouchers. Old:",
+      storedMonth,
+      "New:",
+      currentMonth,
+    );
     set(STORAGE_KEYS.REDEEMED_VOUCHERS, {});
     set(STORAGE_KEYS.VOUCHER_REDEMPTION_MONTH, currentMonth);
   }
@@ -213,21 +217,19 @@ export const getRedeemedVoucherCount = (): number => {
   return Object.keys(getRedeemedVouchers()).length;
 };
 
-export const redeemVoucher = (cardId: string, option: string, voucherTitle?: string) => {
+export const redeemVoucher = (
+  cardId: string,
+  option: string,
+  voucherTitle?: string,
+) => {
   // Save locally
   const vouchers = getRedeemedVouchers();
   vouchers[cardId] = option;
   set(STORAGE_KEYS.REDEEMED_VOUCHERS, vouchers);
-  
-  // Also sync to cloud for admin to see
-  console.log("📤 Syncing voucher to cloud:", { cardId, option, voucherTitle });
-  submitVoucherRequest({
-    voucherType: cardId,
-    voucherTitle: voucherTitle || option,
-    requestedDate: null,
-  })
-    .then(result => console.log("✅ Voucher synced to cloud:", result))
-    .catch(err => console.error("❌ Failed to sync voucher to cloud:", err));
+
+  // The live redemption request is handled by the voucher inventory flow.
+  // This local marker only keeps already-claimed voucher cards out of the deck.
+  void voucherTitle;
 };
 
 // ----- NOTES -----
@@ -300,40 +302,40 @@ export const getLocalDateString = (): string => {
 export const getDailyDrawsToday = (): number => {
   const lastDrawDate = getLastDrawDate();
   const today = getServerDateString();
-  
+
   // Reset count if it's a new day
   if (lastDrawDate !== today) {
     set(STORAGE_KEYS.DAILY_DRAWS_TODAY, 0);
     return 0;
   }
-  
+
   return get(STORAGE_KEYS.DAILY_DRAWS_TODAY, 0);
 };
 
 export const incrementDailyDraws = (): number => {
   const today = getServerDateString();
   const lastDrawDate = getLastDrawDate();
-  
+
   // Reset if new day
   let currentCount = lastDrawDate === today ? getDailyDrawsToday() : 0;
   currentCount += 1;
-  
+
   set(STORAGE_KEYS.DAILY_DRAWS_TODAY, currentCount);
   set(STORAGE_KEYS.LAST_DRAW_DATE, today);
-  
+
   return currentCount;
 };
 
 export const canDrawToday = (dailyLimit: number = 3): boolean => {
   if (!isDailyModeEnabled()) return true;
-  
+
   const drawsToday = getDailyDrawsToday();
   return drawsToday < dailyLimit;
 };
 
 export const getDrawsRemaining = (dailyLimit: number = 3): number => {
   if (!isDailyModeEnabled()) return Infinity;
-  
+
   const drawsToday = getDailyDrawsToday();
   return Math.max(0, dailyLimit - drawsToday);
 };
@@ -342,16 +344,16 @@ export const getDrawsRemaining = (dailyLimit: number = 3): number => {
 export const getTimeUntilNextDraw = (): { hours: number; minutes: number } => {
   const offset = getServerTimeOffset();
   const serverNow = new Date(Date.now() + offset);
-  
+
   // Get tomorrow midnight UTC
   const tomorrow = new Date(serverNow);
   tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
   tomorrow.setUTCHours(0, 0, 0, 0);
-  
+
   const diffMs = tomorrow.getTime() - serverNow.getTime();
   const hours = Math.floor(diffMs / (1000 * 60 * 60));
   const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-  
+
   return { hours, minutes };
 };
 
@@ -362,7 +364,7 @@ export const resetAllStats = (): void => {
   Object.values(STORAGE_KEYS).forEach((key) => {
     localStorage.removeItem(key);
   });
-  
+
   // Also clear any other app-related keys
   const keysToRemove: string[] = [];
   for (let i = 0; i < localStorage.length; i++) {
