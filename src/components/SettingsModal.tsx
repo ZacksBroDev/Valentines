@@ -1,9 +1,11 @@
 import { motion } from "framer-motion";
-import { Lock, RotateCcw } from "lucide-react";
+import { Lock, LogOut, RotateCcw } from "lucide-react";
 import { Modal } from "./Modal";
 import { THEMES, ThemeKey, CONFIG } from "../config";
 import { resetAllStats } from "../utils/storage";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -134,9 +136,14 @@ export const SettingsModal = ({
         <div className="flex items-center justify-between gap-2">
           <div>
             <span className="text-xs text-gray-700">Reduce Motion</span>
-            <p className="text-[10px] text-gray-400">Disables typing animation</p>
+            <p className="text-[10px] text-gray-400">
+              Disables typing animation
+            </p>
           </div>
-          <Toggle enabled={reduceMotionEnabled} onToggle={onReduceMotionToggle} />
+          <Toggle
+            enabled={reduceMotionEnabled}
+            onToggle={onReduceMotionToggle}
+          />
         </div>
 
         <div className="flex items-center justify-between gap-2">
@@ -156,6 +163,9 @@ export const SettingsModal = ({
 
         {/* Reset All Stats */}
         <ResetButton />
+
+        {/* Sign Out */}
+        <SignOutButton />
       </div>
     </Modal>
   );
@@ -191,6 +201,28 @@ const ResetButton = () => {
       <p className="text-[10px] text-gray-400 text-center mt-1">
         Clears all stats, favorites, and seen cards
       </p>
+    </div>
+  );
+};
+
+const SignOutButton = () => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await logout();
+    navigate("/login", { replace: true });
+  };
+
+  return (
+    <div className="pt-2 border-t border-gray-100">
+      <button
+        onClick={handleSignOut}
+        className="w-full py-2 px-3 rounded-lg text-xs font-medium flex items-center justify-center gap-2 bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+      >
+        <LogOut size={14} />
+        Sign Out
+      </button>
     </div>
   );
 };
