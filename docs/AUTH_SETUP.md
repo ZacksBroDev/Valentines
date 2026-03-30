@@ -61,7 +61,7 @@ aws cognito-idp admin-create-user \
   --user-pool-id us-east-1_TVbXakMph \
   --username zackaryzbrown@gmail.com \
   --user-attributes Name=email,Value=zackaryzbrown@gmail.com Name=email_verified,Value=true \
-  --temporary-password "Cu9Cak3" \
+  --temporary-password "<CHOOSE_A_TEMP_PASSWORD>" \
   --region us-east-1
 
 # Regular user (Caitlyn)
@@ -69,7 +69,7 @@ aws cognito-idp admin-create-user \
   --user-pool-id us-east-1_TVbXakMph \
   --username caitlyn.hoffman98@gmail.com \
   --user-attributes Name=email,Value=caitlyn.hoffman98@gmail.com Name=email_verified,Value=true \
-  --temporary-password "Cu9Cak3" \
+  --temporary-password "<CHOOSE_A_TEMP_PASSWORD>" \
   --region us-east-1
 ```
 
